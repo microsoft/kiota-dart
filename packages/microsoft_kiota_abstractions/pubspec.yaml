@@ -1,6 +1,6 @@
 name: microsoft_kiota_abstractions
 description: "Provides interfaces and base classes for Dart Kiota clients."
-version: 0.0.1
+version: 0.0.2
 homepage: https://github.com/microsoft/kiota-dart/tree/main/packages/microsoft_kiota_abstractions
 repository: https://github.com/microsoft/kiota-dart
 

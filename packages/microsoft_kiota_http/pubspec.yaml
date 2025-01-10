@@ -1,6 +1,6 @@
 name: microsoft_kiota_http
 description: "Provides an implementation of a Kiota RequestAdapter that uses `http`."
-version: 0.0.1
+version: 0.0.2
 homepage: https://github.com/microsoft/kiota-dart/tree/main/packages/microsoft_kiota_http
 repository: https://github.com/microsoft/kiota-dart
 

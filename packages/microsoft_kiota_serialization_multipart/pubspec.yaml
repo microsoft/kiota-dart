@@ -1,6 +1,6 @@
 name: microsoft_kiota_serialization_multipart
 description: "Provides parsing and serialization support for the `multipart/form-data` content type."
-version: 0.0.1
+version: 0.0.2
 homepage: https://github.com/microsoft/kiota-dart/tree/main/packages/microsoft_kiota_serialization_multipart
 repository: https://github.com/microsoft/kiota-dart
 

@@ -4,7 +4,7 @@ class KiotaClientFactory {
   KiotaClientFactory._();
 
   static const String _productName = 'kiota-dart';
-  static const String _productVersion = '0.0.1'; // x-release-please-version
+  static const String _productVersion = '0.0.2'; // x-release-please-version
 
   static http.Client createClient() {
     return UserAgentClient(
