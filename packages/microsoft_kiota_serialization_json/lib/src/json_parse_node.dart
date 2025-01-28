@@ -13,7 +13,7 @@ class JsonParseNode implements ParseNode {
 
   @override
   bool? getBoolValue() {
-    return _node as bool;
+    return _node == null ? null : _node as bool;
   }
 
   @override
