@@ -200,6 +200,6 @@ void main() {
       final jsonParseNode = JsonParseNode(null);
 
       expect(jsonParseNode.getBoolValue(), equals(null));
-    });    
+    });
   });
 }
