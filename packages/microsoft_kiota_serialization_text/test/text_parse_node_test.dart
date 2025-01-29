@@ -37,6 +37,12 @@ void main() {
       expect(node.getBoolValue(), equals(true));
     });
 
+    test('getBoolValue with null', () {
+      final node = TextParseNode(null);
+
+      expect(node.getBoolValue(), equals(null));
+    });
+    
     test('getByteArrayValue', () {
       final node = TextParseNode('dGVzdA==');
 
