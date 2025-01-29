@@ -189,5 +189,17 @@ void main() {
       expect(testCollection.first, 2);
       expect(testCollection.last, 5);
     });
+
+    test('getBoolValue', () {
+      final jsonParseNode = JsonParseNode(jsonDecode('true'));
+
+      expect(jsonParseNode.getBoolValue(), equals(true));
+    });
+
+    test('getBoolValue with null', () {
+      final jsonParseNode = JsonParseNode(null);
+
+      expect(jsonParseNode.getBoolValue(), equals(null));
+    });    
   });
 }
