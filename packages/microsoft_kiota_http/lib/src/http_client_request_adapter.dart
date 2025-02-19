@@ -264,19 +264,24 @@ class HttpClientRequestAdapter implements RequestAdapter {
       return rootNode.getBoolValue() as ModelType;
     } else if (_isExactly<ModelType, int>() || _isExactly<ModelType, int?>()) {
       return rootNode.getIntValue() as ModelType;
-    } else if (_isExactly<ModelType, double>() || _isExactly<ModelType, double?>()) {
+    } else if (_isExactly<ModelType, double>() ||
+        _isExactly<ModelType, double?>()) {
       return rootNode.getDoubleValue() as ModelType;
-    } else if (_isExactly<ModelType, String>() || _isExactly<ModelType, String?>()) {
+    } else if (_isExactly<ModelType, String>() ||
+        _isExactly<ModelType, String?>()) {
       return rootNode.getStringValue() as ModelType;
-    } else if (_isExactly<ModelType, DateTime>() || _isExactly<ModelType, DateTime?>()) {
+    } else if (_isExactly<ModelType, DateTime>() ||
+        _isExactly<ModelType, DateTime?>()) {
       return rootNode.getDateTimeValue() as ModelType;
-    } else if (_isExactly<ModelType, DateOnly>() || _isExactly<ModelType, DateOnly?>() || _isSubtype<ModelType, DateOnly?>()) {
+    } else if (_isSubtype<ModelType, DateOnly?>()) {
       return rootNode.getDateOnlyValue() as ModelType;
-    } else if (_isExactly<ModelType, TimeOnly>() || _isExactly<ModelType, TimeOnly?>() || _isSubtype<ModelType, TimeOnly?>()) {
+    } else if (_isSubtype<ModelType, TimeOnly?>()) {
       return rootNode.getTimeOnlyValue() as ModelType;
-    } else if (_isExactly<ModelType, Duration>() || _isExactly<ModelType, Duration?>()) {
+    } else if (_isExactly<ModelType, Duration>() ||
+        _isExactly<ModelType, Duration?>()) {
       return rootNode.getDurationValue() as ModelType;
-    } else if (_isExactly<ModelType, UuidValue>() || _isExactly<ModelType, UuidValue?>()) {
+    } else if (_isExactly<ModelType, UuidValue>() ||
+        _isExactly<ModelType, UuidValue?>()) {
       return rootNode.getGuidValue() as ModelType;
     } else {
       throw ArgumentError(
