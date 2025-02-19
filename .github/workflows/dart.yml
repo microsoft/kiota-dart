@@ -7,6 +7,7 @@ on:
       - 'microsoft_kiota_abstractions-v*'
       - 'microsoft_kiota_bundle-v*'
       - 'microsoft_kiota_http-v*'
+      - 'microsoft_kiota_oauth-v*'
       - 'microsoft_kiota_serialization_form-v*'
       - 'microsoft_kiota_serialization_json-v*'
       - 'microsoft_kiota_serialization_text-v*'

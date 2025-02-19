@@ -8,6 +8,7 @@ workspace:
   - packages/microsoft_kiota_abstractions
   - packages/microsoft_kiota_bundle
   - packages/microsoft_kiota_http
+  - packages/microsoft_kiota_oauth
   - packages/microsoft_kiota_serialization_form
   - packages/microsoft_kiota_serialization_json
   - packages/microsoft_kiota_serialization_multipart
