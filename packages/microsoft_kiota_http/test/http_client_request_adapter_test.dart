@@ -109,5 +109,51 @@ void main() {
       expect(stringResult, isNotNull);
       expect(stringResult, stringContent);
     });
+
+    test('sendPrimitive throws for unsupported types', () async {
+      final client = MockClient();
+      final authProvider = MockAuthenticationProvider();
+      final pNodeFactory = MockParseNodeFactory();
+      final sWriterFactory = MockSerializationWriterFactory();
+      final parseNode = MockParseNode();
+
+      const stringContent = 'Hello, World!';
+      final contentBytes = Uint8List.fromList(stringContent.codeUnits);
+
+      final adapter = HttpClientRequestAdapter(
+        authProvider: authProvider,
+        pNodeFactory: pNodeFactory,
+        sWriterFactory: sWriterFactory,
+        client: client,
+      );
+
+      final info = RequestInformation(
+        httpMethod: HttpMethod.get,
+        urlTemplate: 'https://example.test/primitive',
+      );
+
+      when(authProvider.authenticateRequest(info))
+          .thenAnswer((_) async => Future<void>.value());
+
+      when(client.send(any)).thenAnswer((_) async {
+        return http.StreamedResponse(
+          Stream.fromIterable([contentBytes]),
+          200,
+          headers: {
+            'content-type': 'text/plain',
+          },
+        );
+      });
+
+      when(pNodeFactory.getRootParseNode('text/plain', contentBytes))
+          .thenReturn(parseNode);
+
+      when(parseNode.getStringValue()).thenReturn(stringContent);
+
+      expect(
+            () => adapter.sendPrimitive<Object?>(info),
+        throwsA(isA<ArgumentError>()),
+      );
+    });
   });
 }
