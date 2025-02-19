@@ -1,5 +1,4 @@
 import 'package:http/http.dart' as http;
-import 'package:microsoft_kiota_abstractions/microsoft_kiota_abstractions.dart';
 import 'package:microsoft_kiota_bundle/microsoft_kiota_bundle.dart';
 import 'package:microsoft_kiota_serialization_form/microsoft_kiota_serialization_form.dart';
 import 'package:microsoft_kiota_serialization_json/microsoft_kiota_serialization_json.dart';
