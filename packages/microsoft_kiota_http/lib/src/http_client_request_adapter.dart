@@ -242,6 +242,12 @@ class HttpClientRequestAdapter implements RequestAdapter {
     await _throwIfFailedResponse(response, errorMapping);
   }
 
+  @pragma('vm:prefer-inline')
+  bool _isExactly<T, U>() => T == U;
+
+  @pragma('vm:prefer-inline')
+  bool _isSubtype<T, U>() => <T>[] is List<U>;
+
   @override
   Future<ModelType?> sendPrimitive<ModelType>(
     RequestInformation requestInfo, [
@@ -254,29 +260,28 @@ class HttpClientRequestAdapter implements RequestAdapter {
       return null;
     }
 
-    switch (ModelType) {
-      case const (bool):
-        return rootNode.getBoolValue() as ModelType;
-      case const (int):
-        return rootNode.getIntValue() as ModelType;
-      case const (double):
-        return rootNode.getDoubleValue() as ModelType;
-      case const (String):
-        return rootNode.getStringValue() as ModelType;
-      case const (DateTime):
-        return rootNode.getDateTimeValue() as ModelType;
-      case const (DateOnly):
-        return rootNode.getDateOnlyValue() as ModelType;
-      case const (TimeOnly):
-        return rootNode.getTimeOnlyValue() as ModelType;
-      case const (Duration):
-        return rootNode.getDurationValue() as ModelType;
-      case const (UuidValue):
-        return rootNode.getGuidValue() as ModelType;
-      default:
-        throw ArgumentError(
-          'The type $ModelType is not supported for primitive deserialization',
-        );
+    if (_isExactly<ModelType, bool>() || _isExactly<ModelType, bool?>()) {
+      return rootNode.getBoolValue() as ModelType;
+    } else if (_isExactly<ModelType, int>() || _isExactly<ModelType, int?>()) {
+      return rootNode.getIntValue() as ModelType;
+    } else if (_isExactly<ModelType, double>() || _isExactly<ModelType, double?>()) {
+      return rootNode.getDoubleValue() as ModelType;
+    } else if (_isExactly<ModelType, String>() || _isExactly<ModelType, String?>()) {
+      return rootNode.getStringValue() as ModelType;
+    } else if (_isExactly<ModelType, DateTime>() || _isExactly<ModelType, DateTime?>()) {
+      return rootNode.getDateTimeValue() as ModelType;
+    } else if (_isExactly<ModelType, DateOnly>() || _isExactly<ModelType, DateOnly?>() || _isSubtype<ModelType, DateOnly?>()) {
+      return rootNode.getDateOnlyValue() as ModelType;
+    } else if (_isExactly<ModelType, TimeOnly>() || _isExactly<ModelType, TimeOnly?>() || _isSubtype<ModelType, TimeOnly?>()) {
+      return rootNode.getTimeOnlyValue() as ModelType;
+    } else if (_isExactly<ModelType, Duration>() || _isExactly<ModelType, Duration?>()) {
+      return rootNode.getDurationValue() as ModelType;
+    } else if (_isExactly<ModelType, UuidValue>() || _isExactly<ModelType, UuidValue?>()) {
+      return rootNode.getGuidValue() as ModelType;
+    } else {
+      throw ArgumentError(
+        'The type $ModelType is not supported for primitive deserialization',
+      );
     }
   }
 
