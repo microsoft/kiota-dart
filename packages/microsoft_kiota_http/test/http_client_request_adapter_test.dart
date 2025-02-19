@@ -151,7 +151,7 @@ void main() {
       when(parseNode.getStringValue()).thenReturn(stringContent);
 
       expect(
-            () => adapter.sendPrimitive<Object?>(info),
+        () => adapter.sendPrimitive<Object?>(info),
         throwsA(isA<ArgumentError>()),
       );
     });
