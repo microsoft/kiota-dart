@@ -2,15 +2,13 @@
 
 class OAuthAccessTokenProvider implements AccessTokenProvider {
   OAuthAccessTokenProvider({
-    required this.credentials,
+    required this.client,
     List<String>? allowedHosts,
-    this.scopes,
   }) {
     allowedHostsValidator = AllowedHostsValidator(allowedHosts);
   }
 
-  final OAuthCredentials credentials;
-  final List<String>? scopes;
+  final oauth2.Client client;
 
   @override
   late final AllowedHostsValidator allowedHostsValidator;
@@ -37,18 +35,10 @@ class OAuthAccessTokenProvider implements AccessTokenProvider {
       );
     }
 
-    final scopes = this.scopes ?? <String>[];
-    if (scopes.isEmpty) {
-      scopes.add(uri.resolve('/.default').toString());
+    if (client.credentials.isExpired) {
+      await client.refreshCredentials();
     }
 
-    // TODO: implement getAuthorizationToken
-    throw UnimplementedError();
+    return client.credentials.accessToken;
   }
-}
-
-abstract class OAuthCredentials {
-  Future<String> getToken({
-    required List<String> scopes,
-  });
 }
