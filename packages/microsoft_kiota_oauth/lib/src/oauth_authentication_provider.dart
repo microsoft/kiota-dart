@@ -6,4 +6,16 @@ class OAuthAuthenticationProvider extends BaseBearerTokenAuthenticationProvider
   OAuthAuthenticationProvider(
     OAuthAccessTokenProvider super.accessTokenProvider,
   );
+
+  factory OAuthAuthenticationProvider.withClient(
+    oauth2.Client client, {
+    List<String>? allowedHosts,
+  }) {
+    return OAuthAuthenticationProvider(
+      OAuthAccessTokenProvider(
+        client: client,
+        allowedHosts: allowedHosts,
+      ),
+    );
+  }
 }

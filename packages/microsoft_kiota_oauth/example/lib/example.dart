@@ -9,14 +9,17 @@ Future<void> main() async {
   final client = await authorizationCodeGrant();
   // final client = await clientCredentialsGrant();
 
-  final accessTokenProvider = OAuthAccessTokenProvider(client: client);
-  final authProvider = OAuthAuthenticationProvider(accessTokenProvider);
+  final authProvider = OAuthAuthenticationProvider.withClient(
+    client,
+    allowedHosts: ['example.com'],
+  );
   final adapter = DefaultRequestAdapter(authProvider: authProvider);
 
   // ... pass adapter to the generated API client
 }
 
-final authorizationEndpoint = Uri.parse('http://example.com/oauth2/authorization');
+final authorizationEndpoint =
+    Uri.parse('http://example.com/oauth2/authorization');
 final tokenEndpoint = Uri.parse('http://example.com/oauth2/token');
 final redirectUrl = Uri.parse('http://my-site.com/oauth2-redirect');
 
@@ -44,10 +47,10 @@ Future<oauth2.Client> authorizationCodeGrant() async {
   }
 
   final grant = oauth2.AuthorizationCodeGrant(
-      identifier,
-      tokenEndpoint,
-      tokenEndpoint,
-      secret: secret
+    identifier,
+    tokenEndpoint,
+    tokenEndpoint,
+    secret: secret,
   );
 
   final authorizationUrl = grant.getAuthorizationUrl(redirectUrl);
