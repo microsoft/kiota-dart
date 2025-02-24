@@ -1,3 +1,4 @@
+// ignore_for_file: unused_local_variable
 import 'dart:io';
 
 import 'package:microsoft_kiota_bundle/microsoft_kiota_bundle.dart';
