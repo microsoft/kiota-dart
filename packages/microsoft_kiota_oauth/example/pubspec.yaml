@@ -1,6 +1,7 @@
 name: example
 description: Shows how to use the microsoft_kiota_oauth package.
 version: 1.0.0
+publish_to: 'none'
 
 environment:
   sdk: ^3.7.0
