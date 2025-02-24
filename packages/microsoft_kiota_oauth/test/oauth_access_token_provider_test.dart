@@ -75,7 +75,6 @@ void main() async {
 
   test('refreshes credentials if expired', () async {
     final client = MockClient();
-    final refreshedClient = MockClient();
 
     when(client.credentials).thenReturnInOrder(
       [
