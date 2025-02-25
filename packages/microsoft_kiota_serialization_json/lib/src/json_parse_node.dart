@@ -92,7 +92,7 @@ class JsonParseNode implements ParseNode {
 
   @override
   double? getDoubleValue() {
-    return _node as double;
+    return _node == null ? null : _node as double;
   }
 
   @override
@@ -112,7 +112,7 @@ class JsonParseNode implements ParseNode {
 
   @override
   int? getIntValue() {
-    return _node as int;
+    return _node == null ? null : _node as int;
   }
 
   @override
