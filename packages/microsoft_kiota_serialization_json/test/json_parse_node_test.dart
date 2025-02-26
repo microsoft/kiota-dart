@@ -201,5 +201,27 @@ void main() {
 
       expect(jsonParseNode.getBoolValue(), equals(null));
     });
+    test('getDoubleValue', () {
+      final jsonParseNode = JsonParseNode(jsonDecode('1.5'));
+
+      expect(jsonParseNode.getDoubleValue(), equals(1.5));
+    });
+
+    test('getDoubleValue with null', () {
+      final jsonParseNode = JsonParseNode(null);
+
+      expect(jsonParseNode.getDoubleValue(), equals(null));
+    });
+    test('getIntValue', () {
+      final jsonParseNode = JsonParseNode(jsonDecode('1'));
+
+      expect(jsonParseNode.getIntValue(), equals(1));
+    });
+
+    test('getIntValue with null', () {
+      final jsonParseNode = JsonParseNode(null);
+
+      expect(jsonParseNode.getIntValue(), equals(null));
+    });
   });
 }
