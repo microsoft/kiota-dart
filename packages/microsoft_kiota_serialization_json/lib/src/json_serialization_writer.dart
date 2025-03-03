@@ -151,8 +151,9 @@ class JsonSerializationWriter implements SerializationWriter {
     if (value != null) {
       onBeforeObjectSerialization?.call(value);
     }
+    final hasBodyContent = (key?.isNotEmpty ?? false) && value is! UntypedNode;
     var originalContents = <String, dynamic>{};
-    if (key?.isNotEmpty ?? false) {
+    if (hasBodyContent) {
       originalContents = {..._contents};
       _contents.clear();
     }
@@ -176,7 +177,7 @@ class JsonSerializationWriter implements SerializationWriter {
         }
       }
     }
-    if (key?.isNotEmpty ?? false) {
+    if (hasBodyContent) {
       final objectContents = {..._contents};
       _contents
         ..clear()
