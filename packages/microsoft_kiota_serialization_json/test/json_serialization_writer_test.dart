@@ -138,24 +138,25 @@ void main() {
         ),
       );
     });
-  test('writeUntypedNode', () {
-    var filterRequest = FilterRequest(
-      fieldName: 'name',
-      operator: 'contains',
-      value: UntypedString('jo'),
-    );
-
-    final writer = JsonSerializationWriter()
-      ..writeObjectValue(
-        null,
-        filterRequest,
+    test('writeUntypedNode', () {
+      var filterRequest = FilterRequest(
+        fieldName: 'name',
+        operator: 'contains',
+        value: UntypedString('jo'),
       );
 
-    expect(
-      utf8.decode(writer.getSerializedContent()),
-      equals(
-        '{"fieldName":"name","operator":"contains","value":"jo"}',
-      ),
-    );
+      final writer = JsonSerializationWriter()
+        ..writeObjectValue(
+          null,
+          filterRequest,
+        );
+
+      expect(
+        utf8.decode(writer.getSerializedContent()),
+        equals(
+          '{"fieldName":"name","operator":"contains","value":"jo"}',
+        ),
+      );
+    });
   });
 }
