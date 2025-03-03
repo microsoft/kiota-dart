@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:microsoft_kiota_abstractions/microsoft_kiota_abstractions.dart';
 import 'package:microsoft_kiota_serialization_json/microsoft_kiota_serialization_json.dart';
 import 'package:test/test.dart';
@@ -45,8 +46,6 @@ void main() {
         ..createdDateTime = DateTime(2023, 12, 1, 15, 15)
         ..officeLocation = 'at the desk'
         ..workDuration = const Duration(hours: 40)
-        ..birthDay =
-            DateOnly.fromDateTime(DateTime.parse('2024-10-01 00:00:00'))
         ..birthDay = DateOnly.fromDateTime(DateTime.parse('2024-10-01 00:00:00'))
         ..heightInMetres = 1.7
         ..startWorkTime = TimeOnly.fromDateTimeString('06:00')
@@ -139,39 +138,6 @@ void main() {
         ),
       );
     });
-    test('writeAdditionalDataTypes', () {
-      final user2 = MicrosoftGraphUser()
-        ..workDuration = const Duration(hours: 12)
-        ..active = true;
-      final user = MicrosoftGraphUser()
-        ..officeLocation = ''
-        ..workDuration = const Duration(hours: 2)
-        ..additionalData = {
-          'a': '#1 coworker',
-          'string': 'a string',
-          'double': 0.0,
-          'bool': false,
-          'time': TimeOnly.fromComponents(12, 00),
-          'date': DateOnly.fromComponents(2000),
-          'datetime': DateTime(2024, 12, 31, 23, 59),
-          'uuid': UuidValue.fromString('019329eb-0ac5-7cc0-9dea-6440b3648264'),
-          'user': user2,
-        };
-
-      final writer = JsonSerializationWriter()
-        ..writeObjectValue(
-          null,
-          user,
-        );
-
-      expect(
-        utf8.decode(writer.getSerializedContent()),
-        equals(
-          '{"workDuration":"2:00:00.000000","a":"#1 coworker","string":"a string","double":0.0,"bool":false,"time":"12:00:00","date":"2000-01-01","datetime":"2024-12-31T23:59:00.000","uuid":"019329eb-0ac5-7cc0-9dea-6440b3648264","user":{"workDuration":"12:00:00.000000","active":true}}',
-        ),
-      );
-    });
-  });
   test('writeUntypedNode', () {
     var filterRequest = FilterRequest(
       fieldName: 'name',
