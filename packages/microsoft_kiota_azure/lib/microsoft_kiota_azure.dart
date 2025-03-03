@@ -7,4 +7,7 @@ import 'package:oauth2/oauth2.dart' as oauth2;
 
 part 'src/azure_access_token_provider.dart';
 part 'src/azure_authentication_provider.dart';
+part 'src/token_credential.dart';
+part 'src/token_request_context.dart';
+part 'src/access_token.dart';
 //TODO add the other parts of the model
