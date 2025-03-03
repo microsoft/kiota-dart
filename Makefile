@@ -5,10 +5,13 @@ format:
 	dart format packages
 	dart format tooling
 
-generate: generate-abstractions generate-bundle generate-http generate-oauth generate-serialization-form generate-serialization-json generate-serialization-multipart
+generate: generate-abstractions generate-azure generate-bundle generate-http generate-oauth generate-serialization-form generate-serialization-json generate-serialization-multipart
 
 generate-abstractions: pub-get
 	cd packages/microsoft_kiota_abstractions && dart run build_runner build --delete-conflicting-outputs
+
+generate-azure: pub-get
+	cd packages/microsoft_kiota_azure && dart run build_runner build --delete-conflicting-outputs
 
 generate-bundle: pub-get
 	cd packages/microsoft_kiota_bundle && dart run build_runner build --delete-conflicting-outputs
@@ -28,10 +31,13 @@ generate-serialization-json: pub-get
 generate-serialization-multipart: pub-get
 	cd packages/microsoft_kiota_serialization_multipart && dart run build_runner build --delete-conflicting-outputs
 
-test: test-abstractions test-bundle test-http test-oauth test-serialization-text test-serialization-form test-serialization-json test-serialization-multipart
+test: test-abstractions test-azure test-bundle test-http test-oauth test-serialization-text test-serialization-form test-serialization-json test-serialization-multipart
 
 test-abstractions: generate-abstractions
 	cd packages/microsoft_kiota_abstractions && dart test
+
+test-azure: generate-azure
+	cd packages/microsoft_kiota_azure && dart test
 
 test-bundle: generate-bundle
 	cd packages/microsoft_kiota_bundle && dart test

@@ -6,6 +6,7 @@ environment:
 
 workspace:
   - packages/microsoft_kiota_abstractions
+  - packages/microsoft_kiota_azure
   - packages/microsoft_kiota_bundle
   - packages/microsoft_kiota_http
   - packages/microsoft_kiota_oauth
