@@ -1,0 +1,14 @@
+name: example
+description: Shows how to use the microsoft_kiota_azure package.
+version: 1.0.0
+publish_to: 'none'
+
+environment:
+  sdk: ^3.7.0
+
+dependencies:
+  oauth2: ^2.0.3
+  microsoft_kiota_azure:
+    path: ../
+  microsoft_kiota_bundle:
+    path: ../../microsoft_kiota_bundle

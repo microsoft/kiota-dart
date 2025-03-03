@@ -1,0 +1,21 @@
+name: microsoft_kiota_azure
+description: "Provides an implementation of a Kiota AuthenticationProvider for Azure authentication."
+version: 0.0.1
+homepage: https://github.com/microsoft/kiota-dart/tree/main/packages/microsoft_kiota_azure
+repository: https://github.com/microsoft/kiota-dart
+
+environment:
+  sdk: ^3.6.0
+
+resolution: workspace
+
+dependencies:
+  microsoft_kiota_abstractions: ^0.0.1
+  microsoft_kiota_oauth: ^0.1.0
+  oauth2: ^2.0.3
+
+dev_dependencies:
+  strict: ^2.1.0
+  test: ^1.25.14
+  mockito: ^5.4.5
+  build_runner: any
