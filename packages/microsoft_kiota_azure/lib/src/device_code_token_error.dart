@@ -15,7 +15,7 @@ class DeviceCodeTokenError
 	}
 	final String error;
 	final String errorDescription;
-	final List<String> errorCodes;
+	final List<int> errorCodes;
 	final DateTime timestamp;
 	final String traceId;
 	final String correlationId;
@@ -23,7 +23,7 @@ class DeviceCodeTokenError
 	DeviceCodeTokenError.fromJson(Map<String, dynamic> json) :
 		error = json['error'] as String,
 		errorDescription = json['error_description'] as String,
-		errorCodes = (json['error_codes'] as List).map((e) => e as String).toList(),
+		errorCodes = (json['error_codes'] as List).map((e) => e as int).toList(),
 		timestamp = DateTime.parse(json['timestamp'] as String),
 		traceId = json['trace_id'] as String,
 		correlationId = json['correlation_id'] as String,
