@@ -19,12 +19,35 @@ class DeviceCodeCredential implements TokenCredential
 	final String tenantId;
 	final String host;
 	final void Function(DeviceCodeInfo) challengeConsumer;
+	final Map<String, AccessToken> _tokenCache = HashMap<String, AccessToken>();
 	@override
 	Future<AccessToken> getToken(TokenRequestContext requestContext) async {
+		final cachedToken = getCachedToken(requestContext);
+		if (cachedToken != null) {
+			return cachedToken;
+		}
 		final deviceCodeInfo = await _getDeviceCodeInfo(requestContext);
 		challengeConsumer(deviceCodeInfo);
-		return _pollForToken(deviceCodeInfo);
+		final accessToken = await _pollForToken(deviceCodeInfo);
+		addTokenToCache(requestContext, accessToken);
+		return accessToken;
 	}
+	void addTokenToCache(TokenRequestContext requestContext, AccessToken token) {
+		_tokenCache[getCacheKey(requestContext)] = token;
+	}
+	AccessToken? getCachedToken(TokenRequestContext requestContext)
+	{
+		final cacheKey = getCacheKey(requestContext);
+		final cachedToken = _tokenCache[cacheKey];
+		if (cachedToken != null) {
+			if (cachedToken.expiresOn?.isAfter(DateTime.now()) ?? false) {
+				return cachedToken;
+			}
+			_tokenCache.remove(cacheKey);
+		}
+		return null;
+	}
+	String getCacheKey(TokenRequestContext requestContext) => host + clientId + tenantId + requestContext.scopes.join(" ");
 
 	Future<DeviceCodeInfo> _getDeviceCodeInfo(TokenRequestContext requestContext) async {
 	    final substitutions = <String, dynamic>{};
@@ -37,7 +60,6 @@ class DeviceCodeCredential implements TokenCredential
 			
 		final response = await http.get(Uri.parse(uri));
 		//TODO use the refresh token if present and not expired
-		//TODO cache the access token to avoid re-authenticating across multiple requests
 		if(response.statusCode != 200) {
 			throw Exception("Failed to get device code");
 		}

@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/retry.dart' as retry;
 import 'package:oauth2/oauth2.dart' as oauth2;
 import 'dart:convert';
+import 'dart:collection';
 
 part 'src/azure_access_token_provider.dart';
 part 'src/azure_authentication_provider.dart';
