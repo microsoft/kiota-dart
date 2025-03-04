@@ -41,7 +41,7 @@ void main() async {
   test("doesn't throw for localhost and http scheme", () async {
     final credential = MockTokenCredential();
 
-    when(credential.getAccessToken).thenReturn(AccessToken(token: 'accessToken'));
+    when(credential.getToken(any)).thenAnswer((_) => Future<AccessToken>.value(AccessToken(token: 'accessToken')));
 
     final provider = AzureAccessTokenProvider(
       credential: credential,
@@ -58,7 +58,7 @@ void main() async {
   test('returns token for allowed host', () async {
     final credential = MockTokenCredential();
 
-    when(credential.getAccessToken).thenReturn(AccessToken(token: 'accessToken'));
+    when(credential.getToken(any)).thenAnswer((_) => Future<AccessToken>.value(AccessToken(token: 'accessToken')));
 
     final provider = AzureAccessTokenProvider(
       credential: credential,
@@ -75,20 +75,21 @@ void main() async {
   test('refreshes credentials if expired', () async {
     final credential = MockTokenCredential();
 
-    when(credential.getAccessToken).thenReturnInOrder(
-      [
-        AccessToken(
-          token: 'expired',
-          expiresOn: DateTime.now().subtract(
-            const Duration(minutes: 1)
-          ),
-          refreshAt: DateTime.now().subtract(
-            const Duration(minutes: 2)
-          ),
+    List<Future<AccessToken>> responses =
+    [
+      Future<AccessToken>.value(AccessToken(
+        token: 'expired',
+        expiresOn: DateTime.now().subtract(
+          const Duration(minutes: 1)
         ),
-        AccessToken(token: 'refreshed'),
-      ],
-    );
+        refreshAt: DateTime.now().subtract(
+          const Duration(minutes: 2)
+        ),
+      )),
+      Future<AccessToken>.value(AccessToken(token: 'refreshed')),
+    ];
+
+    when(credential.getToken(any)).thenAnswer((_) => responses.removeAt(0));
 
     final provider = AzureAccessTokenProvider(
       credential: credential,
