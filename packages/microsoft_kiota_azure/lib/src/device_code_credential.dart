@@ -49,16 +49,28 @@ class DeviceCodeCredential implements TokenCredential
 	}
 	String getCacheKey(TokenRequestContext requestContext) => host + clientId + tenantId + requestContext.scopes.join(" ");
 
+	Future<http.Response> postUrlFormBodyRequest(Uri uri, Map<String, String> formBody)
+	{
+		return http.post(uri,
+						headers: {
+							"Accept": "application/json",
+							"Content-Type": "application/x-www-form-urlencoded"
+						},
+						body: formBody);
+	}
+	
 	Future<DeviceCodeInfo> _getDeviceCodeInfo(TokenRequestContext requestContext) async {
 	    final substitutions = <String, dynamic>{};
 		substitutions["host"] = host;
 		substitutions["tenant_id"] = tenantId;
-		substitutions["client_id"] = clientId;
-		substitutions["scope"] = requestContext.scopes.join(" ");
-
 		final uri = StdUriTemplate.expand((deviceCodeUriTemplate), substitutions);
 			
-		final response = await http.get(Uri.parse(uri));
+		final formBody = {
+			"client_id" : clientId,
+			"scope": requestContext.scopes.join(" ")
+		};
+		final response = await postUrlFormBodyRequest(Uri.parse(uri), formBody);
+
 		//TODO use the refresh token if present and not expired
 		if(response.statusCode != 200) {
 			throw Exception("Failed to get device code");
@@ -87,13 +99,17 @@ class DeviceCodeCredential implements TokenCredential
 		final substitutions = <String, dynamic>{};
 		substitutions["host"] = host;
 		substitutions["tenant_id"] = tenantId;
-		substitutions["client_id"] = clientId;
-		substitutions["device_code"] = codeInfo.deviceCode;
-		substitutions["grant_type"] = "urn:ietf:params:oauth:grant-type:device_code";
 
 		final uri = StdUriTemplate.expand((tokenUriTemplate), substitutions);
-			
-		final response = await http.post(Uri.parse(uri));
+
+		final formBody = {
+			"client_id" : clientId,
+			"device_code": codeInfo.deviceCode,
+			"grant_type": "urn:ietf:params:oauth:grant-type:device_code"
+		};
+
+		final response = await postUrlFormBodyRequest(Uri.parse(uri), formBody);
+
 		if(response.statusCode == 400) {
 			final responseBody = jsonDecode(response.body);
 			final errorResponse = DeviceCodeTokenError.fromJson(responseBody);
