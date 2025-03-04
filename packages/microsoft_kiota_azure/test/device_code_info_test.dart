@@ -4,7 +4,8 @@ import 'dart:convert';
 
 void main() async {
   test('deserializes device info from json payload', () async {
-	final String json = '''{
+	const json = '''
+{
 		"user_code": "A62NXK96N",
 		"device_code": "foo",
 		"verification_uri": "https://microsoft.com/devicelogin",

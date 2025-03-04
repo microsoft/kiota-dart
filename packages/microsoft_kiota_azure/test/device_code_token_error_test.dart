@@ -4,7 +4,8 @@ import 'dart:convert';
 
 void main() async {
   test('deserializes device token error from json payload', () async {
-	final String json = '''{
+	const json = '''
+{
 		"error": "authorization_pending",
 		"error_description": "AADSTS70016: OAuth 2.0 device flow error. Authorization is pending. Continue polling. Trace ID: 9aac4ee6-e730-4929-b3ee-6ea7b67e1d00 Correlation ID: cad65606-26ba-423f-9cab-fdd75756e364 Timestamp: 2025-03-04 17:46:18Z",
 		"error_codes": [

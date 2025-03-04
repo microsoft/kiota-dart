@@ -3,9 +3,6 @@ part of '../microsoft_kiota_azure.dart';
 /// Implements the [TokenCredential] for device code authentication.
 class DeviceCodeCredential implements TokenCredential
 {
-	static const String deviceCodeUriTemplate = "https://{host}/{tenant_id}/oauth2/v2.0/devicecode{?client_id,scope}";
-	static const String tokenUriTemplate = "https://{host}/{tenant_id}/oauth2/v2.0/token{?grant_type,client_id,device_code}";
-	static const String defaultTenantId = "common";
 	DeviceCodeCredential(
 		this.clientId,
 		this.challengeConsumer,
@@ -15,6 +12,9 @@ class DeviceCodeCredential implements TokenCredential
 	{
 
 	}
+	static const String deviceCodeUriTemplate = 'https://{host}/{tenant_id}/oauth2/v2.0/devicecode{?client_id,scope}';
+	static const String tokenUriTemplate = 'https://{host}/{tenant_id}/oauth2/v2.0/token{?grant_type,client_id,device_code}';
+	static const String defaultTenantId = 'common';
 	final String clientId;
 	final String tenantId;
 	final String host;
@@ -47,33 +47,33 @@ class DeviceCodeCredential implements TokenCredential
 		}
 		return null;
 	}
-	String getCacheKey(TokenRequestContext requestContext) => host + clientId + tenantId + requestContext.scopes.join(" ");
+	String getCacheKey(TokenRequestContext requestContext) => host + clientId + tenantId + requestContext.scopes.join(' ');
 
 	Future<http.Response> postUrlFormBodyRequest(Uri uri, Map<String, String> formBody)
 	{
 		return http.post(uri,
 						headers: {
-							"Accept": "application/json",
-							"Content-Type": "application/x-www-form-urlencoded"
+							'Accept': 'application/json',
+							'Content-Type': 'application/x-www-form-urlencoded',
 						},
-						body: formBody);
+						body: formBody,);
 	}
 	
 	Future<DeviceCodeInfo> _getDeviceCodeInfo(TokenRequestContext requestContext) async {
 	    final substitutions = <String, dynamic>{};
-		substitutions["host"] = host;
-		substitutions["tenant_id"] = tenantId;
-		final uri = StdUriTemplate.expand((deviceCodeUriTemplate), substitutions);
+		substitutions['host'] = host;
+		substitutions['tenant_id'] = tenantId;
+		final uri = StdUriTemplate.expand(deviceCodeUriTemplate, substitutions);
 			
 		final formBody = {
-			"client_id" : clientId,
-			"scope": requestContext.scopes.join(" ")
+			'client_id' : clientId,
+			'scope': requestContext.scopes.join(' '),
 		};
 		final response = await postUrlFormBodyRequest(Uri.parse(uri), formBody);
 
 		//TODO use the refresh token if present and not expired
 		if(response.statusCode != 200) {
-			throw Exception("Failed to get device code");
+			throw Exception('Failed to get device code');
 		}
 		final responseBody = jsonDecode(response.body);
 		return DeviceCodeInfo.fromJson(responseBody);
@@ -97,15 +97,15 @@ class DeviceCodeCredential implements TokenCredential
 	Future<DeviceCodeTokenResponse?> _getTokenInformation(DeviceCodeInfo codeInfo) async
 	{
 		final substitutions = <String, dynamic>{};
-		substitutions["host"] = host;
-		substitutions["tenant_id"] = tenantId;
+		substitutions['host'] = host;
+		substitutions['tenant_id'] = tenantId;
 
-		final uri = StdUriTemplate.expand((tokenUriTemplate), substitutions);
+		final uri = StdUriTemplate.expand(tokenUriTemplate, substitutions);
 
 		final formBody = {
-			"client_id" : clientId,
-			"device_code": codeInfo.deviceCode,
-			"grant_type": "urn:ietf:params:oauth:grant-type:device_code"
+			'client_id' : clientId,
+			'device_code': codeInfo.deviceCode,
+			'grant_type': 'urn:ietf:params:oauth:grant-type:device_code',
 		};
 
 		final response = await postUrlFormBodyRequest(Uri.parse(uri), formBody);
@@ -113,10 +113,10 @@ class DeviceCodeCredential implements TokenCredential
 		if(response.statusCode == 400) {
 			final responseBody = jsonDecode(response.body);
 			final errorResponse = DeviceCodeTokenError.fromJson(responseBody);
-			if (errorResponse.error == "authorization_pending") {
+			if (errorResponse.error == 'authorization_pending') {
 				return null;
 			}
-			throw Exception("Failed to get token: ${errorResponse.error}");
+			throw Exception('Failed to get token: ${errorResponse.error}');
 		}
 		final responseBody = jsonDecode(response.body);
 		return DeviceCodeTokenResponse.fromJson(responseBody);

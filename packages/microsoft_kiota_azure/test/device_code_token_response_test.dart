@@ -4,7 +4,7 @@ import 'dart:convert';
 
 void main() async {
 	test('deserializes device token error from json payload', () async {
-		final String json = '''
+		const json = '''
 		{
 			"token_type": "Bearer",
 			"scope": "User.Read profile openid email",

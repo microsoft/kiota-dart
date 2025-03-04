@@ -75,17 +75,17 @@ void main() async {
   test('refreshes credentials if expired', () async {
     final credential = MockTokenCredential();
 
-    List<Future<AccessToken>> responses =
-    [
+    var responses =
+    <Future<AccessToken>>[
       Future<AccessToken>.value(AccessToken(
         token: 'expired',
         expiresOn: DateTime.now().subtract(
-          const Duration(minutes: 1)
+          const Duration(minutes: 1),
         ),
         refreshAt: DateTime.now().subtract(
-          const Duration(minutes: 2)
+          const Duration(minutes: 2),
         ),
-      )),
+      ),),
       Future<AccessToken>.value(AccessToken(token: 'refreshed')),
     ];
 
