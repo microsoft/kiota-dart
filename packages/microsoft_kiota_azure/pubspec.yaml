@@ -11,8 +11,8 @@ resolution: workspace
 
 dependencies:
   microsoft_kiota_abstractions: ^0.0.1
-  microsoft_kiota_oauth: ^0.1.0
-  oauth2: ^2.0.3
+  http: ^1.2.2
+  std_uritemplate: ^2.0.1
 
 dev_dependencies:
   strict: ^2.1.0

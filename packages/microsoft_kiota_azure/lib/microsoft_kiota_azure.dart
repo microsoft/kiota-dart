@@ -6,7 +6,6 @@ import 'package:microsoft_kiota_abstractions/microsoft_kiota_abstractions.dart';
 import 'package:std_uritemplate/std_uritemplate.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/retry.dart' as retry;
-import 'package:oauth2/oauth2.dart' as oauth2;
 import 'dart:convert';
 import 'dart:collection';
 
