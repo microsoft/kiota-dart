@@ -178,10 +178,15 @@ class JsonSerializationWriter implements SerializationWriter {
     }
     if (key?.isNotEmpty ?? false) {
       final objectContents = {..._contents};
+      dynamic value = objectContents;
+      if (objectContents.length == 1 && objectContents.keys.first == '') {
+        value = objectContents.values.first;
+      }
+
       _contents
         ..clear()
         ..addAll(originalContents);
-      _contents[key ?? ''] = objectContents;
+      _contents[key ?? ''] = value;
     }
     if (value != null) {
       onAfterObjectSerialization?.call(value);

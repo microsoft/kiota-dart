@@ -5,6 +5,7 @@ import 'package:test/test.dart';
 
 import './intersection_type_mock.dart';
 import 'microsoft_graph_user.dart';
+import 'nested_intersection_type.dart';
 import 'second_test_entity.dart';
 import 'test_enums.dart';
 
@@ -138,6 +139,16 @@ void main() {
         result,
         '[{"id":"10","namingEnum":"Item2:SubItem1","officeLocation":"Montreal"},{"id":"11","namingEnum":"Item3:SubItem1","officeLocation":"Ottawa"}]',
       );
+    });
+    test('serializes nested intersection types correctly', () {
+      final child = IntersectionTypeMock()..stringValue = 'string';
+      final parent = NestedIntersectionType()..nested = child;
+
+      final writer = JsonSerializationWriter();
+      parent.serialize(writer);
+      final content = writer.getSerializedContent();
+      final result = utf8.decode(content);
+      expect(result, '{"nested":"string"}');
     });
   });
 }

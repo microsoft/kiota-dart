@@ -6,7 +6,7 @@ import './second_test_entity.dart';
 class IntersectionTypeMock extends Parsable implements AdditionalDataHolder {
   IntersectionTypeMock();
 
-  factory IntersectionTypeMock.createFromDiscriminatorValue(
+  static IntersectionTypeMock createFromDiscriminatorValue(
     ParseNode parseNode,
   ) {
     final result = IntersectionTypeMock();
