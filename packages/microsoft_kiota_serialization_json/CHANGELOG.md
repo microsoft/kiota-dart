@@ -1,5 +1,9 @@
 # Unreleased
 
+### Bug Fixes
+
+* wrapper types for intersection types should not be serialized as objects ([#97](https://github.com/microsoft/kiota-dart/pull/97))
+
 ## [0.0.4](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_serialization_json-v0.0.3...microsoft_kiota_serialization_json-v0.0.4) (2025-02-26)
 
 
