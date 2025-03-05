@@ -2,11 +2,13 @@ part of '../microsoft_kiota_azure.dart';
 
 /// Implements the [TokenCredential] for device code authentication.
 class DeviceCodeCredential implements TokenCredential {
-  DeviceCodeCredential(this.clientId, this.challengeConsumer,
-      [this.tenantId = defaultTenantId,
-      this.host = AzureNationalClouds.PUBLIC_CLOUD,
-      http.Client? httpClient = null])
-      : _httpClient = httpClient ?? http.Client();
+  DeviceCodeCredential(
+    this.clientId,
+    this.challengeConsumer, [
+    this.tenantId = defaultTenantId,
+    this.host = AzureNationalClouds.public_cloud,
+    http.Client? httpClient,
+  ]) : _httpClient = httpClient ?? http.Client();
   static const String deviceCodeUriTemplate =
       'https://{host}/{tenant_id}/oauth2/v2.0/devicecode{?client_id,scope}';
   static const String tokenUriTemplate =
@@ -51,7 +53,9 @@ class DeviceCodeCredential implements TokenCredential {
       host + clientId + tenantId + requestContext.scopes.join(' ');
 
   Future<http.Response> postUrlFormBodyRequest(
-      Uri uri, Map<String, String> formBody) {
+    Uri uri,
+    Map<String, String> formBody,
+  ) {
     return _httpClient.post(
       uri,
       headers: {
@@ -63,7 +67,8 @@ class DeviceCodeCredential implements TokenCredential {
   }
 
   Future<DeviceCodeInfo> _getDeviceCodeInfo(
-      TokenRequestContext requestContext) async {
+    TokenRequestContext requestContext,
+  ) async {
     final substitutions = <String, dynamic>{};
     substitutions['host'] = host;
     substitutions['tenant_id'] = tenantId;
@@ -75,7 +80,7 @@ class DeviceCodeCredential implements TokenCredential {
     };
     final response = await postUrlFormBodyRequest(Uri.parse(uri), formBody);
 
-    //TODO use the refresh token if present and not expired
+    // TODO(baywet) use the refresh token if present and not expired
     if (response.statusCode != 200) {
       throw Exception('Failed to get device code');
     }
@@ -94,14 +99,16 @@ class DeviceCodeCredential implements TokenCredential {
       tokenResponse = await _getTokenInformation(codeInfo);
     } while (tokenResponse == null);
     return AccessToken(
-        token: tokenResponse.accessToken,
-        expiresOn: DateTime.now()
-            .add(Duration(seconds: tokenResponse.expiresIn ?? 60)));
-    //TODO store the refresh token
+      token: tokenResponse.accessToken,
+      expiresOn:
+          DateTime.now().add(Duration(seconds: tokenResponse.expiresIn ?? 60)),
+    );
+    // TODO(baywet) store the refresh token
   }
 
   Future<DeviceCodeTokenResponse?> _getTokenInformation(
-      DeviceCodeInfo codeInfo) async {
+    DeviceCodeInfo codeInfo,
+  ) async {
     final substitutions = <String, dynamic>{};
     substitutions['host'] = host;
     substitutions['tenant_id'] = tenantId;

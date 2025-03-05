@@ -19,4 +19,3 @@ part 'src/device_code_token_error.dart';
 part 'src/device_code_token_response.dart';
 part 'src/token_credential.dart';
 part 'src/token_request_context.dart';
-//TODO add the other parts of the model

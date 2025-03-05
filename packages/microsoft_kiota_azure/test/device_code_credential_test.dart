@@ -1,8 +1,6 @@
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:microsoft_kiota_azure/microsoft_kiota_azure.dart';
-import 'package:mockito/annotations.dart';
-import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
 void main() async {
@@ -51,7 +49,7 @@ void main() async {
       'clientId',
       (DeviceCodeInfo deviceCodeInfo) => called = true,
       'tenantId',
-      AzureNationalClouds.US_GOVERNMENT,
+      AzureNationalClouds.us_government,
       client,
     );
     final accessToken =

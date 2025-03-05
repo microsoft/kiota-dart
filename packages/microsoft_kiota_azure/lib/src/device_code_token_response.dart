@@ -1,6 +1,14 @@
 part of '../microsoft_kiota_azure.dart';
 
 class DeviceCodeTokenResponse {
+  DeviceCodeTokenResponse(
+    this.accessToken,
+    this.refreshToken,
+    this.idToken,
+    this.expiresIn,
+    this.tokenType,
+    this.scope,
+  );
   DeviceCodeTokenResponse.fromJson(Map<String, dynamic> json)
       : accessToken = json['access_token'] is String
             ? json['access_token'] as String
@@ -15,14 +23,6 @@ class DeviceCodeTokenResponse {
         tokenType =
             json['token_type'] is String ? json['token_type'] as String : null,
         scope = json['scope'] is String ? json['scope'] as String : null;
-  DeviceCodeTokenResponse(
-    this.accessToken,
-    this.refreshToken,
-    this.idToken,
-    this.expiresIn,
-    this.tokenType,
-    this.scope,
-  );
   final String? accessToken;
   final String? refreshToken;
   final String? idToken;

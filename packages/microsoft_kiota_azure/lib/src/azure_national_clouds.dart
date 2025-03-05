@@ -1,8 +1,7 @@
 part of '../microsoft_kiota_azure.dart';
 
-class AzureNationalClouds
-{
-	static const String US_GOVERNMENT = 'login.microsoftonline.us';
-	static const String CHINA_21VIANET = 'login.partner.microsoftonline.cn';
-	static const String PUBLIC_CLOUD = 'login.microsoftonline.com';
+class AzureNationalClouds {
+  static const String us_government = 'login.microsoftonline.us';
+  static const String china_21vianet = 'login.partner.microsoftonline.cn';
+  static const String public_cloud = 'login.microsoftonline.com';
 }
