@@ -57,7 +57,16 @@ class AzureAccessTokenProvider implements AccessTokenProvider {
     final tokenRequestContext = TokenRequestContext(scopes: scopes);
 
     final token = await credential.getToken(tokenRequestContext);
+    final accessToken = token.token;
 
-    return token.token;
+    if (accessToken == null) {
+      throw ArgumentError.value(
+        token,
+        'token',
+        'Token is null, unable to authenticate',
+      );
+    }
+
+    return accessToken;
   }
 }
