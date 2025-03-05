@@ -91,7 +91,7 @@ class DeviceCodeCredential implements TokenCredential {
   Future<AccessToken> _pollForToken(DeviceCodeInfo codeInfo) async {
     DeviceCodeTokenResponse? tokenResponse;
     do {
-      var interval = codeInfo.interval;
+      var interval = codeInfo.interval ?? 0;
       if (interval <= 0) {
         interval = 3;
       }
@@ -115,9 +115,15 @@ class DeviceCodeCredential implements TokenCredential {
 
     final uri = StdUriTemplate.expand(tokenUriTemplate, substitutions);
 
+    if (codeInfo.deviceCode == null) {
+      throw Exception('Device code is null');
+    }
+
+    final deviceCode = codeInfo.deviceCode ?? '';
+
     final formBody = {
       'client_id': clientId,
-      'device_code': codeInfo.deviceCode,
+      'device_code': deviceCode,
       'grant_type': 'urn:ietf:params:oauth:grant-type:device_code',
     };
 
