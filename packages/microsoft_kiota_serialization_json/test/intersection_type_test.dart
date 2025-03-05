@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:microsoft_kiota_abstractions/microsoft_kiota_abstractions.dart';
 import 'package:microsoft_kiota_serialization_json/microsoft_kiota_serialization_json.dart';
 import 'package:test/test.dart';
 
@@ -140,7 +141,8 @@ void main() {
         '[{"id":"10","namingEnum":"Item2:SubItem1","officeLocation":"Montreal"},{"id":"11","namingEnum":"Item3:SubItem1","officeLocation":"Ottawa"}]',
       );
     });
-    test('serializes nested intersection types correctly', () {
+
+    test('serializes nested intersection types correctly (primitive)', () {
       final child = IntersectionTypeMock()..stringValue = 'string';
       final parent = NestedIntersectionType()..nested = child;
 
@@ -149,6 +151,24 @@ void main() {
       final content = writer.getSerializedContent();
       final result = utf8.decode(content);
       expect(result, '{"nested":"string"}');
+    });
+
+    test('serializes nested intersection types correctly (complex)', () {
+      final complex = MicrosoftGraphUser()
+        ..id = 'id'
+        ..accountEnabled = true
+        ..namingEnum = NamingEnum.item2SubItem1
+        ..workDuration = const Duration(hours: 8, minutes: 2)
+        ..additionalData = {'key': 'value'}
+        ..birthDay = DateOnly.fromComponents(1998, 11, 11);
+      final child = IntersectionTypeMock()..composedType1 = complex;
+      final parent = NestedIntersectionType()..nested = child;
+
+      final writer = JsonSerializationWriter();
+      parent.serialize(writer);
+      final content = writer.getSerializedContent();
+      final result = utf8.decode(content);
+      expect(result, '{"nested":{"id":"id","namingEnum":"Item2:SubItem1","workDuration":"8:02:00.000000","birthDay":"1998-11-11","accountEnabled":true,"key":"value"}}');
     });
   });
 }
