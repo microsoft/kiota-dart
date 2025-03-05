@@ -1,9 +1,11 @@
 import 'dart:convert';
+
 import 'package:microsoft_kiota_abstractions/microsoft_kiota_abstractions.dart';
 import 'package:microsoft_kiota_serialization_json/microsoft_kiota_serialization_json.dart';
 import 'package:test/test.dart';
 import 'package:uuid/uuid.dart';
 
+import 'filter_request.dart';
 import 'microsoft_graph_group.dart';
 import 'microsoft_graph_user.dart';
 
@@ -44,8 +46,7 @@ void main() {
         ..createdDateTime = DateTime(2023, 12, 1, 15, 15)
         ..officeLocation = 'at the desk'
         ..workDuration = const Duration(hours: 40)
-        ..birthDay =
-            DateOnly.fromDateTime(DateTime.parse('2024-10-01 00:00:00'))
+        ..birthDay = DateOnly.fromDateTime(DateTime.parse('2024-10-01 00:00:00'))
         ..heightInMetres = 1.7
         ..startWorkTime = TimeOnly.fromDateTimeString('06:00')
         ..active = true
@@ -134,6 +135,26 @@ void main() {
         utf8.decode(writer.getSerializedContent()),
         equals(
           '{"workDuration":"2:00:00.000000","a":"#1 coworker","string":"a string","double":0.0,"bool":false,"time":"12:00:00","date":"2000-01-01","datetime":"2024-12-31T23:59:00.000","uuid":"019329eb-0ac5-7cc0-9dea-6440b3648264","user":{"workDuration":"12:00:00.000000","active":true}}',
+        ),
+      );
+    });
+    test('writeUntypedNode', () {
+      var filterRequest = FilterRequest(
+        fieldName: 'name',
+        operator: 'contains',
+        value: UntypedString('jo'),
+      );
+
+      final writer = JsonSerializationWriter()
+        ..writeObjectValue(
+          null,
+          filterRequest,
+        );
+
+      expect(
+        utf8.decode(writer.getSerializedContent()),
+        equals(
+          '{"fieldName":"name","operator":"contains","value":"jo"}',
         ),
       );
     });
