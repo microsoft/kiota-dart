@@ -1,6 +1,6 @@
 name: microsoft_kiota_oauth
 description: "Provides an implementation of a Kiota AuthenticationProvider for OAuth authentication."
-version: 0.1.0
+version: 0.1.1
 homepage: https://github.com/microsoft/kiota-dart/tree/main/packages/microsoft_kiota_oauth
 repository: https://github.com/microsoft/kiota-dart
 
@@ -18,3 +18,4 @@ dev_dependencies:
   test: ^1.25.14
   mockito: ^5.4.5
   build_runner: any
+  http: any
