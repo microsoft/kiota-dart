@@ -98,7 +98,7 @@ class DeviceCodeCredential implements TokenCredential {
       if (interval <= 0) {
         interval = 3;
       }
-      await Future.delayed(Duration(seconds: interval));
+      await Future<void>.delayed(Duration(seconds: interval));
       tokenResponse = await _getTokenInformation(codeInfo);
     } while (tokenResponse == null);
     return AccessToken(
