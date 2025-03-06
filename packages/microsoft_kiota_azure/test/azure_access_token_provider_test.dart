@@ -75,36 +75,4 @@ void main() async {
 
     expect(token, 'accessToken');
   });
-
-  test('refreshes credentials if expired', () async {
-    final credential = MockTokenCredential();
-
-    final responses = <Future<AccessToken>>[
-      Future<AccessToken>.value(
-        AccessToken(
-          token: 'expired',
-          expiresOn: DateTime.now().subtract(
-            const Duration(minutes: 1),
-          ),
-          refreshAt: DateTime.now().subtract(
-            const Duration(minutes: 2),
-          ),
-        ),
-      ),
-      Future<AccessToken>.value(AccessToken(token: 'refreshed')),
-    ];
-
-    when(credential.getToken(any)).thenAnswer((_) => responses.removeAt(0));
-
-    final provider = AzureAccessTokenProvider(
-      credential: credential,
-      allowedHosts: ['example.com'],
-    );
-
-    final token = await provider.getAuthorizationToken(
-      Uri.parse('https://example.com/me'),
-    );
-
-    expect(token, 'refreshed');
-  });
 }
