@@ -6,7 +6,7 @@ class DeviceCodeCredential implements TokenCredential {
     this.clientId,
     this.challengeConsumer, [
     this.tenantId = defaultTenantId,
-    this.host = AzureNationalClouds.public_cloud,
+    this.host = AzureNationalClouds.publicCloud,
     http.Client? httpClient,
   ]) : _httpClient = httpClient ?? http.Client();
   static const String deviceCodeUriTemplate =
@@ -80,7 +80,7 @@ class DeviceCodeCredential implements TokenCredential {
     };
     final response = await postUrlFormBodyRequest(Uri.parse(uri), formBody);
 
-    // TODO(baywet) use the refresh token if present and not expired
+    // TODO(baywet): use the refresh token if present and not expired.
     if (response.statusCode != 200) {
       throw Exception('Failed to get device code');
     }
@@ -103,7 +103,7 @@ class DeviceCodeCredential implements TokenCredential {
       expiresOn:
           DateTime.now().add(Duration(seconds: tokenResponse.expiresIn ?? 60)),
     );
-    // TODO(baywet) store the refresh token
+    // TODO(baywet): store the refresh token.
   }
 
   Future<DeviceCodeTokenResponse?> _getTokenInformation(

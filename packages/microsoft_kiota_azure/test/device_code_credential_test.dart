@@ -64,7 +64,7 @@ void main() async {
       'clientId',
       (deviceCodeInfo) => called = true,
       'tenantId',
-      AzureNationalClouds.us_government,
+      AzureNationalClouds.usGovernment,
       client,
     );
     final accessToken =

@@ -1,10 +1,10 @@
+import 'dart:convert';
 import 'package:microsoft_kiota_azure/microsoft_kiota_azure.dart';
 import 'package:test/test.dart';
-import 'dart:convert';
 
 void main() async {
-	test('deserializes device token error from json payload', () async {
-		const json = '''
+  test('deserializes device token error from json payload', () async {
+    const json = '''
 		{
 			"token_type": "Bearer",
 			"scope": "User.Read profile openid email",
@@ -14,12 +14,16 @@ void main() async {
 			"id_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJub25lIn0.eyJhdWQiOiIyZDRkMTFhMi1mODE0LTQ2YTctOD..."
 		}
 		''';
-		final deviceCodeTokenResponse = DeviceCodeTokenResponse.fromJson(jsonDecode(json));
-		expect(deviceCodeTokenResponse.accessToken, 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Ik5HVEZ2ZEstZnl0aEV1Q...');
-		expect(deviceCodeTokenResponse.refreshToken, 'AwABAAAAvPM1KaPlrEqdFSBzjqfTGAMxZGUTdM0t4B4...');
-		expect(deviceCodeTokenResponse.idToken, 'eyJ0eXAiOiJKV1QiLCJhbGciOiJub25lIn0.eyJhdWQiOiIyZDRkMTFhMi1mODE0LTQ2YTctOD...');
-		expect(deviceCodeTokenResponse.expiresIn, 3599);
-		expect(deviceCodeTokenResponse.tokenType, 'Bearer');
-		expect(deviceCodeTokenResponse.scope, 'User.Read profile openid email');
-	});
+    final deviceCodeTokenResponse =
+        DeviceCodeTokenResponse.fromJson(jsonDecode(json));
+    expect(deviceCodeTokenResponse.accessToken,
+        'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Ik5HVEZ2ZEstZnl0aEV1Q...');
+    expect(deviceCodeTokenResponse.refreshToken,
+        'AwABAAAAvPM1KaPlrEqdFSBzjqfTGAMxZGUTdM0t4B4...');
+    expect(deviceCodeTokenResponse.idToken,
+        'eyJ0eXAiOiJKV1QiLCJhbGciOiJub25lIn0.eyJhdWQiOiIyZDRkMTFhMi1mODE0LTQ2YTctOD...');
+    expect(deviceCodeTokenResponse.expiresIn, 3599);
+    expect(deviceCodeTokenResponse.tokenType, 'Bearer');
+    expect(deviceCodeTokenResponse.scope, 'User.Read profile openid email');
+  });
 }
