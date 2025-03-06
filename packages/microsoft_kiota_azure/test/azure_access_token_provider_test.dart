@@ -42,7 +42,8 @@ void main() async {
     final credential = MockTokenCredential();
 
     when(credential.getToken(any)).thenAnswer(
-        (_) => Future<AccessToken>.value(AccessToken(token: 'accessToken')));
+      (_) => Future<AccessToken>.value(AccessToken(token: 'accessToken')),
+    );
 
     final provider = AzureAccessTokenProvider(
       credential: credential,
@@ -60,7 +61,8 @@ void main() async {
     final credential = MockTokenCredential();
 
     when(credential.getToken(any)).thenAnswer(
-        (_) => Future<AccessToken>.value(AccessToken(token: 'accessToken')));
+      (_) => Future<AccessToken>.value(AccessToken(token: 'accessToken')),
+    );
 
     final provider = AzureAccessTokenProvider(
       credential: credential,
