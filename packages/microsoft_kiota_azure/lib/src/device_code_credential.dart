@@ -85,7 +85,10 @@ class DeviceCodeCredential implements TokenCredential {
       throw Exception('Failed to get device code');
     }
     final responseBody = jsonDecode(response.body);
-    return DeviceCodeInfo.fromJson(responseBody);
+    if (responseBody is Map<String, dynamic>) {
+      return DeviceCodeInfo.fromJson(responseBody);
+    }
+    throw Exception('Failed to parse device code response');
   }
 
   Future<AccessToken> _pollForToken(DeviceCodeInfo codeInfo) async {
