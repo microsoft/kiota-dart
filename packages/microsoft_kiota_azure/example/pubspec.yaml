@@ -7,7 +7,6 @@ environment:
   sdk: ^3.7.0
 
 dependencies:
-  oauth2: ^2.0.3
   microsoft_kiota_azure:
     path: ../
   microsoft_kiota_bundle:
