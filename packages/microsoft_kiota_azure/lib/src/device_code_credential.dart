@@ -85,10 +85,10 @@ class DeviceCodeCredential implements TokenCredential {
       throw Exception('Failed to get device code');
     }
     final responseBody = jsonDecode(response.body);
-    if (responseBody is Map<String, dynamic>) {
-      return DeviceCodeInfo.fromJson(responseBody);
+    if (responseBody is! Map<String, dynamic>) {
+      throw Exception('Failed to parse device code response');
     }
-    throw Exception('Failed to parse device code response');
+    return DeviceCodeInfo.fromJson(responseBody);
   }
 
   Future<AccessToken> _pollForToken(DeviceCodeInfo codeInfo) async {
@@ -134,6 +134,9 @@ class DeviceCodeCredential implements TokenCredential {
 
     if (response.statusCode == 400) {
       final responseBody = jsonDecode(response.body);
+      if (responseBody is! Map<String, dynamic>) {
+        throw Exception('Failed to parse error response');
+      }
       final errorResponse = DeviceCodeTokenError.fromJson(responseBody);
       if (errorResponse.error == 'authorization_pending') {
         return null;
@@ -141,6 +144,9 @@ class DeviceCodeCredential implements TokenCredential {
       throw Exception('Failed to get token: ${errorResponse.error}');
     }
     final responseBody = jsonDecode(response.body);
+    if (responseBody is! Map<String, dynamic>) {
+      throw Exception('Failed to parse token response');
+    }
     return DeviceCodeTokenResponse.fromJson(responseBody);
   }
 }

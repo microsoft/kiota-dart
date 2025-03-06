@@ -13,7 +13,11 @@ void main() async {
 		"interval": 5,
 		"message": "To sign in, use a web browser to open the page https://microsoft.com/devicelogin and enter the code A62NXK96N to authenticate."
 	}''';
-    final deviceCodeInfo = DeviceCodeInfo.fromJson(jsonDecode(json));
+    final jsonPayload = jsonDecode(json);
+    if (jsonPayload is! Map<String, dynamic>) {
+      throw Exception('Invalid JSON payload');
+    }
+    final deviceCodeInfo = DeviceCodeInfo.fromJson(jsonPayload);
     expect(deviceCodeInfo.userCode, 'A62NXK96N');
     expect(deviceCodeInfo.deviceCode, 'foo');
     expect(

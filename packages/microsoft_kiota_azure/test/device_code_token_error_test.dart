@@ -16,19 +16,32 @@ void main() async {
 		"correlation_id": "cad65606-26ba-423f-9cab-fdd75756e364",
 		"error_uri": "https://login.microsoftonline.com/error?code=70016"
 	}''';
-    final deviceCodeTokenError =
-        DeviceCodeTokenError.fromJson(jsonDecode(json));
+    final jsonPayload = jsonDecode(json);
+    if (jsonPayload is! Map<String, dynamic>) {
+      throw Exception('Invalid JSON payload');
+    }
+    final deviceCodeTokenError = DeviceCodeTokenError.fromJson(jsonPayload);
     expect(deviceCodeTokenError.error, 'authorization_pending');
-    expect(deviceCodeTokenError.errorDescription,
-        'AADSTS70016: OAuth 2.0 device flow error. Authorization is pending. Continue polling. Trace ID: 9aac4ee6-e730-4929-b3ee-6ea7b67e1d00 Correlation ID: cad65606-26ba-423f-9cab-fdd75756e364 Timestamp: 2025-03-04 17:46:18Z');
+    expect(
+      deviceCodeTokenError.errorDescription,
+      'AADSTS70016: OAuth 2.0 device flow error. Authorization is pending. Continue polling. Trace ID: 9aac4ee6-e730-4929-b3ee-6ea7b67e1d00 Correlation ID: cad65606-26ba-423f-9cab-fdd75756e364 Timestamp: 2025-03-04 17:46:18Z',
+    );
     expect(deviceCodeTokenError.errorCodes, [70016]);
     expect(
-        deviceCodeTokenError.timestamp, DateTime.parse('2025-03-04 17:46:18Z'));
+      deviceCodeTokenError.timestamp,
+      DateTime.parse('2025-03-04 17:46:18Z'),
+    );
     expect(
-        deviceCodeTokenError.traceId, '9aac4ee6-e730-4929-b3ee-6ea7b67e1d00');
-    expect(deviceCodeTokenError.correlationId,
-        'cad65606-26ba-423f-9cab-fdd75756e364');
-    expect(deviceCodeTokenError.errorUri,
-        Uri.parse('https://login.microsoftonline.com/error?code=70016'));
+      deviceCodeTokenError.traceId,
+      '9aac4ee6-e730-4929-b3ee-6ea7b67e1d00',
+    );
+    expect(
+      deviceCodeTokenError.correlationId,
+      'cad65606-26ba-423f-9cab-fdd75756e364',
+    );
+    expect(
+      deviceCodeTokenError.errorUri,
+      Uri.parse('https://login.microsoftonline.com/error?code=70016'),
+    );
   });
 }
