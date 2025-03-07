@@ -5,7 +5,7 @@ part of '../microsoft_kiota_azure.dart';
 /// The user will then need to go to the provided URL and enter the code to authenticate.
 /// The [clientId] is required and the [tenantId] and [host] are optional.
 /// The [tenantId] defaults to 'common' and the [host] defaults to the public Azure cloud.
-/// The [_httpClient] is optional and defaults to a new [http.Client], it can be passed to set things like HTTP proxy settings.
+/// The httpClient is optional and defaults to a new [http.Client], it can be passed to set things like HTTP proxy settings.
 class DeviceCodeCredential implements TokenCredential {
   DeviceCodeCredential(
     this.clientId,
