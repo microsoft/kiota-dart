@@ -1,6 +1,11 @@
 part of '../microsoft_kiota_azure.dart';
 
 /// Implements the [TokenCredential] for device code authentication.
+/// Provide a [challengeConsumer] function that will be called with the device code information to display to the user.
+/// The user will then need to go to the provided URL and enter the code to authenticate.
+/// The [clientId] is required and the [tenantId] and [host] are optional.
+/// The [tenantId] defaults to 'common' and the [host] defaults to the public Azure cloud.
+/// The [httpClient] is optional and defaults to a new [http.Client], it can be passed to set things like HTTP proxy settings.
 class DeviceCodeCredential implements TokenCredential {
   DeviceCodeCredential(
     this.clientId,
@@ -22,7 +27,7 @@ class DeviceCodeCredential implements TokenCredential {
   final Map<String, AccessToken> _tokenCache = HashMap<String, AccessToken>();
   @override
   Future<AccessToken> getToken(TokenRequestContext requestContext) async {
-    final cachedToken = getCachedToken(requestContext);
+    final cachedToken = _getCachedToken(requestContext);
     if (cachedToken != null) {
       return cachedToken;
     }
@@ -34,11 +39,11 @@ class DeviceCodeCredential implements TokenCredential {
   }
 
   void addTokenToCache(TokenRequestContext requestContext, AccessToken token) {
-    _tokenCache[getCacheKey(requestContext)] = token;
+    _tokenCache[_getCacheKey(requestContext)] = token;
   }
 
-  AccessToken? getCachedToken(TokenRequestContext requestContext) {
-    final cacheKey = getCacheKey(requestContext);
+  AccessToken? _getCachedToken(TokenRequestContext requestContext) {
+    final cacheKey = _getCacheKey(requestContext);
     final cachedToken = _tokenCache[cacheKey];
     if (cachedToken != null) {
       if (cachedToken.expiresOn?.isAfter(DateTime.now()) ?? false) {
@@ -49,10 +54,10 @@ class DeviceCodeCredential implements TokenCredential {
     return null;
   }
 
-  String getCacheKey(TokenRequestContext requestContext) =>
+  String _getCacheKey(TokenRequestContext requestContext) =>
       host + clientId + tenantId + requestContext.scopes.join(' ');
 
-  Future<http.Response> postUrlFormBodyRequest(
+  Future<http.Response> _postUrlFormBodyRequest(
     Uri uri,
     Map<String, String> formBody,
   ) {
@@ -78,7 +83,7 @@ class DeviceCodeCredential implements TokenCredential {
       'client_id': clientId,
       'scope': requestContext.scopes.join(' '),
     };
-    final response = await postUrlFormBodyRequest(Uri.parse(uri), formBody);
+    final response = await _postUrlFormBodyRequest(Uri.parse(uri), formBody);
 
     // TODO(baywet): use the refresh token if present and not expired.
     if (response.statusCode != 200) {
@@ -130,7 +135,7 @@ class DeviceCodeCredential implements TokenCredential {
       'grant_type': 'urn:ietf:params:oauth:grant-type:device_code',
     };
 
-    final response = await postUrlFormBodyRequest(Uri.parse(uri), formBody);
+    final response = await _postUrlFormBodyRequest(Uri.parse(uri), formBody);
 
     if (response.statusCode == 400) {
       final responseBody = jsonDecode(response.body);

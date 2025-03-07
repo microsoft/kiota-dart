@@ -1,6 +1,12 @@
 part of '../microsoft_kiota_azure.dart';
 
-/// Represents the device code information.
+/// Represents the device code information as returned by the service.
+/// The userCode is the code that the user needs to enter on the verification page.
+/// The deviceCode is the code that the service uses to identify the device.
+/// The verificationUri is the URL that the user needs to go to and enter the userCode.
+/// The expiresIn is the time in seconds that the user has to enter the userCode.
+/// The interval is the time in seconds that the client should wait between polling for the token.
+/// The message is a message that can be displayed to the user.
 class DeviceCodeInfo {
   DeviceCodeInfo(
     this.userCode,
