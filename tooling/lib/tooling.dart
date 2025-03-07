@@ -1,3 +1,3 @@
-library tooling;
+library;
 
 export 'src/prepare_command.dart';
