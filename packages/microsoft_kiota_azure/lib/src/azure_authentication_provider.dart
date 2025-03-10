@@ -2,8 +2,8 @@
 
 /// An authentication provider that uses an [AzureAccessTokenProvider] to
 /// obtain authorization tokens for requests.
-class AzureAuthenticationProvider extends BaseBearerTokenAuthenticationProvider
-    implements AuthenticationProvider {
+class AzureAuthenticationProvider
+    extends BaseBearerTokenAuthenticationProvider {
   /// Creates a new instance of [AzureAuthenticationProvider] using the given
   /// [AzureAccessTokenProvider].
   AzureAuthenticationProvider(

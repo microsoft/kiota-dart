@@ -34,11 +34,11 @@ class DeviceCodeCredential implements TokenCredential {
     final deviceCodeInfo = await _getDeviceCodeInfo(requestContext);
     challengeConsumer(deviceCodeInfo);
     final accessToken = await _pollForToken(deviceCodeInfo);
-    addTokenToCache(requestContext, accessToken);
+    _addTokenToCache(requestContext, accessToken);
     return accessToken;
   }
 
-  void addTokenToCache(TokenRequestContext requestContext, AccessToken token) {
+  void _addTokenToCache(TokenRequestContext requestContext, AccessToken token) {
     _tokenCache[_getCacheKey(requestContext)] = token;
   }
 

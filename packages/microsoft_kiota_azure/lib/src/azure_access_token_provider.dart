@@ -26,6 +26,8 @@ class AzureAccessTokenProvider implements AccessTokenProvider {
   /// The credential to use to obtain the access token and/or refresh credentials.
   final TokenCredential credential;
 
+  /// The scopes to use to obtain the access token.
+  /// Defaults to `['https://graph.microsoft.com/.default']`.
   final List<String> scopes;
 
   @override
