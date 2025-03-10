@@ -145,44 +145,71 @@ class JsonSerializationWriter implements SerializationWriter {
     T? value, [
     Iterable<Parsable?>? additionalValuesToMerge,
   ]) {
-    if (value == null && additionalValuesToMerge == null) {
+    // Only consider non-null values
+    final filteredAdditionalValuesToMerge = additionalValuesToMerge
+            ?.whereType<Parsable>()
+            .toList(growable: false) ??
+        [];
+
+    if (value == null && filteredAdditionalValuesToMerge.isEmpty) {
       return;
     }
-    if (value != null) {
-      onBeforeObjectSerialization?.call(value);
-    }
-    var originalContents = <String, dynamic>{};
-    if (key?.isNotEmpty ?? false) {
+
+    // until interface exposes writeUntypedValue()
+    final serializingUntypedNode = value is UntypedNode;
+
+    Map<String, dynamic>? originalContents;
+    if (!serializingUntypedNode && (key?.isNotEmpty ?? false)) {
+      // serializing this value will change _contents
+      // save current contents and restore it after serializing, moving the
+      // serialized value to its respective key
+
       originalContents = {..._contents};
       _contents.clear();
     }
+
     if (value != null) {
-      onStartObjectSerialization?.call(value, this);
-      if (value is UntypedNode) {
-        writeUntypedValue(key, value as UntypedNode);
-      } else {
+      onBeforeObjectSerialization?.call(value);
+    }
+
+    if (serializingUntypedNode) {
+      final untypedNode = value as UntypedNode;
+      onStartObjectSerialization?.call(untypedNode, this);
+      writeUntypedValue(key, untypedNode);
+      onAfterObjectSerialization?.call(untypedNode);
+    } else {
+      if (value != null) {
+        onStartObjectSerialization?.call(value, this);
+
         value.serialize(this);
       }
-    }
-    if (additionalValuesToMerge != null) {
-      for (final additionalValue in additionalValuesToMerge) {
-        if (additionalValue != null) {
-          onBeforeObjectSerialization?.call(additionalValue);
-          onStartObjectSerialization?.call(additionalValue, this);
 
-          additionalValue.serialize(this);
+      for (final additionalValueToMerge in filteredAdditionalValuesToMerge) {
+        onBeforeObjectSerialization?.call(additionalValueToMerge);
+        onStartObjectSerialization?.call(additionalValueToMerge, this);
 
-          onAfterObjectSerialization?.call(additionalValue);
-        }
+        additionalValueToMerge.serialize(this);
+
+        onAfterObjectSerialization?.call(additionalValueToMerge);
       }
     }
-    if (key?.isNotEmpty ?? false) {
-      final objectContents = {..._contents};
+
+    if (originalContents != null) {
+      final serializedContent = {..._contents};
+
+      // in case a scalar value was serialized, we need to unwrap it
+      dynamic serializedValue = serializedContent;
+      if (serializedContent.length == 1 && serializedContent.keys.first == '') {
+        serializedValue = serializedContent.values.first;
+      }
+
       _contents
         ..clear()
         ..addAll(originalContents);
-      _contents[key ?? ''] = objectContents;
+
+      _contents[key ?? ''] = serializedValue;
     }
+
     if (value != null) {
       onAfterObjectSerialization?.call(value);
     }

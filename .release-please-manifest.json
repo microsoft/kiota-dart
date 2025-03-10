@@ -3,9 +3,9 @@
   "packages/microsoft_kiota_abstractions": "0.0.2",
   "packages/microsoft_kiota_bundle": "0.1.0",
   "packages/microsoft_kiota_http": "0.0.5",
-  "packages/microsoft_kiota_oauth": "0.1.1",
+  "packages/microsoft_kiota_oauth": "0.1.2",
   "packages/microsoft_kiota_serialization_form": "0.0.2",
-  "packages/microsoft_kiota_serialization_json": "0.0.4",
+  "packages/microsoft_kiota_serialization_json": "0.0.5",
   "packages/microsoft_kiota_serialization_multipart": "0.0.2",
   "packages/microsoft_kiota_serialization_text": "0.0.3"
 }

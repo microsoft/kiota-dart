@@ -1,6 +1,6 @@
 name: microsoft_kiota_serialization_json
 description: "Provides parsing and serialization support for the `application/json` content type."
-version: 0.0.4
+version: 0.0.5
 homepage: https://github.com/microsoft/kiota-dart/tree/main/packages/microsoft_kiota_serialization_json
 repository: https://github.com/microsoft/kiota-dart
 
