@@ -5,6 +5,7 @@ on:
     branches: [ "main" ]
     tags:
       - 'microsoft_kiota_abstractions-v*'
+      - 'microsoft_kiota_azure-v*'
       - 'microsoft_kiota_bundle-v*'
       - 'microsoft_kiota_http-v*'
       - 'microsoft_kiota_oauth-v*'

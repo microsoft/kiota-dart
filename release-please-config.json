@@ -9,6 +9,7 @@
         "lib/src/kiota_client_factory.dart"
       ]
     },
+    "packages/microsoft_kiota_azure": {},
     "packages/microsoft_kiota_oauth": {},
     "packages/microsoft_kiota_serialization_form": {},
     "packages/microsoft_kiota_serialization_json": {},
