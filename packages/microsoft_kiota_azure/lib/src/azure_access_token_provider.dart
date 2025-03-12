@@ -17,7 +17,7 @@ class AzureAccessTokenProvider implements AccessTokenProvider {
   /// then used to validate if a token for any given request should be returned.
   AzureAccessTokenProvider({
     required this.credential,
-    this.scopes = const ['https://graph.microsoft.com/.default'],
+    this.scopes = const [],
     List<String>? allowedHosts,
   }) {
     allowedHostsValidator = AllowedHostsValidator(allowedHosts);
@@ -27,7 +27,7 @@ class AzureAccessTokenProvider implements AccessTokenProvider {
   final TokenCredential credential;
 
   /// The scopes to use to obtain the access token.
-  /// Defaults to `['https://graph.microsoft.com/.default']`.
+  /// Defaults to `[]`.
   final List<String> scopes;
 
   @override
@@ -53,6 +53,11 @@ class AzureAccessTokenProvider implements AccessTokenProvider {
         '$uri',
         'Azure authentication is only supported for https or localhost',
       );
+    }
+
+    var requestScopes = scopes.map((scope) => scope).toList();
+    if (requestScopes.isEmpty) {
+      requestScopes = ['${uri.scheme}://${uri.host}/.default'];
     }
 
     // TODO(baywet): claims and CAE eventually.
