@@ -16,7 +16,7 @@ class AzureAuthenticationProvider
   /// Internally creates a new instance of [AzureAccessTokenProvider].
   factory AzureAuthenticationProvider.withCredential(
     TokenCredential credential, {
-    List<String> scopes = const ['https://graph.microsoft.com/.default'],
+    List<String> scopes = const [],
     List<String>? allowedHosts,
   }) {
     return AzureAuthenticationProvider(
