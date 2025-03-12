@@ -61,7 +61,7 @@ class AzureAccessTokenProvider implements AccessTokenProvider {
     }
 
     // TODO(baywet): claims and CAE eventually.
-    final tokenRequestContext = TokenRequestContext(scopes: scopes);
+    final tokenRequestContext = TokenRequestContext(scopes: requestScopes);
 
     final token = await credential.getToken(tokenRequestContext);
     final accessToken = token.token;
