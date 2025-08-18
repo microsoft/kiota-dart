@@ -1,14 +1,14 @@
-# Kiota Azure Library for Dart
+# Kiota Azure library for Dart
 
 [![Pub Version](https://img.shields.io/pub/v/microsoft_kiota_azure?logo=dart&label=Latest)](https://pub.dev/packages/microsoft_kiota_azure)
 
-The Kiota Azure Library for Dart is an Azure authentication provider implementation for the [`microsoft_kiota_abstractions`](https://pub.dev/packages/microsoft_kiota_abstractions) package.
+The Kiota Azure library for Dart is an Azure authentication provider implementation for the [`microsoft_kiota_abstractions`](https://pub.dev/packages/microsoft_kiota_abstractions) package.
 
 A [Kiota](https://github.com/microsoft/kiota) generated project will need a reference to an authentication to make authenticated requests to an API endpoint that uses Azure.
 
 Read more about Kiota [here](https://github.com/microsoft/kiota/blob/main/README.md).
 
-## Using the Kiota Azure Library for Dart
+## Using the Kiota Azure library for Dart
 
 ```shell
 dart pub add microsoft_kiota_azure
