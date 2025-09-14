@@ -1,5 +1,12 @@
 ## Unreleased
 
+## [0.1.0](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_abstractions-v0.0.3...microsoft_kiota_abstractions-v0.1.0) (2025-09-14)
+
+
+### Features
+
+* support byte array serialization writer ([b7c52f0](https://github.com/microsoft/kiota-dart/commit/b7c52f0d00ed21b9eccfd0167a642e2e934801d1))
+
 ## [0.0.3](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_abstractions-v0.0.2...microsoft_kiota_abstractions-v0.0.3) (2025-08-05)
 
 
