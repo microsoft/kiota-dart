@@ -30,7 +30,7 @@ jobs:
       packages: ${{ steps.packages.outputs.packages }}
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Discover packages
         id: packages
@@ -54,7 +54,7 @@ jobs:
     name: '${{ matrix.package }}: Static Analysis'
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Setup Dart
         uses: dart-lang/setup-dart@v1
@@ -109,7 +109,7 @@ jobs:
     name: '${{ matrix.package }}: Test'
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Setup Dart
         uses: dart-lang/setup-dart@v1
@@ -166,7 +166,7 @@ jobs:
         package: ${{ fromJson(needs.define-matrix.outputs.packages) }}
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Setup Dart
         uses: dart-lang/setup-dart@v1
