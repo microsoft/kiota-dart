@@ -1,1 +1,4 @@
 include: package:strict/analysis_options.yaml
+analyzer:
+  exclude:
+    - '**/*.mocks.dart'

@@ -246,12 +246,14 @@ void main() {
         jsonDecode('["6361d96a-8a4e-4bf5-b3b6-c00a0ea3fa28"]'),
       );
       final testCollection = jsonParseNode
+          // ignore: experimental_member_use
           .getCollectionOfPrimitiveValues<UuidValue>();
 
       expect(testCollection, isNotNull);
       expect(testCollection.length, 1);
       expect(
         testCollection.first,
+        // ignore: experimental_member_use
         UuidValue.fromString('6361d96a-8a4e-4bf5-b3b6-c00a0ea3fa28'),
       );
     });

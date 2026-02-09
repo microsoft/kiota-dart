@@ -146,6 +146,7 @@ class MultipartSerializationWriter implements SerializationWriter {
   }
 
   @override
+  // ignore: experimental_member_use
   void writeUuidValue(String? key, UuidValue? value) {
     throw UnsupportedError('$errorMessagePrefix Uuids');
   }

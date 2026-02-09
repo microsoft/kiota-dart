@@ -284,6 +284,7 @@ class HttpClientRequestAdapter implements RequestAdapter {
       return rootNode.getTimeOnlyValue() as ModelType;
     } else if (_isA<ModelType, Duration>()) {
       return rootNode.getDurationValue() as ModelType;
+      // ignore: experimental_member_use
     } else if (_isA<ModelType, UuidValue>()) {
       return rootNode.getGuidValue() as ModelType;
     } else {

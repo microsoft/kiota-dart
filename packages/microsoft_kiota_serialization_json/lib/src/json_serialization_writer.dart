@@ -39,7 +39,9 @@ class JsonSerializationWriter implements SerializationWriter {
         writeTimeOnlyValue(entry.key, entry.value as TimeOnly);
       } else if (entry.value is Parsable) {
         writeObjectValue(entry.key, entry.value as Parsable);
+        // ignore: experimental_member_use
       } else if (entry.value is UuidValue) {
+        // ignore: experimental_member_use
         writeUuidValue(entry.key, entry.value as UuidValue);
       } else {
         _contents[entry.key] = entry.value;
@@ -241,6 +243,7 @@ class JsonSerializationWriter implements SerializationWriter {
   }
 
   @override
+  // ignore: experimental_member_use
   void writeUuidValue(String? key, UuidValue? value) {
     writeStringValue(key, value?.uuid);
   }

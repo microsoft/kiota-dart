@@ -112,6 +112,7 @@ void main() {
           'time': TimeOnly.fromComponents(12, 00),
           'date': DateOnly.fromComponents(2000),
           'datetime': DateTime(2024, 12, 31, 23, 59),
+          // ignore: experimental_member_use
           'uuid': UuidValue.fromString('019329eb-0ac5-7cc0-9dea-6440b3648264'),
           'user': user2,
         };

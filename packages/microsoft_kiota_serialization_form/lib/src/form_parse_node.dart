@@ -139,6 +139,7 @@ class FormParseNode implements ParseNode {
         converter = (node) => node.getTimeOnlyValue() as T?;
       case const (Duration):
         converter = (node) => node.getDurationValue() as T?;
+      // ignore: experimental_member_use
       case const (UuidValue):
         converter = (node) => node.getGuidValue() as T?;
       default:
@@ -188,12 +189,14 @@ class FormParseNode implements ParseNode {
   }
 
   @override
+  // ignore: experimental_member_use
   UuidValue? getGuidValue() {
     final value = _decodedValue;
     if (value.isEmpty) {
       return null;
     }
 
+    // ignore: experimental_member_use
     return UuidValue.withValidation(value);
   }
 

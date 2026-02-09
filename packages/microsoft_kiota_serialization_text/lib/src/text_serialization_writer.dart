@@ -135,6 +135,7 @@ class TextSerializationWriter implements SerializationWriter {
   }
 
   @override
+  // ignore: experimental_member_use
   void writeUuidValue(String? key, UuidValue? value) {
     writeStringValue(key, value?.uuid);
   }
