@@ -123,7 +123,7 @@ class JsonParseNode implements ParseNode {
 
           return dur as T;
         }, 'Duration');
-      // ignore: experimental_member_use
+        // ignore: experimental_member_use
       } else if (_isA<T, UuidValue>()) {
         return _convertPrimitive(
           items,
