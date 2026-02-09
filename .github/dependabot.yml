@@ -5,22 +5,60 @@
 
 version: 2
 updates:
-  - package-ecosystem: "pub" # See documentation for possible values
-    directories:
-      - "/packages/microsoft_kiota_abstractions"
-      - "/packages/microsoft_kiota_abstractions/example"
-      - "/packages/microsoft_kiota_azure"
-      - "/packages/microsoft_kiota_azure/example"
-      - "/packages/microsoft_kiota_bundle"
-      - "/packages/microsoft_kiota_http"
-      - "/packages/microsoft_kiota_http/example"
-      - "/packages/microsoft_kiota_oauth"
-      - "/packages/microsoft_kiota_oauth/example"
-      - "/packages/microsoft_kiota_serialization_form"
-      - "/packages/microsoft_kiota_serialization_json"
-      - "/packages/microsoft_kiota_serialization_multipart"
-      - "/packages/microsoft_kiota_serialization_text"
-      - "/tooling"
+  - package-ecosystem: "pub"
+    directory: "/packages/microsoft_kiota_abstractions"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "pub"
+    directory: "/packages/microsoft_kiota_abstractions/example"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "pub"
+    directory: "/packages/microsoft_kiota_azure"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "pub"
+    directory: "/packages/microsoft_kiota_azure/example"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "pub"
+    directory: "/packages/microsoft_kiota_bundle"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "pub"
+    directory: "/packages/microsoft_kiota_http"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "pub"
+    directory: "/packages/microsoft_kiota_http/example"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "pub"
+    directory: "/packages/microsoft_kiota_oauth"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "pub"
+    directory: "/packages/microsoft_kiota_oauth/example"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "pub"
+    directory: "/packages/microsoft_kiota_serialization_form"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "pub"
+    directory: "/packages/microsoft_kiota_serialization_json"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "pub"  
+    directory: "/packages/microsoft_kiota_serialization_multipart"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "pub"
+    directory: "/packages/microsoft_kiota_serialization_text"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "pub"
+    directory: "/tooling"
     schedule:
       interval: "weekly"
 
