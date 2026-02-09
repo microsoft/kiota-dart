@@ -79,6 +79,7 @@ void main() {
     test('getGuidValue nil', () {
       final node = TextParseNode('00000000-0000-0000-0000-000000000000');
 
+      // ignore: experimental_member_use
       expect(node.getGuidValue(), equals(Namespace.nil.uuidValue));
     });
 
@@ -87,6 +88,7 @@ void main() {
 
       expect(
         node.getGuidValue(),
+        // ignore: experimental_member_use
         equals(UuidValue.fromString('1f8a1626-369d-41df-bcc4-af5c5adbbd0a')),
       );
     });

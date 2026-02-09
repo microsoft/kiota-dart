@@ -92,7 +92,9 @@ class TextParseNode implements ParseNode {
   }
 
   @override
+  // ignore: experimental_member_use
   UuidValue? getGuidValue() {
+    // ignore: experimental_member_use
     return _text == null ? null : UuidValue.withValidation(_text);
   }
 

@@ -126,6 +126,7 @@ class JsonParseNode implements ParseNode {
       } else if (_isA<T, UuidValue>()) {
         return _convertPrimitive(
           items,
+          // ignore: experimental_member_use
           (i) => UuidValue.raw(i) as T,
           'UuidValue',
         );
@@ -194,7 +195,9 @@ class JsonParseNode implements ParseNode {
   }
 
   @override
+  // ignore: experimental_member_use
   UuidValue? getGuidValue() {
+    // ignore: experimental_member_use
     return _node == null ? null : UuidValue.withValidation(_node.toString());
   }
 
