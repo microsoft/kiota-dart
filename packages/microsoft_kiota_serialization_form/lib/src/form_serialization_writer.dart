@@ -47,6 +47,7 @@ class FormSerializationWriter implements SerializationWriter {
         writeTimeOnlyValue(key, t);
       case final Duration d:
         writeDurationValue(key, d);
+      // ignore: experimental_member_use
       case final UuidValue u:
         writeUuidValue(key, u);
       default:
@@ -217,6 +218,7 @@ class FormSerializationWriter implements SerializationWriter {
   }
 
   @override
+  // ignore: experimental_member_use
   void writeUuidValue(String? key, UuidValue? value) {
     writeStringValue(key, value?.uuid);
   }

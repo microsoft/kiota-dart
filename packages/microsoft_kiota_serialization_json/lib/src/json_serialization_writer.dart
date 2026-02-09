@@ -39,6 +39,7 @@ class JsonSerializationWriter implements SerializationWriter {
         writeTimeOnlyValue(entry.key, entry.value as TimeOnly);
       } else if (entry.value is Parsable) {
         writeObjectValue(entry.key, entry.value as Parsable);
+      // ignore: experimental_member_use
       } else if (entry.value is UuidValue) {
         // ignore: experimental_member_use
         writeUuidValue(entry.key, entry.value as UuidValue);

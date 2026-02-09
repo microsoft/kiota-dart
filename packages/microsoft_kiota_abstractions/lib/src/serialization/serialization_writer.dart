@@ -20,6 +20,7 @@ abstract class SerializationWriter {
 
   /// Writes the specified [UuidValue] value to the buffer with an optional
   /// given [key].
+  // ignore: experimental_member_use
   void writeUuidValue(String? key, UuidValue? value);
 
   /// Writes the specified [DateTime] value to the buffer with an optional given

@@ -78,6 +78,7 @@ void main() {
 
       expect(
         node.getGuidValue(),
+        // ignore: experimental_member_use
         equals(UuidValue.fromString('1f8a1626-369d-41df-bcc4-af5c5adbbd0a')),
       );
     });
