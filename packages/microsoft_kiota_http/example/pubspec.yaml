@@ -7,3 +7,5 @@ environment:
 dependencies:
   microsoft_kiota_http:
     path: ../
+  microsoft_kiota_abstractions:
+    path: ../../microsoft_kiota_abstractions
