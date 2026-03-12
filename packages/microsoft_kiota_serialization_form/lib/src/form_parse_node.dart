@@ -6,6 +6,16 @@ class FormParseNode implements ParseNode {
     : _rawValue = value,
       _fields = _parseFields(value);
 
+  /// Private constructor used when only the raw value is needed (e.g., for
+  /// primitive elements in a collection). Avoids the overhead of [_parseFields]
+  /// which allocates a map — none of which is needed for a scalar primitive.
+  /// The [onBeforeAssignFieldValues] and [onAfterAssignFieldValues] hooks are
+  /// intentionally omitted: they are only invoked during [Parsable] object
+  /// deserialization and are never called by primitive or enum getters.
+  FormParseNode._value(String rawValue)
+    : _rawValue = rawValue,
+      _fields = const {};
+
   static Map<String, String> _parseFields(String value) {
     final fields = value.split('&');
     final result = CaseInsensitiveMap<String, List<String>>();
@@ -95,9 +105,7 @@ class FormParseNode implements ParseNode {
         .where((entry) => entry.isNotEmpty);
 
     for (final entry in collection) {
-      final node = FormParseNode(entry)
-        ..onAfterAssignFieldValues = onAfterAssignFieldValues
-        ..onBeforeAssignFieldValues = onBeforeAssignFieldValues;
+      final node = FormParseNode._value(entry);
 
       final enumValue = node.getEnumValue<T>(parser);
       if (enumValue != null) {
@@ -147,9 +155,7 @@ class FormParseNode implements ParseNode {
     }
 
     for (final entry in collection) {
-      final node = FormParseNode(entry)
-        ..onAfterAssignFieldValues = onAfterAssignFieldValues
-        ..onBeforeAssignFieldValues = onBeforeAssignFieldValues;
+      final node = FormParseNode._value(entry);
 
       final value = converter(node);
       if (value != null) {
