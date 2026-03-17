@@ -191,8 +191,7 @@ class JsonParseNode implements ParseNode {
   static T? _parseEnumValue<T extends Enum>(
     String value,
     EnumFactory<T> parser,
-  ) =>
-      parser(value);
+  ) => parser(value);
 
   @override
   DateOnly? getDateOnlyValue() =>
