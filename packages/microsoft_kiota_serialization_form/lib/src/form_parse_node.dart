@@ -53,12 +53,16 @@ class FormParseNode implements ParseNode {
   ParsableHook? onBeforeAssignFieldValues;
 
   static bool? _parseBoolValue(String value) {
-    if (value.isEmpty) return null;
+    if (value.isEmpty) {
+      return null;
+    }
     return bool.tryParse(value);
   }
 
   static Uint8List? _parseByteArrayValue(String value) {
-    if (value.isEmpty) return null;
+    if (value.isEmpty) {
+      return null;
+    }
     return base64Decode(value);
   }
 
@@ -80,7 +84,9 @@ class FormParseNode implements ParseNode {
 
   // ignore: experimental_member_use
   static UuidValue? _parseGuidValue(String value) {
-    if (value.isEmpty) return null;
+    if (value.isEmpty) {
+      return null;
+    }
     // ignore: experimental_member_use
     return UuidValue.withValidation(value);
   }
@@ -90,7 +96,9 @@ class FormParseNode implements ParseNode {
   }
 
   static String? _parseStringValue(String value) {
-    if (value == 'null') return null;
+    if (value == 'null') {
+      return null;
+    }
     return value;
   }
 
@@ -102,7 +110,9 @@ class FormParseNode implements ParseNode {
     String value,
     EnumFactory<T> parser,
   ) {
-    if (value.isEmpty) return null;
+    if (value.isEmpty) {
+      return null;
+    }
     return parser(value);
   }
 

@@ -45,7 +45,7 @@ class JsonParseNode implements ParseNode {
     final result = <T>[];
     if (_node is List) {
       for (final value in _node) {
-        final enumValue = factory(value.toString());
+        final enumValue = _parseEnumValue(value.toString(), factory);
         if (enumValue != null) {
           result.add(enumValue);
         }
@@ -102,18 +102,18 @@ class JsonParseNode implements ParseNode {
       } else if (_isSubtype<T, DateOnly?>()) {
         return _convertPrimitive(
           items,
-          (i) => DateOnly.fromDateTimeString(i) as T,
+          (i) => _parseDateOnlyValue(i) as T,
           'DateOnly',
         );
       } else if (_isSubtype<T, TimeOnly?>()) {
         return _convertPrimitive(
           items,
-          (i) => TimeOnly.fromDateTimeString(i) as T,
+          (i) => _parseTimeOnlyValue(i) as T,
           'TimeOnly',
         );
       } else if (_isA<T, Duration>()) {
         return _convertPrimitive(items, (i) {
-          final dur = DurationExtensions.tryParse(i);
+          final dur = _parseDurationValue(i);
           if (dur == null) {
             throw JsonParseException(
               message: 'Failed to parse duration: $i',
@@ -128,7 +128,7 @@ class JsonParseNode implements ParseNode {
         return _convertPrimitive(
           items,
           // ignore: experimental_member_use
-          (i) => UuidValue.raw(i) as T,
+          (i) => _parseGuidValue(i) as T,
           'UuidValue',
         );
       } else {
@@ -170,15 +170,37 @@ class JsonParseNode implements ParseNode {
     return items.cast<String>().map(converter).toList();
   }
 
-  @override
-  DateOnly? getDateOnlyValue() {
-    return _node == null ? null : DateOnly.fromDateTimeString(_node.toString());
+  static DateOnly? _parseDateOnlyValue(String value) =>
+      DateOnly.fromDateTimeString(value);
+
+  static DateTime? _parseDateTimeValue(String value) =>
+      DateTime.tryParse(value);
+
+  static Duration? _parseDurationValue(String value) =>
+      DurationExtensions.tryParse(value);
+
+  // ignore: experimental_member_use
+  static UuidValue? _parseGuidValue(String value) {
+    // ignore: experimental_member_use
+    return UuidValue.withValidation(value);
   }
 
+  static TimeOnly? _parseTimeOnlyValue(String value) =>
+      TimeOnly.fromDateTimeString(value);
+
+  static T? _parseEnumValue<T extends Enum>(
+    String value,
+    EnumFactory<T> parser,
+  ) =>
+      parser(value);
+
   @override
-  DateTime? getDateTimeValue() {
-    return _node == null ? null : DateTime.tryParse(_node.toString());
-  }
+  DateOnly? getDateOnlyValue() =>
+      _node == null ? null : _parseDateOnlyValue(_node.toString());
+
+  @override
+  DateTime? getDateTimeValue() =>
+      _node == null ? null : _parseDateTimeValue(_node.toString());
 
   @override
   double? getDoubleValue() {
@@ -186,21 +208,17 @@ class JsonParseNode implements ParseNode {
   }
 
   @override
-  Duration? getDurationValue() {
-    return _node == null ? null : DurationExtensions.tryParse(_node.toString());
-  }
+  Duration? getDurationValue() =>
+      _node == null ? null : _parseDurationValue(_node.toString());
 
   @override
-  T? getEnumValue<T extends Enum>(EnumFactory<T> parser) {
-    return _node == null ? null : parser(_node.toString());
-  }
+  T? getEnumValue<T extends Enum>(EnumFactory<T> parser) =>
+      _node == null ? null : _parseEnumValue(_node.toString(), parser);
 
   @override
   // ignore: experimental_member_use
-  UuidValue? getGuidValue() {
-    // ignore: experimental_member_use
-    return _node == null ? null : UuidValue.withValidation(_node.toString());
-  }
+  UuidValue? getGuidValue() =>
+      _node == null ? null : _parseGuidValue(_node.toString());
 
   @override
   int? getIntValue() {
@@ -256,9 +274,8 @@ class JsonParseNode implements ParseNode {
   }
 
   @override
-  TimeOnly? getTimeOnlyValue() {
-    return _node == null ? null : TimeOnly.fromDateTimeString(_node.toString());
-  }
+  TimeOnly? getTimeOnlyValue() =>
+      _node == null ? null : _parseTimeOnlyValue(_node.toString());
 
   UntypedNode? getUntypedValue(dynamic node) {
     if (node == null) {
