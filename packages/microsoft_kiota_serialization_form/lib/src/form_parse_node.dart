@@ -66,7 +66,7 @@ class FormParseNode implements ParseNode {
     return base64Decode(value);
   }
 
-  static DateOnly? _parseDateOnlyValue(String value) {
+  static DateOnly _parseDateOnlyValue(String value) {
     return DateOnly.fromDateTimeString(value);
   }
 
@@ -102,7 +102,7 @@ class FormParseNode implements ParseNode {
     return value;
   }
 
-  static TimeOnly? _parseTimeOnlyValue(String value) {
+  static TimeOnly _parseTimeOnlyValue(String value) {
     return TimeOnly.fromDateTimeString(value);
   }
 
