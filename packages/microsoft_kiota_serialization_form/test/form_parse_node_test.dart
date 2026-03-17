@@ -164,9 +164,7 @@ void main() {
     });
 
     test('getCollectionOfPrimitiveValues<DateTime>', () {
-      final node = FormParseNode(
-        '2021-01-01T00:00:00Z,2022-06-15T12:30:00Z',
-      );
+      final node = FormParseNode('2021-01-01T00:00:00Z,2022-06-15T12:30:00Z');
 
       expect(
         node.getCollectionOfPrimitiveValues<DateTime>(),
@@ -191,7 +189,10 @@ void main() {
 
       expect(
         node.getCollectionOfPrimitiveValues<TimeOnly>(),
-        equals([TimeOnly.fromComponents(8, 0), TimeOnly.fromComponents(17, 30)]),
+        equals([
+          TimeOnly.fromComponents(8, 0),
+          TimeOnly.fromComponents(17, 30),
+        ]),
       );
     });
 
