@@ -182,7 +182,7 @@ class JsonParseNode implements ParseNode {
   // ignore: experimental_member_use
   static UuidValue? _parseGuidValue(String value) {
     // ignore: experimental_member_use
-    return UuidValue.withValidation(value);
+    return UuidValue.raw(value);
   }
 
   static TimeOnly? _parseTimeOnlyValue(String value) =>
