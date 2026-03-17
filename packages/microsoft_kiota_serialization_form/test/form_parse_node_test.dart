@@ -130,14 +130,98 @@ void main() {
       );
     });
 
-    test('getCollectionOfPrimitiveValues', () {
-      final node = FormParseNode('false,123,null,456,true');
-
-      expect(node.getCollectionOfPrimitiveValues<int>(), equals([123, 456]));
+    test('getCollectionOfPrimitiveValues<bool>', () {
+      final node = FormParseNode('false,true');
 
       expect(
         node.getCollectionOfPrimitiveValues<bool>(),
         equals([false, true]),
+      );
+    });
+
+    test('getCollectionOfPrimitiveValues<int>', () {
+      final node = FormParseNode('123,null,456');
+
+      expect(node.getCollectionOfPrimitiveValues<int>(), equals([123, 456]));
+    });
+
+    test('getCollectionOfPrimitiveValues<double>', () {
+      final node = FormParseNode('1.1,2.2,3.3');
+
+      expect(
+        node.getCollectionOfPrimitiveValues<double>(),
+        equals([1.1, 2.2, 3.3]),
+      );
+    });
+
+    test('getCollectionOfPrimitiveValues<String> skips null entries', () {
+      final node = FormParseNode('hello,null,world');
+
+      expect(
+        node.getCollectionOfPrimitiveValues<String>(),
+        equals(['hello', 'world']),
+      );
+    });
+
+    test('getCollectionOfPrimitiveValues<DateTime>', () {
+      final node = FormParseNode('2021-01-01T00:00:00Z,2022-06-15T12:30:00Z');
+
+      expect(
+        node.getCollectionOfPrimitiveValues<DateTime>(),
+        equals([DateTime.utc(2021), DateTime.utc(2022, 6, 15, 12, 30)]),
+      );
+    });
+
+    test('getCollectionOfPrimitiveValues<DateOnly>', () {
+      final node = FormParseNode('2021-01-01,2022-06-15');
+
+      expect(
+        node.getCollectionOfPrimitiveValues<DateOnly>(),
+        equals([
+          DateOnly.fromComponents(2021),
+          DateOnly.fromComponents(2022, 6, 15),
+        ]),
+      );
+    });
+
+    test('getCollectionOfPrimitiveValues<TimeOnly>', () {
+      final node = FormParseNode('08:00:00,17:30:00');
+
+      expect(
+        node.getCollectionOfPrimitiveValues<TimeOnly>(),
+        equals([
+          TimeOnly.fromComponents(8, 0),
+          TimeOnly.fromComponents(17, 30),
+        ]),
+      );
+    });
+
+    test('getCollectionOfPrimitiveValues<Duration>', () {
+      final node = FormParseNode('PT1H,P3DT4H5M6S');
+
+      expect(
+        node.getCollectionOfPrimitiveValues<Duration>(),
+        equals([
+          const Duration(hours: 1),
+          const Duration(days: 3, hours: 4, minutes: 5, seconds: 6),
+        ]),
+      );
+    });
+
+    test('getCollectionOfPrimitiveValues<UuidValue>', () {
+      final node = FormParseNode(
+        '1f8a1626-369d-41df-bcc4-af5c5adbbd0a,'
+        '00000000-0000-0000-0000-000000000000',
+      );
+
+      expect(
+        // ignore: experimental_member_use
+        node.getCollectionOfPrimitiveValues<UuidValue>(),
+        equals([
+          // ignore: experimental_member_use
+          UuidValue.fromString('1f8a1626-369d-41df-bcc4-af5c5adbbd0a'),
+          Namespace.nil.uuidValue,
+        ]),
       );
     });
 

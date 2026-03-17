@@ -52,26 +52,75 @@ class FormParseNode implements ParseNode {
   @override
   ParsableHook? onBeforeAssignFieldValues;
 
-  @override
-  bool? getBoolValue() {
-    final value = _decodedValue;
+  static bool? _parseBoolValue(String value) {
     if (value.isEmpty) {
       return null;
     }
-
     return bool.tryParse(value);
   }
 
-  @override
-  Uint8List? getByteArrayValue() {
-    final value = _decodedValue;
-
+  static Uint8List? _parseByteArrayValue(String value) {
     if (value.isEmpty) {
       return null;
     }
-
     return base64Decode(value);
   }
+
+  static DateOnly _parseDateOnlyValue(String value) {
+    return DateOnly.fromDateTimeString(value);
+  }
+
+  static DateTime? _parseDateTimeValue(String value) {
+    return DateTime.tryParse(value);
+  }
+
+  static double? _parseDoubleValue(String value) {
+    return double.tryParse(value);
+  }
+
+  static Duration? _parseDurationValue(String value) {
+    return DurationExtensions.tryParse(value);
+  }
+
+  // ignore: experimental_member_use
+  static UuidValue? _parseGuidValue(String value) {
+    if (value.isEmpty) {
+      return null;
+    }
+    // ignore: experimental_member_use
+    return UuidValue.withValidation(value);
+  }
+
+  static int? _parseIntValue(String value) {
+    return int.tryParse(value);
+  }
+
+  static String? _parseStringValue(String value) {
+    if (value == 'null') {
+      return null;
+    }
+    return value;
+  }
+
+  static TimeOnly _parseTimeOnlyValue(String value) {
+    return TimeOnly.fromDateTimeString(value);
+  }
+
+  static T? _parseEnumValue<T extends Enum>(
+    String value,
+    EnumFactory<T> parser,
+  ) {
+    if (value.isEmpty) {
+      return null;
+    }
+    return parser(value);
+  }
+
+  @override
+  bool? getBoolValue() => _parseBoolValue(_decodedValue);
+
+  @override
+  Uint8List? getByteArrayValue() => _parseByteArrayValue(_decodedValue);
 
   @override
   ParseNode? getChildNode(String identifier) {
@@ -95,11 +144,7 @@ class FormParseNode implements ParseNode {
         .where((entry) => entry.isNotEmpty);
 
     for (final entry in collection) {
-      final node = FormParseNode(entry)
-        ..onAfterAssignFieldValues = onAfterAssignFieldValues
-        ..onBeforeAssignFieldValues = onBeforeAssignFieldValues;
-
-      final enumValue = node.getEnumValue<T>(parser);
+      final enumValue = _parseEnumValue(entry, parser);
       if (enumValue != null) {
         yield enumValue;
       }
@@ -121,37 +166,33 @@ class FormParseNode implements ParseNode {
         .split(',')
         .where((entry) => entry.isNotEmpty);
 
-    final T? Function(FormParseNode node) converter;
+    final T? Function(String entry) converter;
     switch (T) {
       case const (bool):
-        converter = (node) => node.getBoolValue() as T?;
+        converter = (v) => _parseBoolValue(v) as T?;
       case const (int):
-        converter = (node) => node.getIntValue() as T?;
+        converter = (v) => _parseIntValue(v) as T?;
       case const (double):
-        converter = (node) => node.getDoubleValue() as T?;
+        converter = (v) => _parseDoubleValue(v) as T?;
       case const (String):
-        converter = (node) => node.getStringValue() as T?;
+        converter = (v) => _parseStringValue(v) as T?;
       case const (DateTime):
-        converter = (node) => node.getDateTimeValue() as T?;
+        converter = (v) => _parseDateTimeValue(v) as T?;
       case const (DateOnly):
-        converter = (node) => node.getDateOnlyValue() as T?;
+        converter = (v) => _parseDateOnlyValue(v) as T?;
       case const (TimeOnly):
-        converter = (node) => node.getTimeOnlyValue() as T?;
+        converter = (v) => _parseTimeOnlyValue(v) as T?;
       case const (Duration):
-        converter = (node) => node.getDurationValue() as T?;
+        converter = (v) => _parseDurationValue(v) as T?;
       // ignore: experimental_member_use
       case const (UuidValue):
-        converter = (node) => node.getGuidValue() as T?;
+        converter = (v) => _parseGuidValue(v) as T?;
       default:
         throw UnsupportedError('Unsupported primitive type $T');
     }
 
     for (final entry in collection) {
-      final node = FormParseNode(entry)
-        ..onAfterAssignFieldValues = onAfterAssignFieldValues
-        ..onBeforeAssignFieldValues = onBeforeAssignFieldValues;
-
-      final value = converter(node);
+      final value = converter(entry);
       if (value != null) {
         yield value;
       }
@@ -159,51 +200,27 @@ class FormParseNode implements ParseNode {
   }
 
   @override
-  DateOnly? getDateOnlyValue() {
-    return DateOnly.fromDateTimeString(_decodedValue);
-  }
+  DateOnly? getDateOnlyValue() => _parseDateOnlyValue(_decodedValue);
 
   @override
-  DateTime? getDateTimeValue() {
-    return DateTime.tryParse(_decodedValue);
-  }
+  DateTime? getDateTimeValue() => _parseDateTimeValue(_decodedValue);
 
   @override
-  double? getDoubleValue() {
-    return double.tryParse(_decodedValue);
-  }
+  double? getDoubleValue() => _parseDoubleValue(_decodedValue);
 
   @override
-  Duration? getDurationValue() {
-    return DurationExtensions.tryParse(_decodedValue);
-  }
+  Duration? getDurationValue() => _parseDurationValue(_decodedValue);
 
   @override
-  T? getEnumValue<T extends Enum>(EnumFactory<T> parser) {
-    final value = _decodedValue;
-    if (value.isEmpty) {
-      return null;
-    }
-
-    return parser(value);
-  }
+  T? getEnumValue<T extends Enum>(EnumFactory<T> parser) =>
+      _parseEnumValue(_decodedValue, parser);
 
   @override
   // ignore: experimental_member_use
-  UuidValue? getGuidValue() {
-    final value = _decodedValue;
-    if (value.isEmpty) {
-      return null;
-    }
-
-    // ignore: experimental_member_use
-    return UuidValue.withValidation(value);
-  }
+  UuidValue? getGuidValue() => _parseGuidValue(_decodedValue);
 
   @override
-  int? getIntValue() {
-    return int.tryParse(_decodedValue);
-  }
+  int? getIntValue() => _parseIntValue(_decodedValue);
 
   @override
   T? getObjectValue<T extends Parsable>(ParsableFactory<T> factory) {
@@ -258,16 +275,8 @@ class FormParseNode implements ParseNode {
   }
 
   @override
-  String? getStringValue() {
-    if (_decodedValue == 'null') {
-      return null;
-    }
-
-    return _decodedValue;
-  }
+  String? getStringValue() => _parseStringValue(_decodedValue);
 
   @override
-  TimeOnly? getTimeOnlyValue() {
-    return TimeOnly.fromDateTimeString(_decodedValue);
-  }
+  TimeOnly? getTimeOnlyValue() => _parseTimeOnlyValue(_decodedValue);
 }
