@@ -180,7 +180,7 @@ class JsonParseNode implements ParseNode {
       DurationExtensions.tryParse(value);
 
   // ignore: experimental_member_use
-  static UuidValue? _parseGuidValue(String value) {
+  static UuidValue _parseGuidValue(String value) {
     // ignore: experimental_member_use
     return UuidValue.withValidation(value);
   }
