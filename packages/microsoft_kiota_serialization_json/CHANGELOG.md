@@ -1,5 +1,17 @@
 # Unreleased
 
+## [0.0.8](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_serialization_json-v0.0.7...microsoft_kiota_serialization_json-v0.0.8) (2026-03-17)
+
+
+### Bug Fixes
+
+* reduce parse node allocations when deserializing primitive types ([d5ae9a9](https://github.com/microsoft/kiota-dart/commit/d5ae9a93e55a52a7e0dfe12ee7454cbbf019258a))
+
+
+### Performance Improvements
+
+* extend static converter pattern to JsonParseNode and fix linter violations ([29adfd9](https://github.com/microsoft/kiota-dart/commit/29adfd998f9fd884a26ba62967db99065d5214bf))
+
 ## [0.0.7](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_serialization_json-v0.0.6...microsoft_kiota_serialization_json-v0.0.7) (2025-10-02)
 
 
