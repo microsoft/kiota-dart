@@ -1,5 +1,19 @@
 # Unreleased
 
+## [0.0.5](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_serialization_form-v0.0.4...microsoft_kiota_serialization_form-v0.0.5) (2026-03-17)
+
+
+### Bug Fixes
+
+* reduce parse node allocations when deserializing primitive types ([d5ae9a9](https://github.com/microsoft/kiota-dart/commit/d5ae9a93e55a52a7e0dfe12ee7454cbbf019258a))
+
+
+### Performance Improvements
+
+* eliminate FormParseNode allocations in collection primitive deserialization ([a614057](https://github.com/microsoft/kiota-dart/commit/a614057665354e511f7611e06295ab903a4ef7d7))
+* extend static converter pattern to JsonParseNode and fix linter violations ([29adfd9](https://github.com/microsoft/kiota-dart/commit/29adfd998f9fd884a26ba62967db99065d5214bf))
+* reduce parse node allocations when deserializing primitive types ([2006c8d](https://github.com/microsoft/kiota-dart/commit/2006c8d9956d1c46aeb1c3c9b1bf1f8f8c7d3eec))
+
 ## [0.0.4](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_serialization_form-v0.0.3...microsoft_kiota_serialization_form-v0.0.4) (2025-10-02)
 
 
