@@ -190,8 +190,8 @@ class JsonParseNode implements ParseNode {
 
   static T? _parseEnumValue<T extends Enum>(
     String value,
-    EnumFactory<T> parser,
-  ) => parser(value);
+    EnumFactory<T> factory,
+  ) => factory(value);
 
   @override
   DateOnly? getDateOnlyValue() =>
@@ -211,8 +211,8 @@ class JsonParseNode implements ParseNode {
       _node == null ? null : _parseDurationValue(_node.toString());
 
   @override
-  T? getEnumValue<T extends Enum>(EnumFactory<T> parser) =>
-      _node == null ? null : _parseEnumValue(_node.toString(), parser);
+  T? getEnumValue<T extends Enum>(EnumFactory<T> factory) =>
+      _node == null ? null : _parseEnumValue(_node.toString(), factory);
 
   @override
   // ignore: experimental_member_use
