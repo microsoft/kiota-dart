@@ -124,9 +124,11 @@ class RequestInformation {
     }
 
     if (value is Map) {
-      return value.map(
-        (k, v) => MapEntry(_getSanitizedValue(k), _getSanitizedValue(v)),
-      );
+      return {
+        for (final entry in value.entries)
+          if (entry.value != null)
+            _getSanitizedValue(entry.key): _getSanitizedValue(entry.value),
+      };
     }
 
     return value;
