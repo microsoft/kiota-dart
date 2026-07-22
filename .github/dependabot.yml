@@ -1,68 +1,92 @@
-# To get started with Dependabot version updates, you'll need to specify which
-# package ecosystems to update and where the package manifests are located.
-# Please see the documentation for all configuration options:
-# https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
-
 version: 2
 updates:
-  - package-ecosystem: "pub"
-    directory: "/packages/microsoft_kiota_abstractions"
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "pub"
-    directory: "/packages/microsoft_kiota_abstractions/example"
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "pub"
-    directory: "/packages/microsoft_kiota_azure"
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "pub"
-    directory: "/packages/microsoft_kiota_azure/example"
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "pub"
-    directory: "/packages/microsoft_kiota_bundle"
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "pub"
-    directory: "/packages/microsoft_kiota_http"
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "pub"
-    directory: "/packages/microsoft_kiota_http/example"
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "pub"
-    directory: "/packages/microsoft_kiota_oauth"
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "pub"
-    directory: "/packages/microsoft_kiota_oauth/example"
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "pub"
-    directory: "/packages/microsoft_kiota_serialization_form"
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "pub"
-    directory: "/packages/microsoft_kiota_serialization_json"
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "pub"  
-    directory: "/packages/microsoft_kiota_serialization_multipart"
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "pub"
-    directory: "/packages/microsoft_kiota_serialization_text"
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "pub"
-    directory: "/tooling"
-    schedule:
-      interval: "weekly"
-
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    schedule:
-      interval: "weekly"
+- package-ecosystem: pub
+  directory: /packages/microsoft_kiota_abstractions
+  schedule:
+    interval: weekly
+  cooldown:
+    default-days: 7
+- package-ecosystem: pub
+  directory: /packages/microsoft_kiota_abstractions/example
+  schedule:
+    interval: weekly
+  cooldown:
+    default-days: 7
+- package-ecosystem: pub
+  directory: /packages/microsoft_kiota_azure
+  schedule:
+    interval: weekly
+  cooldown:
+    default-days: 7
+- package-ecosystem: pub
+  directory: /packages/microsoft_kiota_azure/example
+  schedule:
+    interval: weekly
+  cooldown:
+    default-days: 7
+- package-ecosystem: pub
+  directory: /packages/microsoft_kiota_bundle
+  schedule:
+    interval: weekly
+  cooldown:
+    default-days: 7
+- package-ecosystem: pub
+  directory: /packages/microsoft_kiota_http
+  schedule:
+    interval: weekly
+  cooldown:
+    default-days: 7
+- package-ecosystem: pub
+  directory: /packages/microsoft_kiota_http/example
+  schedule:
+    interval: weekly
+  cooldown:
+    default-days: 7
+- package-ecosystem: pub
+  directory: /packages/microsoft_kiota_oauth
+  schedule:
+    interval: weekly
+  cooldown:
+    default-days: 7
+- package-ecosystem: pub
+  directory: /packages/microsoft_kiota_oauth/example
+  schedule:
+    interval: weekly
+  cooldown:
+    default-days: 7
+- package-ecosystem: pub
+  directory: /packages/microsoft_kiota_serialization_form
+  schedule:
+    interval: weekly
+  cooldown:
+    default-days: 7
+- package-ecosystem: pub
+  directory: /packages/microsoft_kiota_serialization_json
+  schedule:
+    interval: weekly
+  cooldown:
+    default-days: 7
+- package-ecosystem: pub
+  directory: /packages/microsoft_kiota_serialization_multipart
+  schedule:
+    interval: weekly
+  cooldown:
+    default-days: 7
+- package-ecosystem: pub
+  directory: /packages/microsoft_kiota_serialization_text
+  schedule:
+    interval: weekly
+  cooldown:
+    default-days: 7
+- package-ecosystem: pub
+  directory: /tooling
+  schedule:
+    interval: weekly
+  cooldown:
+    default-days: 7
+- package-ecosystem: github-actions
+  directory: /
+  schedule:
+    interval: weekly
+  cooldown:
+    default-days: 7
