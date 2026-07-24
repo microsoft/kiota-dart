@@ -240,5 +240,112 @@ void main() {
       // Assert
       expect(testRequest.headers['key'], {'value'});
     });
+
+    test('Map query parameter expands to individual key=value pairs', () {
+      // Arrange
+      final requestInfo = RequestInformation(
+        httpMethod: HttpMethod.get,
+        urlTemplate: 'http://localhost/articles{?query*}',
+      );
+
+      // Act — a Map<String, String?> value stored under a single query param key
+      requestInfo.queryParameters['query'] = <String, String?>{
+        'filter': "equals(published,'true')",
+        'sort': '-createdAt',
+        'page[size]': '10',
+      };
+
+      // Assert — RFC 6570 {?query*} explodes each map entry as its own key=value
+      final url = requestInfo.uri.toString();
+      expect(url, contains('filter=equals%28published%2C%27true%27%29'));
+      expect(url, contains('sort=-createdAt'));
+      expect(url, contains('page%5Bsize%5D=10'));
+    });
+
+    test('Map query parameter skips entries whose value is null', () {
+      // Arrange
+      final requestInfo = RequestInformation(
+        httpMethod: HttpMethod.get,
+        urlTemplate: 'http://localhost/articles{?query*}',
+      );
+
+      // Act — a nullable map where one entry is null
+      requestInfo.queryParameters['query'] = <String, String?>{
+        'filter': "equals(published,'true')",
+        'sort': null,
+      };
+
+      // Assert — null entry is omitted, non-null entry is present
+      final url = requestInfo.uri.toString();
+      expect(url, contains('filter=equals%28published%2C%27true%27%29'));
+      expect(url, isNot(contains('sort')));
+    });
+
+    test(
+      'Map query parameter with all null values produces no query string',
+      () {
+        // Arrange
+        final requestInfo = RequestInformation(
+          httpMethod: HttpMethod.get,
+          urlTemplate: 'http://localhost/articles{?query*}',
+        );
+
+        // Act — all values are null, map becomes empty after filtering
+        requestInfo.queryParameters['query'] = <String, String?>{
+          'filter': null,
+          'sort': null,
+        };
+
+        // Assert — template variable expands to nothing (? prefix omitted)
+        expect(requestInfo.uri.toString(), 'http://localhost/articles');
+      },
+    );
+
+    test('Empty map query parameter produces no query string', () {
+      // Arrange
+      final requestInfo = RequestInformation(
+        httpMethod: HttpMethod.get,
+        urlTemplate: 'http://localhost/articles{?query*}',
+      );
+
+      // Act — an empty map
+      requestInfo.queryParameters['query'] = <String, String?>{};
+
+      // Assert
+      expect(requestInfo.uri.toString(), 'http://localhost/articles');
+    });
+
+    test('Map query parameter preserves empty string value (sends ?key=)', () {
+      // Arrange
+      final requestInfo = RequestInformation(
+        httpMethod: HttpMethod.get,
+        urlTemplate: 'http://localhost/articles{?query*}',
+      );
+
+      // Act — an empty string is a valid value, distinct from null
+      requestInfo.queryParameters['query'] = <String, String?>{'search': ''};
+
+      // Assert — key is present with an empty value
+      expect(requestInfo.uri.toString(), contains('search='));
+    });
+
+    test('Map query parameter coexists with scalar query parameters', () {
+      // Arrange
+      final requestInfo = RequestInformation(
+        httpMethod: HttpMethod.get,
+        urlTemplate: 'http://localhost/articles{?query*,top}',
+      );
+
+      // Act
+      requestInfo.queryParameters['query'] = <String, String?>{
+        'filter': 'active',
+      };
+      requestInfo.queryParameters['top'] = 5;
+
+      // Assert — both kinds of parameters appear in the URL
+      final url = requestInfo.uri.toString();
+      expect(url, contains('filter=active'));
+      expect(url, contains('top=5'));
+    });
   });
 }
