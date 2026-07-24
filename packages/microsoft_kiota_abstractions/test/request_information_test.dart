@@ -257,7 +257,7 @@ void main() {
 
       // Assert — RFC 6570 {?query*} explodes each map entry as its own key=value
       final url = requestInfo.uri.toString();
-      expect(url, contains("filter=equals%28published%2C%27true%27%29"));
+      expect(url, contains('filter=equals%28published%2C%27true%27%29'));
       expect(url, contains('sort=-createdAt'));
       expect(url, contains('page%5Bsize%5D=10'));
     });
@@ -277,27 +277,29 @@ void main() {
 
       // Assert — null entry is omitted, non-null entry is present
       final url = requestInfo.uri.toString();
-      expect(url, contains("filter=equals%28published%2C%27true%27%29"));
+      expect(url, contains('filter=equals%28published%2C%27true%27%29'));
       expect(url, isNot(contains('sort')));
     });
 
-    test('Map query parameter with all null values produces no query string',
-        () {
-      // Arrange
-      final requestInfo = RequestInformation(
-        httpMethod: HttpMethod.get,
-        urlTemplate: 'http://localhost/articles{?query*}',
-      );
+    test(
+      'Map query parameter with all null values produces no query string',
+      () {
+        // Arrange
+        final requestInfo = RequestInformation(
+          httpMethod: HttpMethod.get,
+          urlTemplate: 'http://localhost/articles{?query*}',
+        );
 
-      // Act — all values are null, map becomes empty after filtering
-      requestInfo.queryParameters['query'] = <String, String?>{
-        'filter': null,
-        'sort': null,
-      };
+        // Act — all values are null, map becomes empty after filtering
+        requestInfo.queryParameters['query'] = <String, String?>{
+          'filter': null,
+          'sort': null,
+        };
 
-      // Assert — template variable expands to nothing (? prefix omitted)
-      expect(requestInfo.uri.toString(), 'http://localhost/articles');
-    });
+        // Assert — template variable expands to nothing (? prefix omitted)
+        expect(requestInfo.uri.toString(), 'http://localhost/articles');
+      },
+    );
 
     test('Empty map query parameter produces no query string', () {
       // Arrange
