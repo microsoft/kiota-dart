@@ -1,5 +1,12 @@
 ## Unreleased
 
+## [0.3.0](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_abstractions-v0.2.0...microsoft_kiota_abstractions-v0.3.0) (2026-09-17)
+
+
+### Features
+
+* Add support for the HTTP QUERY verb (RFC 10008) ([#145](https://github.com/microsoft/kiota-dart/issues/145)) ([7664e01](https://github.com/microsoft/kiota-dart/commit/7664e01804896ffc632c6b0da7a552bdc7365834))
+
 ## [0.2.0](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_abstractions-v0.1.0...microsoft_kiota_abstractions-v0.2.0) (2026-08-27)
 
 
