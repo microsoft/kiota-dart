@@ -27,7 +27,10 @@ enum HttpMethod {
   connect('CONNECT'),
 
   /// The TRACE method performs a message loop-back test along the path to the target resource.
-  trace('TRACE');
+  trace('TRACE'),
+
+  /// The QUERY method performs a query to the target resource, carrying the query parameters in the request body (RFC 10008).
+  query('QUERY');
 
   const HttpMethod(this.value);
 
