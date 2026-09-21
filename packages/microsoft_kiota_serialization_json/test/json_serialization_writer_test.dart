@@ -11,6 +11,69 @@ String? _httpMethodEnumSerializer(HttpMethod? value) => value?.name;
 
 void main() {
   group('JsonSerializationWriter', () {
+    final emptyCollectionWriters =
+        <String, void Function(JsonSerializationWriter, String?)>{
+          'primitive': (writer, key) =>
+              writer.writeCollectionOfPrimitiveValues<int>(key, []),
+          'enum': (writer, key) =>
+              writer.writeCollectionOfEnumValues<HttpMethod>(
+                key,
+                [],
+                _httpMethodEnumSerializer,
+              ),
+          'object': (writer, key) =>
+              writer.writeCollectionOfObjectValues<MicrosoftGraphUser>(key, []),
+        };
+    for (final entry in emptyCollectionWriters.entries) {
+      for (final key in <String?>[null, 'items']) {
+        test('preserves empty ${entry.key} collection at $key', () {
+          final writer = JsonSerializationWriter();
+          if (key != null) {
+            writer.writeStringValue('sentinel', 'present');
+          }
+          entry.value(writer, key);
+          expect(
+            jsonDecode(utf8.decode(writer.getSerializedContent())),
+            key == null
+                ? <Object>[]
+                : {'sentinel': 'present', 'items': <Object>[]},
+          );
+        });
+      }
+    }
+    test('continues to omit null collections', () {
+      final writer = JsonSerializationWriter()
+        ..writeStringValue('sentinel', 'present')
+        ..writeCollectionOfPrimitiveValues<int>('primitive', null)
+        ..writeCollectionOfEnumValues<HttpMethod>(
+          'enum',
+          null,
+          _httpMethodEnumSerializer,
+        )
+        ..writeCollectionOfObjectValues<MicrosoftGraphUser>('object', null);
+      expect(jsonDecode(utf8.decode(writer.getSerializedContent())), {
+        'sentinel': 'present',
+      });
+    });
+    for (final count in [0, 3]) {
+      for (final key in <String?>[null, 'items']) {
+        test(
+          'serializes a lazy primitive iterable of length $count at $key',
+          () {
+            final writer = JsonSerializationWriter()
+              ..writeCollectionOfPrimitiveValues(
+                key,
+                Iterable<int>.generate(count),
+              );
+            final expected = List<int>.generate(count, (index) => index);
+            expect(
+              jsonDecode(utf8.decode(writer.getSerializedContent())),
+              key == null ? expected : {'items': expected},
+            );
+          },
+        );
+      }
+    }
     test('writeCollectionOfEnumValues', () {
       final writer = JsonSerializationWriter()
         ..writeCollectionOfEnumValues('key', [

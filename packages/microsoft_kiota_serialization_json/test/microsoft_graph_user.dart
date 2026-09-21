@@ -38,7 +38,7 @@ class MicrosoftGraphUser extends Parsable implements AdditionalDataHolder {
   String? officeLocation;
   bool? active;
   bool? accountEnabled;
-  Iterable<int> numbers = [];
+  Iterable<int>? numbers;
 
   @override
   void serialize(SerializationWriter writer) {
