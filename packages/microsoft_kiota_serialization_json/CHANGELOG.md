@@ -1,5 +1,12 @@
 # Unreleased
 
+## [0.0.9](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_serialization_json-v0.0.8...microsoft_kiota_serialization_json-v0.0.9) (2026-09-21)
+
+
+### Bug Fixes
+
+* preserve empty JSON collections and encode lazy iterables ([#148](https://github.com/microsoft/kiota-dart/issues/148)) ([130db06](https://github.com/microsoft/kiota-dart/commit/130db0651d9f8c9b6a8782afd0b647a4d09101cb))
+
 ## [0.0.8](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_serialization_json-v0.0.7...microsoft_kiota_serialization_json-v0.0.8) (2026-03-17)
 
 

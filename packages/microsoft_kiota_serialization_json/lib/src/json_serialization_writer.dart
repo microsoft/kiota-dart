@@ -67,7 +67,7 @@ class JsonSerializationWriter implements SerializationWriter {
     Iterable<T>? values,
     EnumSerializer<T> serializer,
   ) {
-    if (values == null || values.isEmpty) {
+    if (values == null) {
       return;
     } else {
       final enumList = <String?>[];
@@ -83,7 +83,7 @@ class JsonSerializationWriter implements SerializationWriter {
     String? key,
     Iterable<T>? values,
   ) {
-    if (values == null || values.isEmpty) {
+    if (values == null) {
       return;
     } else {
       final originalContents = {..._contents};
@@ -101,10 +101,12 @@ class JsonSerializationWriter implements SerializationWriter {
 
   @override
   void writeCollectionOfPrimitiveValues<T>(String? key, Iterable<T>? values) {
-    if (values == null || values.isEmpty) {
+    if (values == null) {
       return;
     } else {
-      _contents[key ?? ''] = values;
+      _contents[key ?? ''] = values is List<T>
+          ? values
+          : values.toList(growable: false);
     }
   }
 
