@@ -104,7 +104,9 @@ class JsonSerializationWriter implements SerializationWriter {
     if (values == null) {
       return;
     } else {
-      _contents[key ?? ''] = values.toList();
+      _contents[key ?? ''] = values is List<T>
+          ? values
+          : values.toList(growable: false);
     }
   }
 

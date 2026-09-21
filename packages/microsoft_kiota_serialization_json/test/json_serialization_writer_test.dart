@@ -155,7 +155,7 @@ void main() {
       expect(
         utf8.decode(writer.getSerializedContent()),
         equals(
-          '{"name":"a group","leader":{"heightInMetres":1.9,"endWorkTime":"17:00:00","numbers":[]},"members":[{"officeLocation":"on a chair","workDuration":"2:00:00.000000","numbers":[],"a":"#1 coworker"},{"workDuration":"12:00:00.000000","active":true,"numbers":[]}]}',
+          '{"name":"a group","leader":{"heightInMetres":1.9,"endWorkTime":"17:00:00"},"members":[{"officeLocation":"on a chair","workDuration":"2:00:00.000000","a":"#1 coworker"},{"workDuration":"12:00:00.000000","active":true}]}',
         ),
       );
     });
@@ -185,7 +185,7 @@ void main() {
       expect(
         utf8.decode(writer.getSerializedContent()),
         equals(
-          '{"workDuration":"2:00:00.000000","numbers":[],"a":"#1 coworker","string":"a string","double":0.0,"bool":false,"time":"12:00:00","date":"2000-01-01","datetime":"2024-12-31T23:59:00.000","uuid":"019329eb-0ac5-7cc0-9dea-6440b3648264","user":{"workDuration":"12:00:00.000000","active":true,"numbers":[]}}',
+          '{"workDuration":"2:00:00.000000","a":"#1 coworker","string":"a string","double":0.0,"bool":false,"time":"12:00:00","date":"2000-01-01","datetime":"2024-12-31T23:59:00.000","uuid":"019329eb-0ac5-7cc0-9dea-6440b3648264","user":{"workDuration":"12:00:00.000000","active":true}}',
         ),
       );
     });
