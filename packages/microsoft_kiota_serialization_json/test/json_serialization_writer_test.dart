@@ -11,6 +11,69 @@ String? _httpMethodEnumSerializer(HttpMethod? value) => value?.name;
 
 void main() {
   group('JsonSerializationWriter', () {
+    final emptyCollectionWriters =
+        <String, void Function(JsonSerializationWriter, String?)>{
+          'primitive': (writer, key) =>
+              writer.writeCollectionOfPrimitiveValues<int>(key, []),
+          'enum': (writer, key) =>
+              writer.writeCollectionOfEnumValues<HttpMethod>(
+                key,
+                [],
+                _httpMethodEnumSerializer,
+              ),
+          'object': (writer, key) =>
+              writer.writeCollectionOfObjectValues<MicrosoftGraphUser>(key, []),
+        };
+    for (final entry in emptyCollectionWriters.entries) {
+      for (final key in <String?>[null, 'items']) {
+        test('preserves empty ${entry.key} collection at $key', () {
+          final writer = JsonSerializationWriter();
+          if (key != null) {
+            writer.writeStringValue('sentinel', 'present');
+          }
+          entry.value(writer, key);
+          expect(
+            jsonDecode(utf8.decode(writer.getSerializedContent())),
+            key == null
+                ? <Object>[]
+                : {'sentinel': 'present', 'items': <Object>[]},
+          );
+        });
+      }
+    }
+    test('continues to omit null collections', () {
+      final writer = JsonSerializationWriter()
+        ..writeStringValue('sentinel', 'present')
+        ..writeCollectionOfPrimitiveValues<int>('primitive', null)
+        ..writeCollectionOfEnumValues<HttpMethod>(
+          'enum',
+          null,
+          _httpMethodEnumSerializer,
+        )
+        ..writeCollectionOfObjectValues<MicrosoftGraphUser>('object', null);
+      expect(jsonDecode(utf8.decode(writer.getSerializedContent())), {
+        'sentinel': 'present',
+      });
+    });
+    for (final count in [0, 3]) {
+      for (final key in <String?>[null, 'items']) {
+        test(
+          'serializes a lazy primitive iterable of length $count at $key',
+          () {
+            final writer = JsonSerializationWriter()
+              ..writeCollectionOfPrimitiveValues(
+                key,
+                Iterable<int>.generate(count),
+              );
+            final expected = List<int>.generate(count, (index) => index);
+            expect(
+              jsonDecode(utf8.decode(writer.getSerializedContent())),
+              key == null ? expected : {'items': expected},
+            );
+          },
+        );
+      }
+    }
     test('writeCollectionOfEnumValues', () {
       final writer = JsonSerializationWriter()
         ..writeCollectionOfEnumValues('key', [
@@ -92,7 +155,7 @@ void main() {
       expect(
         utf8.decode(writer.getSerializedContent()),
         equals(
-          '{"name":"a group","leader":{"heightInMetres":1.9,"endWorkTime":"17:00:00"},"members":[{"officeLocation":"on a chair","workDuration":"2:00:00.000000","a":"#1 coworker"},{"workDuration":"12:00:00.000000","active":true}]}',
+          '{"name":"a group","leader":{"heightInMetres":1.9,"endWorkTime":"17:00:00","numbers":[]},"members":[{"officeLocation":"on a chair","workDuration":"2:00:00.000000","numbers":[],"a":"#1 coworker"},{"workDuration":"12:00:00.000000","active":true,"numbers":[]}]}',
         ),
       );
     });
@@ -122,7 +185,7 @@ void main() {
       expect(
         utf8.decode(writer.getSerializedContent()),
         equals(
-          '{"workDuration":"2:00:00.000000","a":"#1 coworker","string":"a string","double":0.0,"bool":false,"time":"12:00:00","date":"2000-01-01","datetime":"2024-12-31T23:59:00.000","uuid":"019329eb-0ac5-7cc0-9dea-6440b3648264","user":{"workDuration":"12:00:00.000000","active":true}}',
+          '{"workDuration":"2:00:00.000000","numbers":[],"a":"#1 coworker","string":"a string","double":0.0,"bool":false,"time":"12:00:00","date":"2000-01-01","datetime":"2024-12-31T23:59:00.000","uuid":"019329eb-0ac5-7cc0-9dea-6440b3648264","user":{"workDuration":"12:00:00.000000","active":true,"numbers":[]}}',
         ),
       );
     });

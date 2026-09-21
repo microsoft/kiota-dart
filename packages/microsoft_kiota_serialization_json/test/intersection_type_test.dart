@@ -117,7 +117,7 @@ void main() {
       final result = utf8.decode(content);
       expect(
         result,
-        '{"id":"opaque","officeLocation":"Montreal","displayName":"McGill"}',
+        '{"id":"opaque","officeLocation":"Montreal","numbers":[],"displayName":"McGill"}',
       );
     });
 
@@ -150,7 +150,7 @@ void main() {
       final result = utf8.decode(content);
       expect(
         result,
-        '[{"id":"10","namingEnum":"Item2:SubItem1","officeLocation":"Montreal"},{"id":"11","namingEnum":"Item3:SubItem1","officeLocation":"Ottawa"}]',
+        '[{"id":"10","namingEnum":"Item2:SubItem1","officeLocation":"Montreal","numbers":[]},{"id":"11","namingEnum":"Item3:SubItem1","officeLocation":"Ottawa","numbers":[]}]',
       );
     });
 
@@ -182,7 +182,7 @@ void main() {
       final result = utf8.decode(content);
       expect(
         result,
-        '{"nested":{"id":"id","namingEnum":"Item2:SubItem1","workDuration":"8:02:00.000000","birthDay":"1998-11-11","accountEnabled":true,"key":"value"}}',
+        '{"nested":{"id":"id","namingEnum":"Item2:SubItem1","workDuration":"8:02:00.000000","birthDay":"1998-11-11","accountEnabled":true,"numbers":[],"key":"value"}}',
       );
     });
   });

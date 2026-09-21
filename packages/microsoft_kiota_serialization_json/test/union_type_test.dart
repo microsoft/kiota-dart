@@ -111,7 +111,10 @@ void main() {
         ..serialize(writer);
       final content = writer.getSerializedContent();
       final result = utf8.decode(content);
-      expect(result, '{"id":"opaque","officeLocation":"Montreal"}');
+      expect(
+        result,
+        '{"id":"opaque","officeLocation":"Montreal","numbers":[]}',
+      );
     });
 
     test('SerializeUnionTypeComplexProperty2', () {
@@ -141,7 +144,7 @@ void main() {
       final result = utf8.decode(content);
       expect(
         result,
-        '[{"id":"10","officeLocation":"Montreal"},{"id":"11","officeLocation":"Ottawa"}]',
+        '[{"id":"10","officeLocation":"Montreal","numbers":[]},{"id":"11","officeLocation":"Ottawa","numbers":[]}]',
       );
     });
   });

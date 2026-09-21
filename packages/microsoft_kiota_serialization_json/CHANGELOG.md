@@ -1,5 +1,9 @@
 # Unreleased
 
+### Bug Fixes
+
+* Preserve empty JSON collections and serialize lazy primitive iterables as arrays.
+
 ## [0.0.8](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_serialization_json-v0.0.7...microsoft_kiota_serialization_json-v0.0.8) (2026-03-17)
 
 
