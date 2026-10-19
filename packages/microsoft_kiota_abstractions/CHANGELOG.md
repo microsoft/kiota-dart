@@ -1,5 +1,12 @@
 ## Unreleased
 
+## [0.3.1](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_abstractions-v0.3.0...microsoft_kiota_abstractions-v0.3.1) (2026-10-19)
+
+
+### Bug Fixes
+
+* trim media types before parser registry lookup ([#151](https://github.com/microsoft/kiota-dart/issues/151)) ([8c34cb9](https://github.com/microsoft/kiota-dart/commit/8c34cb9bbfbdc16222102aabf0167a2ec652f787))
+
 ## [0.3.0](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_abstractions-v0.2.0...microsoft_kiota_abstractions-v0.3.0) (2026-09-17)
 
 
