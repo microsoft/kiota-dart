@@ -23,5 +23,22 @@ void main() {
           .getRootParseNode('application/vnd+json', jsonStream);
       expect(rootParseNode, isNotNull);
     });
+
+    test('ContentTypeWithOptionalWhitespace', () {
+      const contentType = 'application/json';
+      final mockFactory = MockParseNodeFactory();
+      final jsonStream = utf8.encode('{"test": "input"}');
+      final mockParseNode = MockParseNode();
+      when(
+        mockFactory.getRootParseNode(contentType, jsonStream),
+      ).thenReturn(mockParseNode);
+      final registry = ParseNodeFactoryRegistry();
+      registry.contentTypeAssociatedFactories[contentType] = mockFactory;
+      final rootParseNode = registry.getRootParseNode(
+        'application/json ; charset=utf-8',
+        jsonStream,
+      );
+      expect(rootParseNode, isNotNull);
+    });
   });
 }
