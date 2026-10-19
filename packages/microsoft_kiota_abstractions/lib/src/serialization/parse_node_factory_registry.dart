@@ -33,6 +33,7 @@ class ParseNodeFactoryRegistry implements ParseNodeFactory {
 
     final vendorSpecificContentType = contentType
         .split(';')
+        .where((element) => element.isNotEmpty)
         .first
         .trim();
     if (contentTypeAssociatedFactories.containsKey(vendorSpecificContentType)) {

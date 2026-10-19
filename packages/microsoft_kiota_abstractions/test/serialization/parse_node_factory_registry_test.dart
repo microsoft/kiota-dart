@@ -32,9 +32,9 @@ void main() {
       when(
         mockFactory.getRootParseNode(contentType, jsonStream),
       ).thenReturn(mockParseNode);
-      ParseNodeFactoryRegistry.defaultInstance.contentTypeAssociatedFactories
-          .putIfAbsent(contentType, () => mockFactory);
-      final rootParseNode = ParseNodeFactoryRegistry.defaultInstance
+      final registry = ParseNodeFactoryRegistry();
+      registry.contentTypeAssociatedFactories[contentType] = mockFactory;
+      final rootParseNode = registry
           .getRootParseNode('application/json ; charset=utf-8', jsonStream);
       expect(rootParseNode, isNotNull);
     });
