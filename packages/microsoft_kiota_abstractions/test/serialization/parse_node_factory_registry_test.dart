@@ -34,8 +34,10 @@ void main() {
       ).thenReturn(mockParseNode);
       final registry = ParseNodeFactoryRegistry();
       registry.contentTypeAssociatedFactories[contentType] = mockFactory;
-      final rootParseNode = registry
-          .getRootParseNode('application/json ; charset=utf-8', jsonStream);
+      final rootParseNode = registry.getRootParseNode(
+        'application/json ; charset=utf-8',
+        jsonStream,
+      );
       expect(rootParseNode, isNotNull);
     });
   });
