@@ -12,6 +12,14 @@ void main() {
         () => AllowedHostsValidator(['https://example.com']),
         throwsArgumentError,
       );
+      expect(
+        () => AllowedHostsValidator(['  http://example.com  ']),
+        throwsArgumentError,
+      );
+      expect(
+        () => AllowedHostsValidator(['  https://example.com  ']),
+        throwsArgumentError,
+      );
     });
 
     test('Is case insensitive', () {
@@ -19,6 +27,15 @@ void main() {
 
       expect(validator.isUrlHostValid(Uri.parse('http://example.com')), isTrue);
       expect(validator.isUrlHostValid(Uri.parse('http://EXAMPLE.com')), isTrue);
+    });
+
+    test('Trims host entries', () {
+      final validator = AllowedHostsValidator(['  example.com  ']);
+
+      expect(
+        validator.isUrlHostValid(Uri.parse('https://example.com/path')),
+        isTrue,
+      );
     });
 
     test('Validates subdomain separately', () {
@@ -108,6 +125,16 @@ void main() {
         validator.isUrlHostValid(
           Uri.parse('https://abc.123.graphql.fabric.microsoft.com/path'),
         ),
+        isTrue,
+      );
+    });
+
+    test('Validates uri structure when allowedHosts empty', () {
+      final validator = AllowedHostsValidator();
+
+      expect(validator.isUrlHostValid(Uri.parse('/path/only')), isFalse);
+      expect(
+        validator.isUrlHostValid(Uri.parse('https://example.com/path')),
         isTrue,
       );
     });

@@ -13,7 +13,8 @@ class AllowedHostsValidator {
   AllowedHostsValidator([Iterable<String>? validHosts]) {
     validHosts ??= <String>[];
     _validateHosts(validHosts);
-    _allowedHosts = _createCaseInsensitiveHashSet()..addAll(validHosts);
+    _allowedHosts = _createCaseInsensitiveHashSet()
+      ..addAll(validHosts.map((h) => h.trim()).where((h) => h.isNotEmpty));
   }
 
   Set<String> _allowedHosts = {};
@@ -24,11 +25,15 @@ class AllowedHostsValidator {
   /// Sets the allowed hosts.
   set allowedHosts(Iterable<String> value) {
     _validateHosts(value);
-    _allowedHosts = _createCaseInsensitiveHashSet()..addAll(value);
+    _allowedHosts = _createCaseInsensitiveHashSet()
+      ..addAll(value.map((h) => h.trim()).where((h) => h.isNotEmpty));
   }
 
   /// Validates that the given [uri] is valid.
   bool isUrlHostValid(Uri uri) {
+    if (!uri.hasScheme || uri.host.isEmpty) {
+      return false;
+    }
     if (_allowedHosts.isEmpty || _allowedHosts.contains(uri.host)) {
       return true;
     }
@@ -42,7 +47,7 @@ class AllowedHostsValidator {
 
   static void _validateHosts(Iterable<String> hostsToValidate) {
     for (final host in hostsToValidate) {
-      final normalized = host.toLowerCase();
+      final normalized = host.trim().toLowerCase();
       if (normalized.startsWith('http://') ||
           normalized.startsWith('https://')) {
         throw ArgumentError.value(

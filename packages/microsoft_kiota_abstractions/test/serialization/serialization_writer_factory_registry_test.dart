@@ -23,5 +23,20 @@ void main() {
           .getSerializationWriter('application/vnd+text');
       expect(serializationWriter, isNotNull);
     });
+
+    test('ContentTypeWithOptionalWhitespace', () {
+      const contentType = 'application/json';
+      final mockWriter = MockSerializationWriter();
+      final mockFactory = MockSerializationWriterFactory();
+      when(
+        mockFactory.getSerializationWriter(contentType),
+      ).thenReturn(mockWriter);
+      final registry = SerializationWriterFactoryRegistry();
+      registry.contentTypeAssociatedFactories[contentType] = mockFactory;
+      final writer = registry.getSerializationWriter(
+        'application/json ; charset=utf-8',
+      );
+      expect(writer, isNotNull);
+    });
   });
 }
