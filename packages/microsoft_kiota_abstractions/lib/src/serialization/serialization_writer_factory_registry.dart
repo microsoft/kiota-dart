@@ -28,7 +28,8 @@ class SerializationWriterFactoryRegistry implements SerializationWriterFactory {
     final vendorSpecificContentType = contentType
         .split(';')
         .where((element) => element.isNotEmpty)
-        .first;
+        .first
+        .trim();
     if (contentTypeAssociatedFactories.containsKey(vendorSpecificContentType)) {
       return contentTypeAssociatedFactories[vendorSpecificContentType]!
           .getSerializationWriter(vendorSpecificContentType);
@@ -44,7 +45,7 @@ class SerializationWriterFactoryRegistry implements SerializationWriterFactory {
     }
 
     throw UnsupportedError(
-      'Content type $cleanedContentType does not have a factory registered to be parsed',
+      'Content type $cleanedContentType does not have a factory registered to be serialized',
     );
   }
 }
