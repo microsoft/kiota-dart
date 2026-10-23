@@ -1,5 +1,12 @@
 ## Unreleased
 
+## [0.3.2](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_abstractions-v0.3.1...microsoft_kiota_abstractions-v0.3.2) (2026-10-23)
+
+
+### Bug Fixes
+
+* **abstractions:** trim media type in writer registry and normalize allowed hosts ([#154](https://github.com/microsoft/kiota-dart/issues/154)) ([9e94410](https://github.com/microsoft/kiota-dart/commit/9e94410090ca5fb1a2a6210d48c467e970434c8b))
+
 ## [0.3.1](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_abstractions-v0.3.0...microsoft_kiota_abstractions-v0.3.1) (2026-10-19)
 
 
