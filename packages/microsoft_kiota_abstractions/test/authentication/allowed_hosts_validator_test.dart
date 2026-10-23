@@ -138,5 +138,22 @@ void main() {
         isTrue,
       );
     });
+
+    test('Blank only allowlist does not become unrestricted', () {
+      final validator1 = AllowedHostsValidator(['', '   ']);
+
+      expect(
+        validator1.isUrlHostValid(Uri.parse('https://untrusted.example/path')),
+        isFalse,
+      );
+
+      final validator2 = AllowedHostsValidator(['example.com'])
+        ..allowedHosts = ['   ', ''];
+
+      expect(
+        validator2.isUrlHostValid(Uri.parse('https://untrusted.example/path')),
+        isFalse,
+      );
+    });
   });
 }

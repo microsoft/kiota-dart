@@ -14,7 +14,7 @@ class AllowedHostsValidator {
     validHosts ??= <String>[];
     _validateHosts(validHosts);
     _allowedHosts = _createCaseInsensitiveHashSet()
-      ..addAll(validHosts.map((h) => h.trim()).where((h) => h.isNotEmpty));
+      ..addAll(validHosts.map((h) => h.trim()));
   }
 
   Set<String> _allowedHosts = {};
@@ -26,7 +26,7 @@ class AllowedHostsValidator {
   set allowedHosts(Iterable<String> value) {
     _validateHosts(value);
     _allowedHosts = _createCaseInsensitiveHashSet()
-      ..addAll(value.map((h) => h.trim()).where((h) => h.isNotEmpty));
+      ..addAll(value.map((h) => h.trim()));
   }
 
   /// Validates that the given [uri] is valid.
