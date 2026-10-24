@@ -11,6 +11,18 @@ HttpMethod? _httpMethodEnumFactory(String value) => HttpMethod.values
 
 void main() {
   group('TextParseNode', () {
+    test('handles single double quote without crashing', () {
+      final singleQuote = TextParseNode('"');
+
+      expect(singleQuote.getStringValue(), equals('"'));
+    });
+
+    test('trims empty quotes', () {
+      final emptyQuotes = TextParseNode('""');
+
+      expect(emptyQuotes.getStringValue(), equals(''));
+    });
+
     test('trims quotes', () {
       final node = TextParseNode('"value"');
 

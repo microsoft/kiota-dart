@@ -11,7 +11,9 @@ class TextParseNode implements ParseNode {
     var sanitized = text;
 
     // trim " characters at beginning and end
-    if (sanitized.startsWith('"') && sanitized.endsWith('"')) {
+    if (sanitized.length >= 2 &&
+        sanitized.startsWith('"') &&
+        sanitized.endsWith('"')) {
       sanitized = sanitized.substring(1, sanitized.length - 1);
     }
 
