@@ -5,9 +5,10 @@ part of '../microsoft_kiota_serialization_form.dart';
 class FormSerializationWriterFactory implements SerializationWriterFactory {
   @override
   SerializationWriter getSerializationWriter(String contentType) {
-    if (contentType.toLowerCase() != validContentType) {
+    final mediaType = contentType.split(';').first.trim().toLowerCase();
+    if (mediaType != validContentType) {
       throw ArgumentError(
-        'The provided content type is not supported by the FormSerializationWriterFactory',
+        'The provided content type is not supported by the FormSerializationWriterFactory: $contentType',
       );
     }
 
