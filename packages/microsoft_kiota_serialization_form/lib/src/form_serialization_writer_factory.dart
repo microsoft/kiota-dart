@@ -2,6 +2,9 @@ part of '../microsoft_kiota_serialization_form.dart';
 
 /// Represents a serialization writer factory that can be used to create a form
 /// url encoded serialization writer.
+///
+/// Content types are normalized to their base media type, allowing optional
+/// parameters (such as `charset`) and surrounding whitespace.
 class FormSerializationWriterFactory implements SerializationWriterFactory {
   @override
   SerializationWriter getSerializationWriter(String contentType) {

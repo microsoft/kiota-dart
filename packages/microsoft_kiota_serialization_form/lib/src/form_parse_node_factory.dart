@@ -1,6 +1,9 @@
 part of '../microsoft_kiota_serialization_form.dart';
 
-/// The [ParseNodeFactory] implementation for form content types
+/// The [ParseNodeFactory] implementation for form content types.
+///
+/// Content types are normalized to their base media type, allowing optional
+/// parameters (such as `charset`) and surrounding whitespace.
 class FormParseNodeFactory implements ParseNodeFactory {
   @override
   ParseNode getRootParseNode(String contentType, Uint8List content) {
