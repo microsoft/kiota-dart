@@ -1,5 +1,12 @@
 # Unreleased
 
+## [0.0.6](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_serialization_text-v0.0.5...microsoft_kiota_serialization_text-v0.0.6) (2026-10-27)
+
+
+### Bug Fixes
+
+* **text:** handle single quote sanitization and support content-type parameters ([#157](https://github.com/microsoft/kiota-dart/issues/157)) ([8788b12](https://github.com/microsoft/kiota-dart/commit/8788b1296ff725bd61a180fa9babcaaf6037cd8f))
+
 ## [0.0.5](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_serialization_text-v0.0.4...microsoft_kiota_serialization_text-v0.0.5) (2025-10-02)
 
 

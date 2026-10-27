@@ -1,5 +1,12 @@
 # Unreleased
 
+## [0.0.6](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_serialization_form-v0.0.5...microsoft_kiota_serialization_form-v0.0.6) (2026-10-27)
+
+
+### Bug Fixes
+
+* **form:** support content-type parameters and whitespace in form factories ([#159](https://github.com/microsoft/kiota-dart/issues/159)) ([91eb7c1](https://github.com/microsoft/kiota-dart/commit/91eb7c1dbf3b43e9ac573988e988fcf2b9b6c1c2))
+
 ## [0.0.5](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_serialization_form-v0.0.4...microsoft_kiota_serialization_form-v0.0.5) (2026-03-17)
 
 
