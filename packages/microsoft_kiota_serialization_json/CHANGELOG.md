@@ -1,5 +1,12 @@
 # Unreleased
 
+## [0.0.10](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_serialization_json-v0.0.9...microsoft_kiota_serialization_json-v0.0.10) (2026-10-29)
+
+
+### Bug Fixes
+
+* **json:** support content-type parameters and whitespace in json factories ([#160](https://github.com/microsoft/kiota-dart/issues/160)) ([0f57078](https://github.com/microsoft/kiota-dart/commit/0f57078df55e1abd078e063161c83dd9ab519c8d))
+
 ## [0.0.9](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_serialization_json-v0.0.8...microsoft_kiota_serialization_json-v0.0.9) (2026-09-21)
 
 
