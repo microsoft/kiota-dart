@@ -189,5 +189,17 @@ void main() {
         ),
       );
     });
+
+    test('round-trip untyped JSON preserves scalar types', () {
+      const inputJson =
+          '{"int":42,"float":3.14,"str":"hello","numericStr":"123","boolStr":"true","bool":true,"nullVal":null}';
+      final parseNode = JsonParseNode(jsonDecode(inputJson));
+      final untyped = parseNode.getObjectValue(
+        UntypedNode.createFromDiscriminatorValue,
+      );
+
+      final writer = JsonSerializationWriter()..writeObjectValue(null, untyped);
+      expect(utf8.decode(writer.getSerializedContent()), equals(inputJson));
+    });
   });
 }

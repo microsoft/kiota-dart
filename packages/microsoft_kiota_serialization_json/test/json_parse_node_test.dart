@@ -168,7 +168,75 @@ void main() {
         final location = testEntity.location;
         expect(location, isNotNull);
         expect(location is UntypedObject, isTrue);
+
+        final locationObj = location! as UntypedObject;
+        expect(
+          locationObj.properties['floorCount'],
+          isA<UntypedInteger>().having((e) => e.value, 'value', 50),
+        );
+        expect(
+          locationObj.properties['displayName'],
+          isA<UntypedString>().having(
+            (e) => e.value,
+            'value',
+            'Microsoft Building 92',
+          ),
+        );
+        expect(
+          locationObj.properties['hasReception'],
+          isA<UntypedBoolean>().having((e) => e.value, 'value', true),
+        );
+        expect(locationObj.properties['contact'], isA<UntypedNull>());
+
+        final address = locationObj.properties['address']! as UntypedObject;
+        expect(
+          address.properties['postalCode'],
+          isA<UntypedString>().having((e) => e.value, 'value', '98052'),
+        );
+
+        final coordinates =
+            locationObj.properties['coordinates']! as UntypedObject;
+        expect(
+          coordinates.properties['latitude'],
+          isA<UntypedDouble>().having((e) => e.value, 'value', 47.641942),
+        );
       }
+    });
+
+    test('Parses untyped scalar values preserving native JSON types', () {
+      final json = jsonDecode(
+        '{"int": 42, "float": 3.14, "str": "hello", "numericStr": "123", "boolStr": "true", "bool": true, "nullVal": null}',
+      );
+      final node = JsonParseNode(json);
+      final untyped =
+          node.getObjectValue(UntypedNode.createFromDiscriminatorValue)!
+              as UntypedObject;
+
+      expect(
+        untyped.properties['int'],
+        isA<UntypedInteger>().having((e) => e.value, 'value', 42),
+      );
+      expect(
+        untyped.properties['float'],
+        isA<UntypedDouble>().having((e) => e.value, 'value', 3.14),
+      );
+      expect(
+        untyped.properties['str'],
+        isA<UntypedString>().having((e) => e.value, 'value', 'hello'),
+      );
+      expect(
+        untyped.properties['numericStr'],
+        isA<UntypedString>().having((e) => e.value, 'value', '123'),
+      );
+      expect(
+        untyped.properties['boolStr'],
+        isA<UntypedString>().having((e) => e.value, 'value', 'true'),
+      );
+      expect(
+        untyped.properties['bool'],
+        isA<UntypedBoolean>().having((e) => e.value, 'value', true),
+      );
+      expect(untyped.properties['nullVal'], isA<UntypedNull>());
     });
     test('Get enumcollection from json', () {
       final jsonParseNode = JsonParseNode(
