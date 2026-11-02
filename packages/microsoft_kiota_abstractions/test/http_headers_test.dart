@@ -47,5 +47,16 @@ void main() {
       expect(headers['Content-Encoding'], {'gzip'});
       expect(headers['Content-Length'], {'100'});
     });
+
+    test('setting empty set for single value header does not throw', () {
+      final headers = HttpHeaders();
+      headers['Content-Type'] = <String>{};
+      headers['Content-Encoding'] = <String>{};
+      headers['Content-Length'] = <String>{};
+
+      expect(headers['Content-Type'], isEmpty);
+      expect(headers['Content-Encoding'], isEmpty);
+      expect(headers['Content-Length'], isEmpty);
+    });
   });
 }

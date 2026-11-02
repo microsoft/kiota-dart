@@ -27,7 +27,7 @@ class HttpHeaders extends CaseInsensitiveMap<String, Set<String>> {
 
     final Set<String> normalizedValue;
     if (singleValueHeaders.contains(lowerCaseKey)) {
-      normalizedValue = {value.first};
+      normalizedValue = value.isEmpty ? <String>{} : {value.first};
     } else {
       normalizedValue = value;
     }

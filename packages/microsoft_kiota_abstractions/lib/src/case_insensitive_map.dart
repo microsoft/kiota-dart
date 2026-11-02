@@ -140,7 +140,19 @@ class CaseInsensitiveMap<K extends String, V> implements Map<K, V> {
 
   @override
   V update(K key, V Function(V value) update, {V Function()? ifAbsent}) {
-    return _contents.update(normalizeKey(key), update, ifAbsent: ifAbsent);
+    final normalizedKey = normalizeKey(key);
+
+    return _contents.update(
+      normalizedKey,
+      update,
+      ifAbsent: ifAbsent == null
+          ? null
+          : () {
+              _originalKeys[normalizedKey] = key;
+
+              return ifAbsent();
+            },
+    );
   }
 
   @override

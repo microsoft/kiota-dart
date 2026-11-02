@@ -13,5 +13,19 @@ void main() {
         });
       expect(headers['key'], {'value'});
     });
+
+    test(
+      'update with ifAbsent sets originalKey and works with entries and keys',
+      () {
+        final headers = HttpHeaders()
+          ..update('My-Header', (v) => v, ifAbsent: () => {'value'})
+          ..map((name, values) {
+            return MapEntry(name, values.join(', '));
+          });
+        expect(headers['my-header'], {'value'});
+        expect(headers.keys.toList(), ['My-Header']);
+        expect(headers.entries.first.key, 'My-Header');
+      },
+    );
   });
 }
