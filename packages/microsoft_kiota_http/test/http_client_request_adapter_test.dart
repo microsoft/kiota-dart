@@ -108,6 +108,108 @@ void main() {
       expect(stringResult, stringContent);
     });
 
+    test('sendPrimitive Uint8List', () async {
+      final client = MockClient();
+      final authProvider = MockAuthenticationProvider();
+      final pNodeFactory = MockParseNodeFactory();
+      final sWriterFactory = MockSerializationWriterFactory();
+      final parseNode = MockParseNode();
+
+      final expectedBytes = Uint8List.fromList([1, 2, 3, 4, 5]);
+
+      final adapter = HttpClientRequestAdapter(
+        authProvider: authProvider,
+        pNodeFactory: pNodeFactory,
+        sWriterFactory: sWriterFactory,
+        client: client,
+      );
+
+      final info = RequestInformation(
+        httpMethod: HttpMethod.get,
+        urlTemplate: 'https://example.test/primitive',
+      );
+
+      when(
+        authProvider.authenticateRequest(info),
+      ).thenAnswer((_) async => Future<void>.value());
+
+      when(client.send(any)).thenAnswer((_) async {
+        return http.StreamedResponse(
+          Stream.fromIterable([expectedBytes]),
+          200,
+          headers: {'content-type': 'application/octet-stream'},
+        );
+      });
+
+      when(
+        pNodeFactory.getRootParseNode(
+          'application/octet-stream',
+          expectedBytes,
+        ),
+      ).thenReturn(parseNode);
+
+      when(parseNode.getByteArrayValue()).thenReturn(expectedBytes);
+
+      final result = await adapter.sendPrimitive<Uint8List>(info);
+
+      expect(result, isNotNull);
+      expect(result, expectedBytes);
+    });
+
+    test('sendPrimitive nullable Uint8List', () async {
+      final client = MockClient();
+      final authProvider = MockAuthenticationProvider();
+      final pNodeFactory = MockParseNodeFactory();
+      final sWriterFactory = MockSerializationWriterFactory();
+      final parseNode = MockParseNode();
+
+      final expectedBytes = Uint8List.fromList([42, 43, 44]);
+
+      final adapter = HttpClientRequestAdapter(
+        authProvider: authProvider,
+        pNodeFactory: pNodeFactory,
+        sWriterFactory: sWriterFactory,
+        client: client,
+      );
+
+      final info = RequestInformation(
+        httpMethod: HttpMethod.get,
+        urlTemplate: 'https://example.test/primitive',
+      );
+
+      when(
+        authProvider.authenticateRequest(info),
+      ).thenAnswer((_) async => Future<void>.value());
+
+      when(client.send(any)).thenAnswer((_) async {
+        return http.StreamedResponse(
+          Stream.fromIterable([expectedBytes]),
+          200,
+          headers: {'content-type': 'application/octet-stream'},
+        );
+      });
+
+      when(
+        pNodeFactory.getRootParseNode(
+          'application/octet-stream',
+          expectedBytes,
+        ),
+      ).thenReturn(parseNode);
+
+      when(parseNode.getByteArrayValue()).thenReturn(expectedBytes);
+
+      final result = await adapter.sendPrimitive<Uint8List?>(info);
+
+      expect(result, isNotNull);
+      expect(result, expectedBytes);
+
+      when(parseNode.getByteArrayValue()).thenReturn(null);
+
+      final nullResult = await adapter.sendPrimitive<Uint8List?>(info);
+
+      expect(nullResult, isNull);
+    });
+
     test('sendPrimitive throws for unsupported types', () async {
       final client = MockClient();
       final authProvider = MockAuthenticationProvider();
