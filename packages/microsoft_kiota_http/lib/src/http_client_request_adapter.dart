@@ -287,6 +287,8 @@ class HttpClientRequestAdapter implements RequestAdapter {
       // ignore: experimental_member_use
     } else if (_isA<ModelType, UuidValue>()) {
       return rootNode.getGuidValue() as ModelType;
+    } else if (_isSubtype<ModelType, Uint8List?>()) {
+      return rootNode.getByteArrayValue() as ModelType?;
     } else {
       throw ArgumentError(
         'The type $ModelType is not supported for primitive deserialization',
