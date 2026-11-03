@@ -299,19 +299,24 @@ class JsonParseNode implements ParseNode {
       return UntypedObject(propertiesMap);
     }
 
-    final doubleValue = double.tryParse(node.toString());
-    if (doubleValue != null) {
-      return UntypedDouble(doubleValue);
+    if (node is bool) {
+      return UntypedBoolean(value: node);
     }
 
-    final intValue = int.tryParse(node.toString());
-    if (intValue != null) {
-      return UntypedInteger(intValue);
+    if (node is int) {
+      return UntypedInteger(node);
     }
 
-    final boolValue = bool.tryParse(node.toString());
-    if (boolValue != null) {
-      return UntypedBoolean(value: boolValue);
+    if (node is double) {
+      return UntypedDouble(node);
+    }
+
+    if (node is num) {
+      final intVal = node.toInt();
+      if (intVal == node) {
+        return UntypedInteger(intVal);
+      }
+      return UntypedDouble(node.toDouble());
     }
 
     if (node is String) {
