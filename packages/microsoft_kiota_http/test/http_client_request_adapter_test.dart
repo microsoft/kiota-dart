@@ -154,6 +154,12 @@ void main() {
 
       expect(result, isNotNull);
       expect(result, expectedBytes);
+
+      when(parseNode.getByteArrayValue()).thenReturn(null);
+
+      final nullResult = await adapter.sendPrimitive<Uint8List>(info);
+
+      expect(nullResult, isNull);
     });
 
     test('sendPrimitive nullable Uint8List', () async {
