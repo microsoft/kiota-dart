@@ -136,7 +136,7 @@ class HttpClientRequestAdapter implements RequestAdapter {
     try {
       final rootNode = await _getRootParseNode(response);
       result = rootNode?.getObjectValue(errorFactory);
-    } on Exception catch (_) {
+    } on Object catch (_) {
       result = null;
     }
 

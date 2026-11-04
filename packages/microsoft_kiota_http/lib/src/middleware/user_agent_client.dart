@@ -17,11 +17,14 @@ class UserAgentClient extends http.BaseClient {
     }
 
     final targetKey = existingKey ?? 'User-Agent';
-    final existingUserAgent = request.headers[targetKey];
+    final existingUserAgent = request.headers[targetKey]?.trim();
     if (existingUserAgent == null || existingUserAgent.isEmpty) {
       request.headers[targetKey] = userAgent;
-    } else if (!existingUserAgent.contains(userAgent)) {
-      request.headers[targetKey] = '$existingUserAgent $userAgent';
+    } else {
+      final tokens = existingUserAgent.split(RegExp(r'\s+'));
+      if (!tokens.contains(userAgent)) {
+        request.headers[targetKey] = '$existingUserAgent $userAgent';
+      }
     }
 
     return _inner.send(request);
