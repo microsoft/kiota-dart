@@ -110,5 +110,81 @@ void main() {
         );
       },
     );
+
+    test(
+      'does not duplicate multi-product user agent when already present',
+      () async {
+        late http.BaseRequest capturedRequest;
+        final inner = MockClient((request) async {
+          capturedRequest = request;
+          return http.Response('ok', 200);
+        });
+
+        final client = UserAgentClient(
+          inner,
+          userAgent: 'my-sdk/2.0 kiota-dart/1.0.0',
+        );
+        final request = http.Request('GET', Uri.parse('https://example.test'));
+        request.headers['User-Agent'] = 'my-sdk/2.0 kiota-dart/1.0.0';
+
+        await client.send(request);
+
+        expect(
+          capturedRequest.headers['User-Agent'],
+          equals('my-sdk/2.0 kiota-dart/1.0.0'),
+        );
+      },
+    );
+
+    test(
+      'does not duplicate multi-product user agent sequence embedded among other agents',
+      () async {
+        late http.BaseRequest capturedRequest;
+        final inner = MockClient((request) async {
+          capturedRequest = request;
+          return http.Response('ok', 200);
+        });
+
+        final client = UserAgentClient(
+          inner,
+          userAgent: 'my-sdk/2.0 kiota-dart/1.0.0',
+        );
+        final request = http.Request('GET', Uri.parse('https://example.test'));
+        request.headers['User-Agent'] =
+            'custom-client/1.0 my-sdk/2.0 kiota-dart/1.0.0 postman/10.0';
+
+        await client.send(request);
+
+        expect(
+          capturedRequest.headers['User-Agent'],
+          equals('custom-client/1.0 my-sdk/2.0 kiota-dart/1.0.0 postman/10.0'),
+        );
+      },
+    );
+
+    test(
+      'appends multi-product user agent when only part of product list is present',
+      () async {
+        late http.BaseRequest capturedRequest;
+        final inner = MockClient((request) async {
+          capturedRequest = request;
+          return http.Response('ok', 200);
+        });
+
+        final client = UserAgentClient(
+          inner,
+          userAgent: 'my-sdk/2.0 kiota-dart/1.0.0',
+        );
+        final request = http.Request('GET', Uri.parse('https://example.test'));
+        request.headers['User-Agent'] = 'my-sdk/2.0';
+
+        await client.send(request);
+
+        expect(
+          capturedRequest.headers['User-Agent'],
+          equals('my-sdk/2.0 my-sdk/2.0 kiota-dart/1.0.0'),
+        );
+      },
+    );
   });
 }

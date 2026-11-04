@@ -291,6 +291,37 @@ void main() {
     });
 
     test(
+      'convertToNativeRequest preserves explicit baseurl in pathParameters when adapter baseUrl is unset',
+      () async {
+        final client = MockClient();
+        final authProvider = MockAuthenticationProvider();
+        final pNodeFactory = MockParseNodeFactory();
+        final sWriterFactory = MockSerializationWriterFactory();
+
+        final adapter = HttpClientRequestAdapter(
+          authProvider: authProvider,
+          pNodeFactory: pNodeFactory,
+          sWriterFactory: sWriterFactory,
+          client: client,
+        );
+
+        final info = RequestInformation(
+          httpMethod: HttpMethod.get,
+          urlTemplate: '{+baseurl}/items',
+        )..pathParameters['baseurl'] = 'https://explicit.test';
+
+        when(
+          authProvider.authenticateRequest(info),
+        ).thenAnswer((_) async => Future<void>.value());
+
+        final native = await adapter.convertToNativeRequest<http.Request>(info);
+        expect(native, isNotNull);
+        expect(native!.method, equals('GET'));
+        expect(native.url, equals(Uri.parse('https://explicit.test/items')));
+      },
+    );
+
+    test(
       'convertToNativeRequest throws ArgumentError when httpMethod is null',
       () async {
         final client = MockClient();
