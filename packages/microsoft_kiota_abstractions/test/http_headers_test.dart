@@ -58,5 +58,28 @@ void main() {
       expect(headers['Content-Encoding'], isEmpty);
       expect(headers['Content-Length'], isEmpty);
     });
+
+    test('add appends value or creates new header', () {
+      final headers = HttpHeaders()..add('Accept', 'application/json');
+      expect(headers['Accept'], {'application/json'});
+
+      headers.add('Accept', 'application/xml');
+      expect(headers['Accept'], {'application/json', 'application/xml'});
+
+      // single value headers are replaced
+      headers
+        ..add('Content-Type', 'application/json')
+        ..add('Content-Type', 'application/xml');
+      expect(headers['Content-Type'], {'application/xml'});
+    });
+
+    test('tryAdd sets header only if not already present with value', () {
+      final headers = HttpHeaders();
+      expect(headers.tryAdd('Authorization', 'Bearer token'), isTrue);
+      expect(headers['Authorization'], {'Bearer token'});
+
+      expect(headers.tryAdd('authorization', 'Bearer new-token'), isFalse);
+      expect(headers['Authorization'], {'Bearer token'});
+    });
   });
 }

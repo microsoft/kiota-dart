@@ -60,6 +60,27 @@ void main() {
       expect(testRequest.requestOptions.isEmpty, isTrue);
     });
 
+    test('getRequestOption finds option polymorphically', () {
+      final request = RequestInformation(httpMethod: HttpMethod.get);
+      final mock = MockRequestOption();
+      request.addRequestOptions([mock]);
+
+      expect(request.getRequestOption<RequestOption>(), equals(mock));
+      expect(request.getRequestOption<MockRequestOption>(), equals(mock));
+    });
+
+    test(
+      'uri throws when urlTemplate contains {+baseurl} and baseurl is empty',
+      () {
+        final request = RequestInformation(
+          httpMethod: HttpMethod.get,
+          urlTemplate: '{+baseurl}/users',
+        );
+        request.pathParameters['baseurl'] = '   ';
+        expect(() => request.uri, throwsArgumentError);
+      },
+    );
+
     test('Sets path parameters of DateTime type', () {
       // Arrange as the request builders would
       final requestInfo = RequestInformation(
