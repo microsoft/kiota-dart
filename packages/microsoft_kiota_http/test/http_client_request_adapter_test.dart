@@ -261,5 +261,63 @@ void main() {
         throwsA(isA<ArgumentError>()),
       );
     });
+
+    test('convertToNativeRequest sets base URL and converts request', () async {
+      final client = MockClient();
+      final authProvider = MockAuthenticationProvider();
+      final pNodeFactory = MockParseNodeFactory();
+      final sWriterFactory = MockSerializationWriterFactory();
+
+      final adapter = HttpClientRequestAdapter(
+        authProvider: authProvider,
+        pNodeFactory: pNodeFactory,
+        sWriterFactory: sWriterFactory,
+        client: client,
+      )..baseUrl = 'https://example.test';
+
+      final info = RequestInformation(
+        httpMethod: HttpMethod.get,
+        urlTemplate: '{+baseurl}/items',
+      );
+
+      when(
+        authProvider.authenticateRequest(info),
+      ).thenAnswer((_) async => Future<void>.value());
+
+      final native = await adapter.convertToNativeRequest<http.Request>(info);
+      expect(native, isNotNull);
+      expect(native!.method, equals('GET'));
+      expect(native.url, equals(Uri.parse('https://example.test/items')));
+    });
+
+    test(
+      'convertToNativeRequest throws ArgumentError when httpMethod is null',
+      () async {
+        final client = MockClient();
+        final authProvider = MockAuthenticationProvider();
+        final pNodeFactory = MockParseNodeFactory();
+        final sWriterFactory = MockSerializationWriterFactory();
+
+        final adapter = HttpClientRequestAdapter(
+          authProvider: authProvider,
+          pNodeFactory: pNodeFactory,
+          sWriterFactory: sWriterFactory,
+          client: client,
+        );
+
+        final info = RequestInformation(
+          urlTemplate: 'https://example.test/items',
+        );
+
+        when(
+          authProvider.authenticateRequest(info),
+        ).thenAnswer((_) async => Future<void>.value());
+
+        expect(
+          () => adapter.convertToNativeRequest<http.Request>(info),
+          throwsA(isA<ArgumentError>()),
+        );
+      },
+    );
   });
 }
