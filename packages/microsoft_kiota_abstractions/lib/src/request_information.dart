@@ -153,7 +153,7 @@ class RequestInformation {
   /// Gets a [RequestOption] of the specified type [T] from the request.
   T? getRequestOption<T>() {
     final direct = _requestOptions[T.toString()];
-    if (direct is T) {
+    if (direct != null && direct is T) {
       return direct as T;
     }
 

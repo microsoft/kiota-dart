@@ -69,6 +69,15 @@ void main() {
       expect(request.getRequestOption<MockRequestOption>(), equals(mock));
     });
 
+    test('getRequestOption finds option with nullable type argument', () {
+      final request = RequestInformation(httpMethod: HttpMethod.get);
+      final mock = MockRequestOption();
+      request.addRequestOptions([mock]);
+
+      expect(request.getRequestOption<RequestOption?>(), equals(mock));
+      expect(request.getRequestOption<MockRequestOption?>(), equals(mock));
+    });
+
     test(
       'uri throws when urlTemplate contains {+baseurl} and baseurl is empty',
       () {
