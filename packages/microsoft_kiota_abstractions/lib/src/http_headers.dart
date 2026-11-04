@@ -40,4 +40,38 @@ class HttpHeaders extends CaseInsensitiveMap<String, Set<String>> {
   void put(String key, String value) {
     this[key] = {value};
   }
+
+  /// Adds a [value] to the header with the given [key].
+  ///
+  /// If the header does not exist, it is created with [value].
+  /// If the header already exists and is not a single-value header,
+  /// the [value] is added to the existing set of values.
+  void add(String key, String value) {
+    final lowerCaseKey = key.toLowerCase();
+    if (singleValueHeaders.contains(lowerCaseKey)) {
+      put(key, value);
+      return;
+    }
+
+    final existing = this[key];
+    if (existing == null || existing.isEmpty) {
+      put(key, value);
+    } else {
+      this[key] = {...existing, value};
+    }
+  }
+
+  /// Adds a [value] to the header with the given [key] only if the header
+  /// is not already set with a non-empty value.
+  ///
+  /// Returns `true` if added, `false` otherwise.
+  bool tryAdd(String key, String value) {
+    final existing = this[key];
+    if (existing != null && existing.isNotEmpty) {
+      return false;
+    }
+
+    put(key, value);
+    return true;
+  }
 }
