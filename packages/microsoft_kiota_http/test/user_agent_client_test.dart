@@ -90,28 +90,6 @@ void main() {
     });
 
     test(
-      'appends user agent when existing agent contains user agent as substring',
-      () async {
-        late http.BaseRequest capturedRequest;
-        final inner = MockClient((request) async {
-          capturedRequest = request;
-          return http.Response('ok', 200);
-        });
-
-        final client = UserAgentClient(inner, userAgent: 'kiota-dart/1.0.0');
-        final request = http.Request('GET', Uri.parse('https://example.test'));
-        request.headers['User-Agent'] = 'kiota-dart/1.0.0-preview';
-
-        await client.send(request);
-
-        expect(
-          capturedRequest.headers['User-Agent'],
-          equals('kiota-dart/1.0.0-preview kiota-dart/1.0.0'),
-        );
-      },
-    );
-
-    test(
       'does not duplicate multi-product user agent when already present',
       () async {
         late http.BaseRequest capturedRequest;

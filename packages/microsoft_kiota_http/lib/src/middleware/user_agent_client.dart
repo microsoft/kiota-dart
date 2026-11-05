@@ -20,43 +20,10 @@ class UserAgentClient extends http.BaseClient {
     final existingUserAgent = request.headers[targetKey]?.trim();
     if (existingUserAgent == null || existingUserAgent.isEmpty) {
       request.headers[targetKey] = userAgent;
-    } else {
-      final existingTokens = existingUserAgent
-          .split(RegExp(r'\s+'))
-          .where((t) => t.isNotEmpty)
-          .toList();
-      final configuredTokens = userAgent
-          .trim()
-          .split(RegExp(r'\s+'))
-          .where((t) => t.isNotEmpty)
-          .toList();
-      if (!_containsTokenSequence(existingTokens, configuredTokens)) {
-        request.headers[targetKey] = '$existingUserAgent $userAgent';
-      }
+    } else if (!existingUserAgent.contains(userAgent)) {
+      request.headers[targetKey] = '$existingUserAgent $userAgent';
     }
 
     return _inner.send(request);
-  }
-
-  bool _containsTokenSequence(List<String> source, List<String> target) {
-    if (target.isEmpty) {
-      return true;
-    }
-    if (source.length < target.length) {
-      return false;
-    }
-    for (var i = 0; i <= source.length - target.length; i++) {
-      var match = true;
-      for (var j = 0; j < target.length; j++) {
-        if (source[i + j] != target[j]) {
-          match = false;
-          break;
-        }
-      }
-      if (match) {
-        return true;
-      }
-    }
-    return false;
   }
 }
