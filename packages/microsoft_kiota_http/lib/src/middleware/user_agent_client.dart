@@ -8,7 +8,21 @@ class UserAgentClient extends http.BaseClient {
 
   @override
   Future<http.StreamedResponse> send(http.BaseRequest request) {
-    request.headers['User-Agent'] = userAgent;
+    String? existingKey;
+    for (final key in request.headers.keys) {
+      if (key.toLowerCase() == 'user-agent') {
+        existingKey = key;
+        break;
+      }
+    }
+
+    final targetKey = existingKey ?? 'User-Agent';
+    final existingUserAgent = request.headers[targetKey]?.trim();
+    if (existingUserAgent == null || existingUserAgent.isEmpty) {
+      request.headers[targetKey] = userAgent;
+    } else if (!existingUserAgent.contains(userAgent)) {
+      request.headers[targetKey] = '$existingUserAgent $userAgent';
+    }
 
     return _inner.send(request);
   }

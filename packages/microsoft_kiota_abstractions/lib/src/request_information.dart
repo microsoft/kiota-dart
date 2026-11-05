@@ -62,7 +62,9 @@ class RequestInformation {
       throw ArgumentError('urlTemplate');
     }
 
-    if (url.contains('{+baseurl}') && !pathParameters.containsKey('baseurl')) {
+    final baseurl = pathParameters['baseurl'];
+    if (url.contains('{+baseurl}') &&
+        (baseurl == null || (baseurl is String && baseurl.trim().isEmpty))) {
       throw ArgumentError(
         'pathParameters must contain a value for "baseurl" for the url to be built.',
       );
@@ -150,9 +152,15 @@ class RequestInformation {
 
   /// Gets a [RequestOption] of the specified type [T] from the request.
   T? getRequestOption<T>() {
-    final option = _requestOptions[T.toString()];
-    if (option != null) {
-      return option as T;
+    final direct = _requestOptions[T.toString()];
+    if (direct != null && direct is T) {
+      return direct as T;
+    }
+
+    for (final option in _requestOptions.values) {
+      if (option is T) {
+        return option as T;
+      }
     }
 
     return null;

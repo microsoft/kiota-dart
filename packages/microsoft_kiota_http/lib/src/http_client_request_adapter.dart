@@ -41,10 +41,12 @@ class HttpClientRequestAdapter implements RequestAdapter {
   }
 
   http.BaseRequest _getMessageFromInfo(RequestInformation requestInfo) {
-    final request = http.Request(
-      requestInfo.httpMethod!.value,
-      requestInfo.uri,
-    );
+    final httpMethod = requestInfo.httpMethod;
+    if (httpMethod == null) {
+      throw ArgumentError.notNull('requestInfo.httpMethod');
+    }
+
+    final request = http.Request(httpMethod.value, requestInfo.uri);
 
     if (requestInfo.headers.isNotEmpty) {
       final flattenedHeaders = requestInfo.headers.map((name, values) {
@@ -83,7 +85,10 @@ class HttpClientRequestAdapter implements RequestAdapter {
   }
 
   void _setBaseUrl(RequestInformation requestInfo) {
-    requestInfo.pathParameters['baseurl'] = baseUrl;
+    final adapterBaseUrl = baseUrl;
+    if (adapterBaseUrl != null && adapterBaseUrl.isNotEmpty) {
+      requestInfo.pathParameters['baseurl'] = adapterBaseUrl;
+    }
   }
 
   ResponseHandler? _getResponseHandler(RequestInformation requestInfo) {
@@ -130,8 +135,13 @@ class HttpClientRequestAdapter implements RequestAdapter {
       );
     }
 
-    final rootNode = await _getRootParseNode(response);
-    final result = rootNode?.getObjectValue(errorFactory);
+    dynamic result;
+    try {
+      final rootNode = await _getRootParseNode(response);
+      result = rootNode?.getObjectValue(errorFactory);
+    } on Object catch (_) {
+      result = null;
+    }
 
     if (result case Exception exception) {
       if (exception case final ApiException apiException) {
@@ -169,6 +179,7 @@ class HttpClientRequestAdapter implements RequestAdapter {
 
   @override
   Future<T?> convertToNativeRequest<T>(RequestInformation requestInfo) async {
+    _setBaseUrl(requestInfo);
     await _authProvider.authenticateRequest(requestInfo);
 
     final request = _getMessageFromInfo(requestInfo);

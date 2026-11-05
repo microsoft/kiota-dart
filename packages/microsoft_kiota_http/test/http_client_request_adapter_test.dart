@@ -261,5 +261,153 @@ void main() {
         throwsA(isA<ArgumentError>()),
       );
     });
+
+    test('convertToNativeRequest sets base URL and converts request', () async {
+      final client = MockClient();
+      final authProvider = MockAuthenticationProvider();
+      final pNodeFactory = MockParseNodeFactory();
+      final sWriterFactory = MockSerializationWriterFactory();
+
+      final adapter = HttpClientRequestAdapter(
+        authProvider: authProvider,
+        pNodeFactory: pNodeFactory,
+        sWriterFactory: sWriterFactory,
+        client: client,
+      )..baseUrl = 'https://example.test';
+
+      final info = RequestInformation(
+        httpMethod: HttpMethod.get,
+        urlTemplate: '{+baseurl}/items',
+      );
+
+      when(
+        authProvider.authenticateRequest(info),
+      ).thenAnswer((_) async => Future<void>.value());
+
+      final native = await adapter.convertToNativeRequest<http.Request>(info);
+      expect(native, isNotNull);
+      expect(native!.method, equals('GET'));
+      expect(native.url, equals(Uri.parse('https://example.test/items')));
+    });
+
+    test(
+      'convertToNativeRequest preserves explicit baseurl in pathParameters when adapter baseUrl is unset',
+      () async {
+        final client = MockClient();
+        final authProvider = MockAuthenticationProvider();
+        final pNodeFactory = MockParseNodeFactory();
+        final sWriterFactory = MockSerializationWriterFactory();
+
+        final adapter = HttpClientRequestAdapter(
+          authProvider: authProvider,
+          pNodeFactory: pNodeFactory,
+          sWriterFactory: sWriterFactory,
+          client: client,
+        );
+
+        final info = RequestInformation(
+          httpMethod: HttpMethod.get,
+          urlTemplate: '{+baseurl}/items',
+        )..pathParameters['baseurl'] = 'https://explicit.test';
+
+        when(
+          authProvider.authenticateRequest(info),
+        ).thenAnswer((_) async => Future<void>.value());
+
+        final native = await adapter.convertToNativeRequest<http.Request>(info);
+        expect(native, isNotNull);
+        expect(native!.method, equals('GET'));
+        expect(native.url, equals(Uri.parse('https://explicit.test/items')));
+      },
+    );
+
+    test(
+      'convertToNativeRequest throws ArgumentError when httpMethod is null',
+      () async {
+        final client = MockClient();
+        final authProvider = MockAuthenticationProvider();
+        final pNodeFactory = MockParseNodeFactory();
+        final sWriterFactory = MockSerializationWriterFactory();
+
+        final adapter = HttpClientRequestAdapter(
+          authProvider: authProvider,
+          pNodeFactory: pNodeFactory,
+          sWriterFactory: sWriterFactory,
+          client: client,
+        );
+
+        final info = RequestInformation(
+          urlTemplate: 'https://example.test/items',
+        );
+
+        when(
+          authProvider.authenticateRequest(info),
+        ).thenAnswer((_) async => Future<void>.value());
+
+        expect(
+          () => adapter.convertToNativeRequest<http.Request>(info),
+          throwsA(isA<ArgumentError>()),
+        );
+      },
+    );
+
+    test(
+      'throws ApiException with status and headers when error response has unsupported content type',
+      () async {
+        final client = MockClient();
+        final authProvider = MockAuthenticationProvider();
+        final pNodeFactory = MockParseNodeFactory();
+        final sWriterFactory = MockSerializationWriterFactory();
+
+        final adapter = HttpClientRequestAdapter(
+          authProvider: authProvider,
+          pNodeFactory: pNodeFactory,
+          sWriterFactory: sWriterFactory,
+          client: client,
+        );
+
+        final info = RequestInformation(
+          httpMethod: HttpMethod.get,
+          urlTemplate: 'https://example.test/items',
+        );
+
+        when(
+          authProvider.authenticateRequest(info),
+        ).thenAnswer((_) async => Future<void>.value());
+
+        const htmlContent = '<html><body>502 Bad Gateway</body></html>';
+        final contentBytes = Uint8List.fromList(htmlContent.codeUnits);
+
+        when(client.send(any)).thenAnswer((_) async {
+          return http.StreamedResponse(
+            Stream.fromIterable([contentBytes]),
+            502,
+            headers: {
+              'content-type': 'text/html',
+              'x-custom-header': 'test-value',
+            },
+          );
+        });
+
+        when(
+          pNodeFactory.getRootParseNode('text/html', contentBytes),
+        ).thenThrow(
+          UnsupportedError('Content type text/html is not supported'),
+        );
+
+        final errorMapping = <String, ParsableFactory<Parsable>>{
+          '5XX': (node) => throw UnimplementedError(),
+        };
+
+        try {
+          await adapter.sendPrimitive<String>(info, errorMapping);
+          fail('Expected ApiException to be thrown');
+        } on ApiException catch (e) {
+          expect(e.statusCode, equals(502));
+          expect(e.responseHeaders?['x-custom-header'], contains('test-value'));
+          expect(e.message, contains('failed to deserialize: 502'));
+        }
+      },
+    );
   });
 }
