@@ -15,13 +15,17 @@ class FormParseNode implements ParseNode {
         continue;
       }
 
-      final parts = field.split('=');
-      if (parts.length != 2) {
+      final separatorIndex = field.indexOf('=');
+      if (separatorIndex == -1) {
         continue;
       }
 
-      final key = _sanitizeKey(parts[0]);
-      final value = _sanitizeValue(parts[1]);
+      final key = _sanitizeKey(field.substring(0, separatorIndex));
+      if (key.isEmpty) {
+        continue;
+      }
+
+      final value = _sanitizeValue(field.substring(separatorIndex + 1));
 
       if (!result.containsKey(key)) {
         result[key] = [];
