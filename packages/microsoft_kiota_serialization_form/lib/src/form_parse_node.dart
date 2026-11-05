@@ -70,8 +70,15 @@ class FormParseNode implements ParseNode {
     return base64Decode(value);
   }
 
-  static DateOnly _parseDateOnlyValue(String value) {
-    return DateOnly.fromDateTimeString(value);
+  static DateOnly? _parseDateOnlyValue(String value) {
+    if (value.trim().isEmpty) {
+      return null;
+    }
+    try {
+      return DateOnly.fromDateTimeString(value);
+    } on FormatException {
+      return null;
+    }
   }
 
   static DateTime? _parseDateTimeValue(String value) {
@@ -106,8 +113,15 @@ class FormParseNode implements ParseNode {
     return value;
   }
 
-  static TimeOnly _parseTimeOnlyValue(String value) {
-    return TimeOnly.fromDateTimeString(value);
+  static TimeOnly? _parseTimeOnlyValue(String value) {
+    if (value.trim().isEmpty) {
+      return null;
+    }
+    try {
+      return TimeOnly.fromDateTimeString(value);
+    } on FormatException {
+      return null;
+    }
   }
 
   static T? _parseEnumValue<T extends Enum>(
