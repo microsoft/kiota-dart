@@ -67,7 +67,11 @@ class FormParseNode implements ParseNode {
     if (value.isEmpty) {
       return null;
     }
-    return base64Decode(value);
+    try {
+      return base64Decode(value);
+    } on FormatException {
+      return null;
+    }
   }
 
   static DateOnly? _parseDateOnlyValue(String value) {
