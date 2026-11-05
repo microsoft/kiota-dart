@@ -285,5 +285,60 @@ void main() {
       expect(temp, isNotNull);
       expect(temp!.getBoolValue(), true);
     });
+
+    test('preserves equals signs in parameter values', () {
+      final node = FormParseNode(
+        'client_secret=secret=with=equals&token=abc==&query=a=1&b=2',
+      );
+
+      final secret = node.getChildNode('client_secret');
+      expect(secret, isNotNull);
+      expect(secret!.getStringValue(), equals('secret=with=equals'));
+
+      final token = node.getChildNode('token');
+      expect(token, isNotNull);
+      expect(token!.getStringValue(), equals('abc=='));
+
+      final query = node.getChildNode('query');
+      expect(query, isNotNull);
+      expect(query!.getStringValue(), equals('a=1'));
+
+      final b = node.getChildNode('b');
+      expect(b, isNotNull);
+      expect(b!.getStringValue(), equals('2'));
+    });
+
+    test('handles empty parameter values and empty child nodes', () {
+      final node = FormParseNode('key=&other=value');
+
+      final emptyChild = node.getChildNode('key');
+      expect(emptyChild, isNotNull);
+      expect(emptyChild!.getStringValue(), equals(''));
+
+      final otherChild = node.getChildNode('other');
+      expect(otherChild, isNotNull);
+      expect(otherChild!.getStringValue(), equals('value'));
+
+      final emptyNode = FormParseNode('');
+      expect(emptyNode.getStringValue(), equals(''));
+    });
+
+    test(
+      'getDateOnlyValue and getTimeOnlyValue return null on empty string',
+      () {
+        final emptyNode = FormParseNode('');
+        expect(emptyNode.getDateOnlyValue(), isNull);
+        expect(emptyNode.getTimeOnlyValue(), isNull);
+
+        final whitespaceNode = FormParseNode('   ');
+        expect(whitespaceNode.getDateOnlyValue(), isNull);
+        expect(whitespaceNode.getTimeOnlyValue(), isNull);
+      },
+    );
+
+    test('getByteArrayValue safely returns null on invalid base64', () {
+      final invalidNode = FormParseNode('invalid-base64!');
+      expect(invalidNode.getByteArrayValue(), isNull);
+    });
   });
 }
