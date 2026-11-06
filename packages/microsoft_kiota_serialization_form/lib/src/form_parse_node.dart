@@ -15,13 +15,17 @@ class FormParseNode implements ParseNode {
         continue;
       }
 
-      final parts = field.split('=');
-      if (parts.length != 2) {
+      final separatorIndex = field.indexOf('=');
+      if (separatorIndex == -1) {
         continue;
       }
 
-      final key = _sanitizeKey(parts[0]);
-      final value = _sanitizeValue(parts[1]);
+      final key = _sanitizeKey(field.substring(0, separatorIndex));
+      if (key.isEmpty) {
+        continue;
+      }
+
+      final value = _sanitizeValue(field.substring(separatorIndex + 1));
 
       if (!result.containsKey(key)) {
         result[key] = [];
@@ -63,11 +67,22 @@ class FormParseNode implements ParseNode {
     if (value.isEmpty) {
       return null;
     }
-    return base64Decode(value);
+    try {
+      return base64Decode(value);
+    } on FormatException {
+      return null;
+    }
   }
 
-  static DateOnly _parseDateOnlyValue(String value) {
-    return DateOnly.fromDateTimeString(value);
+  static DateOnly? _parseDateOnlyValue(String value) {
+    if (value.trim().isEmpty) {
+      return null;
+    }
+    try {
+      return DateOnly.fromDateTimeString(value);
+    } on FormatException {
+      return null;
+    }
   }
 
   static DateTime? _parseDateTimeValue(String value) {
@@ -102,8 +117,15 @@ class FormParseNode implements ParseNode {
     return value;
   }
 
-  static TimeOnly _parseTimeOnlyValue(String value) {
-    return TimeOnly.fromDateTimeString(value);
+  static TimeOnly? _parseTimeOnlyValue(String value) {
+    if (value.trim().isEmpty) {
+      return null;
+    }
+    try {
+      return TimeOnly.fromDateTimeString(value);
+    } on FormatException {
+      return null;
+    }
   }
 
   static T? _parseEnumValue<T extends Enum>(
