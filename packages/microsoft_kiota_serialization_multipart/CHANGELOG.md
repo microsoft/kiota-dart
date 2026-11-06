@@ -1,5 +1,12 @@
 # Unreleased
 
+## [0.0.5](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_serialization_multipart-v0.0.4...microsoft_kiota_serialization_multipart-v0.0.5) (2026-11-06)
+
+
+### Bug Fixes
+
+* **multipart:** support content-type parameters and whitespace in multipart factory ([#162](https://github.com/microsoft/kiota-dart/issues/162)) ([cefb104](https://github.com/microsoft/kiota-dart/commit/cefb104fcc9df68ac825bd0171c8e95afd82beb7))
+
 ## [0.0.4](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_serialization_multipart-v0.0.3...microsoft_kiota_serialization_multipart-v0.0.4) (2025-10-02)
 
 

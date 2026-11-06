@@ -1,5 +1,12 @@
 # Unreleased
 
+## [0.0.11](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_serialization_json-v0.0.10...microsoft_kiota_serialization_json-v0.0.11) (2026-11-06)
+
+
+### Bug Fixes
+
+* **serialization-json:** preserve native scalar types in UntypedNode deserialization ([#166](https://github.com/microsoft/kiota-dart/issues/166)) ([cc90d34](https://github.com/microsoft/kiota-dart/commit/cc90d34ffb4df31132ebd842dd6f0fd52d982734))
+
 ## [0.0.10](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_serialization_json-v0.0.9...microsoft_kiota_serialization_json-v0.0.10) (2026-10-29)
 
 
