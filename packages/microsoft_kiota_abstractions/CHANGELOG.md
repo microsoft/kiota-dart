@@ -1,5 +1,13 @@
 ## Unreleased
 
+## [0.3.3](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_abstractions-v0.3.2...microsoft_kiota_abstractions-v0.3.3) (2026-11-06)
+
+
+### Bug Fixes
+
+* **abstractions:** preserve original key on update with ifAbsent and guard empty header assignment ([#163](https://github.com/microsoft/kiota-dart/issues/163)) ([ab6574b](https://github.com/microsoft/kiota-dart/commit/ab6574b63f8fb85e191f916d07ea25bb150d850f))
+* **http,abstractions:** improve request adapter lifecycle, user-agent handling, and header parity ([#168](https://github.com/microsoft/kiota-dart/issues/168)) ([b78ba33](https://github.com/microsoft/kiota-dart/commit/b78ba3343cc8a0a745fc23c8012bb7027cea9ad3))
+
 ## [0.3.2](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_abstractions-v0.3.1...microsoft_kiota_abstractions-v0.3.2) (2026-10-23)
 
 

@@ -1,5 +1,13 @@
 # Unreleased
 
+## [0.0.8](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_http-v0.0.7...microsoft_kiota_http-v0.0.8) (2026-11-06)
+
+
+### Bug Fixes
+
+* **http,abstractions:** improve request adapter lifecycle, user-agent handling, and header parity ([#168](https://github.com/microsoft/kiota-dart/issues/168)) ([b78ba33](https://github.com/microsoft/kiota-dart/commit/b78ba3343cc8a0a745fc23c8012bb7027cea9ad3))
+* **http:** add Uint8List support to sendPrimitive in HttpClientRequestAdapter ([#167](https://github.com/microsoft/kiota-dart/issues/167)) ([d5052b2](https://github.com/microsoft/kiota-dart/commit/d5052b266ede6f121e2f9585fdf7da668ce55c81))
+
 ## [0.0.7](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_http-v0.0.6...microsoft_kiota_http-v0.0.7) (2025-10-02)
 
 
