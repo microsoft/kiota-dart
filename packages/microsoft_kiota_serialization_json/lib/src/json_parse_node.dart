@@ -231,6 +231,10 @@ class JsonParseNode implements ParseNode {
       return getUntypedValue(_node)! as T;
     }
 
+    if (_node == null) {
+      return null;
+    }
+
     onBeforeAssignFieldValues?.call(item);
     _assignFieldValues(item);
     onAfterAssignFieldValues?.call(item);
