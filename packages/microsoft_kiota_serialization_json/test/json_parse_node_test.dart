@@ -458,5 +458,29 @@ void main() {
         expect(untyped, isA<UntypedNull>());
       },
     );
+
+    test(
+      'onBeforeAssignFieldValues and onAfterAssignFieldValues are called exactly once',
+      () {
+        var beforeCount = 0;
+        var afterCount = 0;
+        final jsonParseNode = JsonParseNode(jsonDecode('{"id": "user1"}'))
+          ..onBeforeAssignFieldValues = ((_) {
+            beforeCount++;
+          })
+          ..onAfterAssignFieldValues = ((_) {
+            afterCount++;
+          });
+
+        final user = jsonParseNode.getObjectValue(
+          MicrosoftGraphUser.createFromDiscriminator,
+        );
+
+        expect(user, isNotNull);
+        expect(user!.id, equals('user1'));
+        expect(beforeCount, equals(1));
+        expect(afterCount, equals(1));
+      },
+    );
   });
 }
