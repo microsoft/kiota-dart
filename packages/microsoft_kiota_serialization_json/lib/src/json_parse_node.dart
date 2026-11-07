@@ -247,8 +247,6 @@ class JsonParseNode implements ParseNode {
       return;
     }
 
-    onBeforeAssignFieldValues?.call(item);
-
     final itemAdditionalData = item is AdditionalDataHolder
         ? (item as AdditionalDataHolder).additionalData
         : null;
@@ -268,7 +266,6 @@ class JsonParseNode implements ParseNode {
         itemAdditionalData?[entry.key as String] = entry.value;
       }
     }
-    onAfterAssignFieldValues?.call(item);
   }
 
   @override
