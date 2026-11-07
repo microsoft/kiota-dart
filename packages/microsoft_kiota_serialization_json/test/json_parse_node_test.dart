@@ -434,5 +434,29 @@ void main() {
 
       expect(jsonParseNode.getIntValue(), equals(null));
     });
+
+    test(
+      'getObjectValue returns null for null JSON node on parsable models',
+      () {
+        final jsonParseNode = JsonParseNode(null);
+        final user = jsonParseNode.getObjectValue(
+          MicrosoftGraphUser.createFromDiscriminator,
+        );
+
+        expect(user, isNull);
+      },
+    );
+
+    test(
+      'getObjectValue returns UntypedNull for null JSON node on untyped models',
+      () {
+        final jsonParseNode = JsonParseNode(null);
+        final untyped = jsonParseNode.getObjectValue(
+          UntypedNode.createFromDiscriminatorValue,
+        );
+
+        expect(untyped, isA<UntypedNull>());
+      },
+    );
   });
 }
