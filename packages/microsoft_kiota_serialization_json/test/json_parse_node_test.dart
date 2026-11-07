@@ -7,6 +7,7 @@ import 'package:test/test.dart';
 import 'package:uuid/uuid.dart';
 
 import 'derived_microsoft_graph_user.dart';
+import 'microsoft_graph_group.dart';
 import 'microsoft_graph_user.dart';
 import 'test_enums.dart';
 import 'untyped_test_entity.dart';
@@ -433,6 +434,86 @@ void main() {
       final jsonParseNode = JsonParseNode(null);
 
       expect(jsonParseNode.getIntValue(), equals(null));
+    });
+
+    test(
+      'getObjectValue returns null for null JSON node on parsable models',
+      () {
+        final jsonParseNode = JsonParseNode(null);
+        final user = jsonParseNode.getObjectValue(
+          MicrosoftGraphUser.createFromDiscriminator,
+        );
+
+        expect(user, isNull);
+      },
+    );
+
+    test(
+      'getObjectValue returns UntypedNull for null JSON node on untyped models',
+      () {
+        final jsonParseNode = JsonParseNode(null);
+        final untyped = jsonParseNode.getObjectValue(
+          UntypedNode.createFromDiscriminatorValue,
+        );
+
+        expect(untyped, isA<UntypedNull>());
+      },
+    );
+
+    test(
+      'onBeforeAssignFieldValues and onAfterAssignFieldValues are called exactly once',
+      () {
+        var beforeCount = 0;
+        var afterCount = 0;
+        final jsonParseNode = JsonParseNode(jsonDecode('{"id": "user1"}'))
+          ..onBeforeAssignFieldValues = ((_) {
+            beforeCount++;
+          })
+          ..onAfterAssignFieldValues = ((_) {
+            afterCount++;
+          });
+
+        final user = jsonParseNode.getObjectValue(
+          MicrosoftGraphUser.createFromDiscriminator,
+        );
+
+        expect(user, isNotNull);
+        expect(user!.id, equals('user1'));
+        expect(beforeCount, equals(1));
+        expect(afterCount, equals(1));
+      },
+    );
+
+    test(
+      'deserializing object with null child property keeps property null',
+      () {
+        final json = jsonDecode(
+          '{"id": "g1", "name": "Group 1", "leader": null}',
+        );
+        final jsonParseNode = JsonParseNode(json);
+        final group = jsonParseNode.getObjectValue(
+          (_) => MicrosoftGraphGroup(),
+        );
+
+        expect(group, isNotNull);
+        expect(group!.id, equals('g1'));
+        expect(group.name, equals('Group 1'));
+        expect(group.leader, isNull);
+      },
+    );
+
+    test('getCollectionOfObjectValues ignores null object entries', () {
+      final json = jsonDecode('[{"id": "u1"}, null, {"id": "u2"}]');
+      final jsonParseNode = JsonParseNode(json);
+      final users = jsonParseNode
+          .getCollectionOfObjectValues(
+            MicrosoftGraphUser.createFromDiscriminator,
+          )
+          .toList();
+
+      expect(users.length, equals(2));
+      expect(users[0].id, equals('u1'));
+      expect(users[1].id, equals('u2'));
     });
   });
 }
