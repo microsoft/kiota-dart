@@ -38,5 +38,22 @@ void main() {
       expect(TimeOnly.fromComponents(12, 34, 56).toRfc3339String(), '12:34:56');
       expect(TimeOnly.fromComponents(12, 34).toRfc3339String(), '12:34:00');
     });
+
+    test('tryParse valid and invalid strings', () {
+      expect(
+        TimeOnly.tryParse('12:34:56')?.toRfc3339String(),
+        equals('12:34:56'),
+      );
+      expect(TimeOnly.tryParse('12:34')?.toRfc3339String(), equals('12:34:00'));
+      expect(
+        TimeOnly.tryParse('12:34:56.789')?.toRfc3339String(),
+        equals('12:34:56.789'),
+      );
+      expect(TimeOnly.tryParse(null), isNull);
+      expect(TimeOnly.tryParse(''), isNull);
+      expect(TimeOnly.tryParse('   '), isNull);
+      expect(TimeOnly.tryParse('invalid-time'), isNull);
+      expect(TimeOnly.tryParse('not a time'), isNull);
+    });
   });
 }

@@ -40,6 +40,23 @@ abstract class TimeOnly implements Comparable<TimeOnly> {
     );
   }
 
+  /// Creates an object implementing [TimeOnly] from the provided string using
+  /// [DateTime.tryParse].
+  ///
+  /// Returns `null` if [dateTimeString] is null, empty, or cannot be parsed.
+  static TimeOnly? tryParse(String? dateTimeString) {
+    if (dateTimeString == null || dateTimeString.trim().isEmpty) {
+      return null;
+    }
+
+    final dateTime = DateTime.tryParse('2024-01-01 $dateTimeString');
+    if (dateTime == null) {
+      return null;
+    }
+
+    return TimeOnly.fromDateTime(dateTime);
+  }
+
   /// Gets the hours of the time.
   int get hours;
 

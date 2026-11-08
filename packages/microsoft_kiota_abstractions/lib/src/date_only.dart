@@ -31,6 +31,23 @@ abstract class DateOnly implements Comparable<DateOnly> {
     return _DateOnlyImpl(day: day, month: month, year: year);
   }
 
+  /// Creates an object implementing [DateOnly] from the provided string using
+  /// [DateTime.tryParse].
+  ///
+  /// Returns `null` if [dateTimeString] is null, empty, or cannot be parsed.
+  static DateOnly? tryParse(String? dateTimeString) {
+    if (dateTimeString == null || dateTimeString.trim().isEmpty) {
+      return null;
+    }
+
+    final date = DateTime.tryParse(dateTimeString);
+    if (date == null) {
+      return null;
+    }
+
+    return DateOnly.fromDateTime(date);
+  }
+
   /// Gets the year of the date.
   int get year;
 

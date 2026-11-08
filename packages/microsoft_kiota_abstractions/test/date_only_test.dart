@@ -33,5 +33,21 @@ void main() {
         '2021-01-01',
       );
     });
+
+    test('tryParse valid and invalid strings', () {
+      expect(
+        DateOnly.tryParse('2021-01-01')?.toRfc3339String(),
+        equals('2021-01-01'),
+      );
+      expect(
+        DateOnly.tryParse('2024-02-29')?.toRfc3339String(),
+        equals('2024-02-29'),
+      );
+      expect(DateOnly.tryParse(null), isNull);
+      expect(DateOnly.tryParse(''), isNull);
+      expect(DateOnly.tryParse('   '), isNull);
+      expect(DateOnly.tryParse('invalid-date'), isNull);
+      expect(DateOnly.tryParse('not a date'), isNull);
+    });
   });
 }
