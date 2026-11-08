@@ -340,5 +340,15 @@ void main() {
       final invalidNode = FormParseNode('invalid-base64!');
       expect(invalidNode.getByteArrayValue(), isNull);
     });
+
+    test('getGuidValue safely returns null on empty or invalid guid', () {
+      expect(FormParseNode('').getGuidValue(), isNull);
+      expect(FormParseNode('not-a-guid').getGuidValue(), isNull);
+    });
+
+    test('getDurationValue safely returns null on invalid duration', () {
+      expect(FormParseNode('').getDurationValue(), isNull);
+      expect(FormParseNode('not-a-duration').getDurationValue(), isNull);
+    });
   });
 }
