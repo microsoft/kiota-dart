@@ -176,5 +176,41 @@ void main() {
         throwsNoStructuredDataError,
       );
     });
+
+    test(
+      'getByteArrayValue returns null for null, empty, or invalid base64',
+      () {
+        expect(TextParseNode(null).getByteArrayValue(), isNull);
+        expect(TextParseNode('').getByteArrayValue(), isNull);
+        expect(TextParseNode('not-base-64!@#').getByteArrayValue(), isNull);
+      },
+    );
+
+    test('getDateOnlyValue returns null for null, empty, or invalid date', () {
+      expect(TextParseNode(null).getDateOnlyValue(), isNull);
+      expect(TextParseNode('').getDateOnlyValue(), isNull);
+      expect(TextParseNode('invalid-date').getDateOnlyValue(), isNull);
+    });
+
+    test('getTimeOnlyValue returns null for null, empty, or invalid time', () {
+      expect(TextParseNode(null).getTimeOnlyValue(), isNull);
+      expect(TextParseNode('').getTimeOnlyValue(), isNull);
+      expect(TextParseNode('invalid-time').getTimeOnlyValue(), isNull);
+    });
+
+    test('getGuidValue returns null for null, empty, or invalid guid', () {
+      expect(TextParseNode(null).getGuidValue(), isNull);
+      expect(TextParseNode('').getGuidValue(), isNull);
+      expect(TextParseNode('not-a-guid').getGuidValue(), isNull);
+    });
+
+    test(
+      'getDurationValue returns null for null, empty, or invalid duration',
+      () {
+        expect(TextParseNode(null).getDurationValue(), isNull);
+        expect(TextParseNode('').getDurationValue(), isNull);
+        expect(TextParseNode('invalid-duration').getDurationValue(), isNull);
+      },
+    );
   });
 }
