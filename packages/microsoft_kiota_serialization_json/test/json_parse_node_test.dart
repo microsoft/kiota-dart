@@ -485,6 +485,45 @@ void main() {
     );
 
     test(
+      'onBeforeAssignFieldValues and onAfterAssignFieldValues are not called when node is not a Map',
+      () {
+        var beforeCount = 0;
+        var afterCount = 0;
+        final stringParseNode = JsonParseNode('not-a-map')
+          ..onBeforeAssignFieldValues = ((_) {
+            beforeCount++;
+          })
+          ..onAfterAssignFieldValues = ((_) {
+            afterCount++;
+          });
+
+        final user = stringParseNode.getObjectValue(
+          MicrosoftGraphUser.createFromDiscriminator,
+        );
+
+        expect(user, isNotNull);
+        expect(beforeCount, equals(0));
+        expect(afterCount, equals(0));
+
+        final nullParseNode = JsonParseNode(null)
+          ..onBeforeAssignFieldValues = ((_) {
+            beforeCount++;
+          })
+          ..onAfterAssignFieldValues = ((_) {
+            afterCount++;
+          });
+
+        final nullUser = nullParseNode.getObjectValue(
+          MicrosoftGraphUser.createFromDiscriminator,
+        );
+
+        expect(nullUser, isNull);
+        expect(beforeCount, equals(0));
+        expect(afterCount, equals(0));
+      },
+    );
+
+    test(
       'deserializing object with null child property keeps property null',
       () {
         final json = jsonDecode(

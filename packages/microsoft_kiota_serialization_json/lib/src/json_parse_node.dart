@@ -235,9 +235,7 @@ class JsonParseNode implements ParseNode {
       return null;
     }
 
-    onBeforeAssignFieldValues?.call(item);
     _assignFieldValues(item);
-    onAfterAssignFieldValues?.call(item);
 
     return item;
   }
@@ -246,6 +244,8 @@ class JsonParseNode implements ParseNode {
     if (_node is! Map) {
       return;
     }
+
+    onBeforeAssignFieldValues?.call(item);
 
     final itemAdditionalData = item is AdditionalDataHolder
         ? (item as AdditionalDataHolder).additionalData
@@ -266,6 +266,8 @@ class JsonParseNode implements ParseNode {
         itemAdditionalData?[entry.key as String] = entry.value;
       }
     }
+
+    onAfterAssignFieldValues?.call(item);
   }
 
   @override
