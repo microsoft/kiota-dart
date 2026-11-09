@@ -1,5 +1,12 @@
 # Unreleased
 
+## [0.0.7](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_serialization_form-v0.0.6...microsoft_kiota_serialization_form-v0.0.7) (2026-11-09)
+
+
+### Bug Fixes
+
+* **form:** preserve equals delimiters, allow empty values, and safely parse dates ([#169](https://github.com/microsoft/kiota-dart/issues/169)) ([cd48125](https://github.com/microsoft/kiota-dart/commit/cd4812515693200301334ffb8e66155682b11d0d))
+
 ## [0.0.6](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_serialization_form-v0.0.5...microsoft_kiota_serialization_form-v0.0.6) (2026-10-27)
 
 
