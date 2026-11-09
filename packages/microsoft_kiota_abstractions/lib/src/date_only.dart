@@ -58,10 +58,15 @@ abstract class DateOnly implements Comparable<DateOnly> {
       return null;
     }
 
-    final dateTime = DateTime.utc(year, month, day);
-    if (dateTime.year != year ||
-        dateTime.month != month ||
-        dateTime.day != day) {
+    try {
+      final dateTime = DateTime.utc(year, month, day);
+      if (dateTime.year != year ||
+          dateTime.month != month ||
+          dateTime.day != day) {
+        return null;
+      }
+      // ignore: avoid_catching_errors
+    } on ArgumentError {
       return null;
     }
 

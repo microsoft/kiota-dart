@@ -54,6 +54,8 @@ void main() {
       expect(DateOnly.tryParse('2021-01-01T23:00:00-05:00'), isNull);
       expect(DateOnly.tryParse('2021-01-01T00:00:00Z'), isNull);
       expect(DateOnly.tryParse('2021-01-01 12:00:00'), isNull);
+      // Rejects out-of-range years that exceed DateTime.utc supported range
+      expect(DateOnly.tryParse('999999-01-01'), isNull);
     });
   });
 }

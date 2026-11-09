@@ -190,6 +190,7 @@ void main() {
       expect(TextParseNode(null).getDateOnlyValue(), isNull);
       expect(TextParseNode('').getDateOnlyValue(), isNull);
       expect(TextParseNode('invalid-date').getDateOnlyValue(), isNull);
+      expect(TextParseNode('999999-01-01').getDateOnlyValue(), isNull);
     });
 
     test('getTimeOnlyValue returns null for null, empty, or invalid time', () {

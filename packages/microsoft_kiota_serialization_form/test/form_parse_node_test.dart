@@ -333,6 +333,9 @@ void main() {
         final whitespaceNode = FormParseNode('   ');
         expect(whitespaceNode.getDateOnlyValue(), isNull);
         expect(whitespaceNode.getTimeOnlyValue(), isNull);
+
+        final outOfRangeNode = FormParseNode('999999-01-01');
+        expect(outOfRangeNode.getDateOnlyValue(), isNull);
       },
     );
 
