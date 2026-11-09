@@ -40,21 +40,53 @@ abstract class TimeOnly implements Comparable<TimeOnly> {
     );
   }
 
-  /// Creates an object implementing [TimeOnly] from the provided string using
-  /// [DateTime.tryParse].
+  static final RegExp _timeRegex = RegExp(
+    r'^(\d{1,2})(?::(\d{2})(?::(\d{2})(?:\.(\d+))?)?)?$',
+  );
+
+  /// Creates an object implementing [TimeOnly] from the provided string.
   ///
-  /// Returns `null` if [dateTimeString] is null, empty, or cannot be parsed.
-  static TimeOnly? tryParse(String? dateTimeString) {
-    if (dateTimeString == null || dateTimeString.trim().isEmpty) {
+  /// Returns `null` if [timeString] is null, empty, or cannot be parsed as a
+  /// valid time of day.
+  static TimeOnly? tryParse(String? timeString) {
+    if (timeString == null) {
+      return null;
+    }
+    final trimmed = timeString.trim();
+    if (trimmed.isEmpty) {
       return null;
     }
 
-    final dateTime = DateTime.tryParse('2024-01-01 $dateTimeString');
-    if (dateTime == null) {
+    final match = _timeRegex.firstMatch(trimmed);
+    if (match == null) {
       return null;
     }
 
-    return TimeOnly.fromDateTime(dateTime);
+    final hours = int.tryParse(match.group(1)!);
+    if (hours == null || hours < 0 || hours > 23) {
+      return null;
+    }
+
+    final minutesGroup = match.group(2);
+    final minutes = minutesGroup != null ? int.tryParse(minutesGroup) : 0;
+    if (minutes == null || minutes < 0 || minutes > 59) {
+      return null;
+    }
+
+    final secondsGroup = match.group(3);
+    final seconds = secondsGroup != null ? int.tryParse(secondsGroup) : 0;
+    if (seconds == null || seconds < 0 || seconds > 59) {
+      return null;
+    }
+
+    final fractionGroup = match.group(4);
+    var milliseconds = 0;
+    if (fractionGroup != null && fractionGroup.isNotEmpty) {
+      final padded = fractionGroup.padRight(3, '0');
+      milliseconds = int.tryParse(padded.substring(0, 3)) ?? 0;
+    }
+
+    return TimeOnly.fromComponents(hours, minutes, seconds, milliseconds);
   }
 
   /// Gets the hours of the time.

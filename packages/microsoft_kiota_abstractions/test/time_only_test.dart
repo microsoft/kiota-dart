@@ -45,6 +45,7 @@ void main() {
         equals('12:34:56'),
       );
       expect(TimeOnly.tryParse('12:34')?.toRfc3339String(), equals('12:34:00'));
+      expect(TimeOnly.tryParse('12')?.toRfc3339String(), equals('12:00:00'));
       expect(
         TimeOnly.tryParse('12:34:56.789')?.toRfc3339String(),
         equals('12:34:56.789'),
@@ -54,6 +55,13 @@ void main() {
       expect(TimeOnly.tryParse('   '), isNull);
       expect(TimeOnly.tryParse('invalid-time'), isNull);
       expect(TimeOnly.tryParse('not a time'), isNull);
+      expect(TimeOnly.tryParse('24:00:00'), isNull);
+      expect(TimeOnly.tryParse('12:60:00'), isNull);
+      expect(TimeOnly.tryParse('12:00:60'), isNull);
+      // Rejects strings with timezone offsets to avoid wall-clock time shifts
+      expect(TimeOnly.tryParse('12:00:00+02:00'), isNull);
+      expect(TimeOnly.tryParse('12:00:00-05:00'), isNull);
+      expect(TimeOnly.tryParse('12:00:00Z'), isNull);
     });
   });
 }

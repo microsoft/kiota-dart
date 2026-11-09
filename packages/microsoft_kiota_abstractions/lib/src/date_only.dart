@@ -31,21 +31,41 @@ abstract class DateOnly implements Comparable<DateOnly> {
     return _DateOnlyImpl(day: day, month: month, year: year);
   }
 
-  /// Creates an object implementing [DateOnly] from the provided string using
-  /// [DateTime.tryParse].
+  static final RegExp _dateRegex = RegExp(r'^(\d{4,})-(\d{2})-(\d{2})$');
+
+  /// Creates an object implementing [DateOnly] from the provided string.
   ///
-  /// Returns `null` if [dateTimeString] is null, empty, or cannot be parsed.
-  static DateOnly? tryParse(String? dateTimeString) {
-    if (dateTimeString == null || dateTimeString.trim().isEmpty) {
+  /// Returns `null` if [dateString] is null, empty, or cannot be parsed as a
+  /// valid calendar date in `YYYY-MM-DD` format.
+  static DateOnly? tryParse(String? dateString) {
+    if (dateString == null) {
+      return null;
+    }
+    final trimmed = dateString.trim();
+    final match = _dateRegex.firstMatch(trimmed);
+    if (match == null) {
       return null;
     }
 
-    final date = DateTime.tryParse(dateTimeString);
-    if (date == null) {
+    final year = int.tryParse(match.group(1)!);
+    final month = int.tryParse(match.group(2)!);
+    final day = int.tryParse(match.group(3)!);
+
+    if (year == null || month == null || day == null) {
+      return null;
+    }
+    if (month < 1 || month > 12 || day < 1 || day > 31) {
       return null;
     }
 
-    return DateOnly.fromDateTime(date);
+    final dateTime = DateTime.utc(year, month, day);
+    if (dateTime.year != year ||
+        dateTime.month != month ||
+        dateTime.day != day) {
+      return null;
+    }
+
+    return DateOnly.fromComponents(year, month, day);
   }
 
   /// Gets the year of the date.

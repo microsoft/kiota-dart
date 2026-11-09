@@ -48,6 +48,12 @@ void main() {
       expect(DateOnly.tryParse('   '), isNull);
       expect(DateOnly.tryParse('invalid-date'), isNull);
       expect(DateOnly.tryParse('not a date'), isNull);
+      expect(DateOnly.tryParse('2023-02-29'), isNull);
+      expect(DateOnly.tryParse('2021-04-31'), isNull);
+      // Rejects strings with time components or timezone offsets
+      expect(DateOnly.tryParse('2021-01-01T23:00:00-05:00'), isNull);
+      expect(DateOnly.tryParse('2021-01-01T00:00:00Z'), isNull);
+      expect(DateOnly.tryParse('2021-01-01 12:00:00'), isNull);
     });
   });
 }
