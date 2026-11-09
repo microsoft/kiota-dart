@@ -15,6 +15,7 @@ on:
       - 'microsoft_kiota_serialization_multipart-v*'
   pull_request:
     branches: [ "main" ]
+  merge_group:
   workflow_dispatch:
 
 permissions:
