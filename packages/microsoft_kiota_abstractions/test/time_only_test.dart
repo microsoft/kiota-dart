@@ -44,8 +44,10 @@ void main() {
         TimeOnly.tryParse('12:34:56')?.toRfc3339String(),
         equals('12:34:56'),
       );
-      expect(TimeOnly.tryParse('12:34')?.toRfc3339String(), equals('12:34:00'));
-      expect(TimeOnly.tryParse('12')?.toRfc3339String(), equals('12:00:00'));
+      expect(
+        TimeOnly.tryParse('09:30:00')?.toRfc3339String(),
+        equals('09:30:00'),
+      );
       expect(
         TimeOnly.tryParse('12:34:56.789')?.toRfc3339String(),
         equals('12:34:56.789'),
@@ -58,6 +60,10 @@ void main() {
       expect(TimeOnly.tryParse('24:00:00'), isNull);
       expect(TimeOnly.tryParse('12:60:00'), isNull);
       expect(TimeOnly.tryParse('12:00:60'), isNull);
+      // Rejects omitted leading zeros and partial representations (RFC 3339 section 5.6)
+      expect(TimeOnly.tryParse('9:30:00'), isNull);
+      expect(TimeOnly.tryParse('12:34'), isNull);
+      expect(TimeOnly.tryParse('12'), isNull);
       // Rejects strings with timezone offsets to avoid wall-clock time shifts
       expect(TimeOnly.tryParse('12:00:00+02:00'), isNull);
       expect(TimeOnly.tryParse('12:00:00-05:00'), isNull);

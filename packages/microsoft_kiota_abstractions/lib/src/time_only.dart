@@ -41,13 +41,13 @@ abstract class TimeOnly implements Comparable<TimeOnly> {
   }
 
   static final RegExp _timeRegex = RegExp(
-    r'^(\d{1,2})(?::(\d{2})(?::(\d{2})(?:\.(\d+))?)?)?$',
+    r'^(\d{2}):(\d{2}):(\d{2})(?:\.(\d+))?$',
   );
 
   /// Creates an object implementing [TimeOnly] from the provided string.
   ///
   /// Returns `null` if [timeString] is null, empty, or cannot be parsed as a
-  /// valid time of day.
+  /// valid RFC 3339 `partial-time` (`HH:mm:ss[.fraction]`).
   static TimeOnly? tryParse(String? timeString) {
     if (timeString == null) {
       return null;
@@ -67,14 +67,12 @@ abstract class TimeOnly implements Comparable<TimeOnly> {
       return null;
     }
 
-    final minutesGroup = match.group(2);
-    final minutes = minutesGroup != null ? int.tryParse(minutesGroup) : 0;
+    final minutes = int.tryParse(match.group(2)!);
     if (minutes == null || minutes < 0 || minutes > 59) {
       return null;
     }
 
-    final secondsGroup = match.group(3);
-    final seconds = secondsGroup != null ? int.tryParse(secondsGroup) : 0;
+    final seconds = int.tryParse(match.group(3)!);
     if (seconds == null || seconds < 0 || seconds > 59) {
       return null;
     }

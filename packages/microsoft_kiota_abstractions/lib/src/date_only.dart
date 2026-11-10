@@ -31,12 +31,12 @@ abstract class DateOnly implements Comparable<DateOnly> {
     return _DateOnlyImpl(day: day, month: month, year: year);
   }
 
-  static final RegExp _dateRegex = RegExp(r'^(\d{4,})-(\d{2})-(\d{2})$');
+  static final RegExp _dateRegex = RegExp(r'^(\d{4})-(\d{2})-(\d{2})$');
 
   /// Creates an object implementing [DateOnly] from the provided string.
   ///
   /// Returns `null` if [dateString] is null, empty, or cannot be parsed as a
-  /// valid calendar date in `YYYY-MM-DD` format.
+  /// valid RFC 3339 `full-date` (`YYYY-MM-DD`).
   static DateOnly? tryParse(String? dateString) {
     if (dateString == null) {
       return null;
