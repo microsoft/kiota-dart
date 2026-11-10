@@ -11,6 +11,52 @@ String? _httpMethodEnumSerializer(HttpMethod? value) => value?.name;
 
 void main() {
   group('JsonSerializationWriter', () {
+    final isoDurations = {
+      Duration.zero: 'PT0S',
+      const Duration(hours: 2): 'PT2H',
+      const Duration(days: 2): 'P2D',
+      const Duration(days: 1, hours: 2, minutes: 30): 'P1DT2H30M',
+      const Duration(milliseconds: 500): 'PT0.5S',
+      const Duration(seconds: 5, microseconds: 123456): 'PT5.123456S',
+      const Duration(microseconds: 1): 'PT0.000001S',
+      const Duration(minutes: -1): '-PT1M',
+      const Duration(microseconds: -1): '-PT0.000001S',
+      const Duration(days: -3, hours: -4, seconds: -5): '-P3DT4H5S',
+    };
+    for (final entry in isoDurations.entries) {
+      for (final key in <String?>[null, 'duration']) {
+        test('writes and round-trips ${entry.value} at $key', () {
+          final writer = JsonSerializationWriter()
+            ..writeDurationValue(key, entry.key);
+          final serialized = utf8.decode(writer.getSerializedContent());
+
+          expect(
+            serialized,
+            equals(
+              key == null
+                  ? '"${entry.value}"'
+                  : '{"duration":"${entry.value}"}',
+            ),
+          );
+          final node = JsonParseNode(jsonDecode(serialized));
+          expect(
+            (key == null ? node : node.getChildNode(key))?.getDurationValue(),
+            equals(entry.key),
+          );
+        });
+      }
+    }
+    test('omits null duration values', () {
+      final writer = JsonSerializationWriter()
+        ..writeStringValue('sentinel', 'present')
+        ..writeDurationValue('duration', null);
+
+      expect(
+        utf8.decode(writer.getSerializedContent()),
+        equals('{"sentinel":"present"}'),
+      );
+    });
+
     final emptyCollectionWriters =
         <String, void Function(JsonSerializationWriter, String?)>{
           'primitive': (writer, key) =>
@@ -129,7 +175,7 @@ void main() {
       expect(
         utf8.decode(writer.getSerializedContent()),
         equals(
-          '{"id":"abc","createdDateTime":"2023-12-01T15:15:00.000","officeLocation":"at the desk","workDuration":"40:00:00.000000","birthDay":"2024-10-01","heightInMetres":1.7,"startWorkTime":"06:00:00","active":true,"numbers":[2,3,5],"a":"some value","b":12,"c":false,"someNull":"null","untypedArray":["abc",8.8],"object":{"name":"a name","age":8}}',
+          '{"id":"abc","createdDateTime":"2023-12-01T15:15:00.000","officeLocation":"at the desk","workDuration":"P1DT16H","birthDay":"2024-10-01","heightInMetres":1.7,"startWorkTime":"06:00:00","active":true,"numbers":[2,3,5],"a":"some value","b":12,"c":false,"someNull":"null","untypedArray":["abc",8.8],"object":{"name":"a name","age":8}}',
         ),
       );
     });
@@ -155,7 +201,7 @@ void main() {
       expect(
         utf8.decode(writer.getSerializedContent()),
         equals(
-          '{"name":"a group","leader":{"heightInMetres":1.9,"endWorkTime":"17:00:00"},"members":[{"officeLocation":"on a chair","workDuration":"2:00:00.000000","a":"#1 coworker"},{"workDuration":"12:00:00.000000","active":true}]}',
+          '{"name":"a group","leader":{"heightInMetres":1.9,"endWorkTime":"17:00:00"},"members":[{"officeLocation":"on a chair","workDuration":"PT2H","a":"#1 coworker"},{"workDuration":"PT12H","active":true}]}',
         ),
       );
     });
@@ -185,7 +231,7 @@ void main() {
       expect(
         utf8.decode(writer.getSerializedContent()),
         equals(
-          '{"workDuration":"2:00:00.000000","a":"#1 coworker","string":"a string","double":0.0,"bool":false,"time":"12:00:00","date":"2000-01-01","datetime":"2024-12-31T23:59:00.000","uuid":"019329eb-0ac5-7cc0-9dea-6440b3648264","user":{"workDuration":"12:00:00.000000","active":true}}',
+          '{"workDuration":"PT2H","a":"#1 coworker","string":"a string","double":0.0,"bool":false,"time":"12:00:00","date":"2000-01-01","datetime":"2024-12-31T23:59:00.000","uuid":"019329eb-0ac5-7cc0-9dea-6440b3648264","user":{"workDuration":"PT12H","active":true}}',
         ),
       );
     });

@@ -1,5 +1,9 @@
 ## Unreleased
 
+### Bug Fixes
+
+* Add `Duration.toIso8601String()` for normalized ISO 8601 durations with microsecond precision.
+
 ## [0.3.3](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_abstractions-v0.3.2...microsoft_kiota_abstractions-v0.3.3) (2026-11-09)
 
 
