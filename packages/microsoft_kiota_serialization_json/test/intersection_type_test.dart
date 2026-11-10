@@ -182,7 +182,7 @@ void main() {
       final result = utf8.decode(content);
       expect(
         result,
-        '{"nested":{"id":"id","namingEnum":"Item2:SubItem1","workDuration":"8:02:00.000000","birthDay":"1998-11-11","accountEnabled":true,"key":"value"}}',
+        '{"nested":{"id":"id","namingEnum":"Item2:SubItem1","workDuration":"PT8H2M","birthDay":"1998-11-11","accountEnabled":true,"key":"value"}}',
       );
     });
   });

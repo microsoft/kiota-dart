@@ -126,7 +126,7 @@ class TextSerializationWriter implements SerializationWriter {
 
   @override
   void writeDurationValue(String? key, Duration? value) {
-    writeStringValue(key, value?.toString());
+    writeStringValue(key, value?.toIso8601String());
   }
 
   @override

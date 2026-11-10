@@ -2,6 +2,46 @@ part of '../../microsoft_kiota_abstractions.dart';
 
 /// Extensions for [Duration].
 extension DurationExtensions on Duration {
+  /// Formats this duration as ISO 8601, preserving microsecond precision.
+  String toIso8601String() {
+    if (this == Duration.zero) {
+      return 'PT0S';
+    }
+
+    final days = inDays.abs();
+    final hours = inHours.remainder(Duration.hoursPerDay).abs();
+    final minutes = inMinutes.remainder(Duration.minutesPerHour).abs();
+    final seconds = inSeconds.remainder(Duration.secondsPerMinute).abs();
+    final microseconds = inMicroseconds
+        .remainder(Duration.microsecondsPerSecond)
+        .abs();
+    final result = StringBuffer(isNegative ? '-P' : 'P');
+    if (days != 0) {
+      result.write('${days}D');
+    }
+    if (hours != 0 || minutes != 0 || seconds != 0 || microseconds != 0) {
+      result.write('T');
+      if (hours != 0) {
+        result.write('${hours}H');
+      }
+      if (minutes != 0) {
+        result.write('${minutes}M');
+      }
+      if (seconds != 0 || microseconds != 0) {
+        result.write(seconds);
+        if (microseconds != 0) {
+          final fraction = microseconds
+              .toString()
+              .padLeft(6, '0')
+              .replaceFirst(RegExp(r'0+$'), '');
+          result.write('.$fraction');
+        }
+        result.write('S');
+      }
+    }
+    return result.toString();
+  }
+
   /// Tries to parse a [String] in the ISO 8601 format to a [Duration].
   static Duration? tryParse(String? value) {
     if (value == null) {
