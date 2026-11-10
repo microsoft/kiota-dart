@@ -1,9 +1,5 @@
 # Unreleased
 
-### Bug Fixes
-
-* **Wire-format change:** durations in JSON parts now use normalized ISO 8601 values (for example, `PT2H`) instead of Dart's `Duration.toString()` format (`2:00:00.000000`).
-
 ## [0.0.5](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_serialization_multipart-v0.0.4...microsoft_kiota_serialization_multipart-v0.0.5) (2026-11-09)
 
 

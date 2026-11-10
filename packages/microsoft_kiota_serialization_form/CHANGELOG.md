@@ -1,9 +1,5 @@
 # Unreleased
 
-### Bug Fixes
-
-* **Wire-format change:** serialize durations as normalized ISO 8601 values (for example, `PT2H`) instead of Dart's `Duration.toString()` format (`2:00:00.000000`), enabling round trips.
-
 ## [0.0.7](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_serialization_form-v0.0.6...microsoft_kiota_serialization_form-v0.0.7) (2026-11-09)
 
 
