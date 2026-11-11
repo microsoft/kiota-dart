@@ -31,6 +31,48 @@ abstract class DateOnly implements Comparable<DateOnly> {
     return _DateOnlyImpl(day: day, month: month, year: year);
   }
 
+  static final RegExp _dateRegex = RegExp(r'^(\d{4})-(\d{2})-(\d{2})$');
+
+  /// Creates an object implementing [DateOnly] from the provided string.
+  ///
+  /// Returns `null` if [dateString] is null, empty, or cannot be parsed as a
+  /// valid RFC 3339 `full-date` (`YYYY-MM-DD`).
+  static DateOnly? tryParse(String? dateString) {
+    if (dateString == null) {
+      return null;
+    }
+    final trimmed = dateString.trim();
+    final match = _dateRegex.firstMatch(trimmed);
+    if (match == null) {
+      return null;
+    }
+
+    final year = int.tryParse(match.group(1)!);
+    final month = int.tryParse(match.group(2)!);
+    final day = int.tryParse(match.group(3)!);
+
+    if (year == null || month == null || day == null) {
+      return null;
+    }
+    if (month < 1 || month > 12 || day < 1 || day > 31) {
+      return null;
+    }
+
+    try {
+      final dateTime = DateTime.utc(year, month, day);
+      if (dateTime.year != year ||
+          dateTime.month != month ||
+          dateTime.day != day) {
+        return null;
+      }
+      // ignore: avoid_catching_errors
+    } on ArgumentError {
+      return null;
+    }
+
+    return DateOnly.fromComponents(year, month, day);
+  }
+
   /// Gets the year of the date.
   int get year;
 

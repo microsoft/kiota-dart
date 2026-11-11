@@ -39,7 +39,16 @@ class TextParseNode implements ParseNode {
 
   @override
   Uint8List? getByteArrayValue() {
-    return _text == null ? null : base64Decode(_text);
+    final text = _text;
+    if (text == null || text.isEmpty) {
+      return null;
+    }
+
+    try {
+      return base64Decode(text);
+    } on FormatException {
+      return null;
+    }
   }
 
   @override
@@ -66,7 +75,7 @@ class TextParseNode implements ParseNode {
 
   @override
   DateOnly? getDateOnlyValue() {
-    return _text == null ? null : DateOnly.fromDateTimeString(_text);
+    return DateOnly.tryParse(_text);
   }
 
   @override
@@ -96,8 +105,17 @@ class TextParseNode implements ParseNode {
   @override
   // ignore: experimental_member_use
   UuidValue? getGuidValue() {
-    // ignore: experimental_member_use
-    return _text == null ? null : UuidValue.withValidation(_text);
+    final text = _text;
+    if (text == null || text.isEmpty) {
+      return null;
+    }
+
+    try {
+      // ignore: experimental_member_use
+      return UuidValue.withValidation(text);
+    } on FormatException {
+      return null;
+    }
   }
 
   @override
@@ -117,6 +135,6 @@ class TextParseNode implements ParseNode {
 
   @override
   TimeOnly? getTimeOnlyValue() {
-    return _text == null ? null : TimeOnly.fromDateTimeString(_text);
+    return TimeOnly.tryParse(_text);
   }
 }

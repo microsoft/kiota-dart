@@ -33,5 +33,33 @@ void main() {
         '2021-01-01',
       );
     });
+
+    test('tryParse valid and invalid strings', () {
+      expect(
+        DateOnly.tryParse('2021-01-01')?.toRfc3339String(),
+        equals('2021-01-01'),
+      );
+      expect(
+        DateOnly.tryParse('2024-02-29')?.toRfc3339String(),
+        equals('2024-02-29'),
+      );
+      expect(DateOnly.tryParse(null), isNull);
+      expect(DateOnly.tryParse(''), isNull);
+      expect(DateOnly.tryParse('   '), isNull);
+      expect(DateOnly.tryParse('invalid-date'), isNull);
+      expect(DateOnly.tryParse('not a date'), isNull);
+      expect(DateOnly.tryParse('2023-02-29'), isNull);
+      expect(DateOnly.tryParse('2021-04-31'), isNull);
+      // Rejects omitted leading zeros (RFC 3339 section 5.6 requires 2DIGIT)
+      expect(DateOnly.tryParse('2026-11-9'), isNull);
+      expect(DateOnly.tryParse('2026-1-09'), isNull);
+      // Rejects strings with time components or timezone offsets
+      expect(DateOnly.tryParse('2021-01-01T23:00:00-05:00'), isNull);
+      expect(DateOnly.tryParse('2021-01-01T00:00:00Z'), isNull);
+      expect(DateOnly.tryParse('2021-01-01 12:00:00'), isNull);
+      // Rejects years that do not match RFC 3339 4-digit fullyear
+      expect(DateOnly.tryParse('999-01-01'), isNull);
+      expect(DateOnly.tryParse('999999-01-01'), isNull);
+    });
   });
 }

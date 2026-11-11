@@ -55,10 +55,19 @@ extension DurationExtensions on Duration {
 
     final match = regex.firstMatch(value);
     if (match == null) {
-      throw const FormatException(
-        'String does not follow correct format',
-        'value',
-      );
+      return null;
+    }
+
+    final hasAnyComponent =
+        match.group(2) != null ||
+        match.group(3) != null ||
+        match.group(4) != null ||
+        match.group(5) != null ||
+        match.group(6) != null ||
+        match.group(7) != null ||
+        match.group(8) != null;
+    if (!hasAnyComponent) {
+      return null;
     }
 
     final sign = match.group(1) == '-' ? -1 : 1;

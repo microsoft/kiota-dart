@@ -75,14 +75,7 @@ class FormParseNode implements ParseNode {
   }
 
   static DateOnly? _parseDateOnlyValue(String value) {
-    if (value.trim().isEmpty) {
-      return null;
-    }
-    try {
-      return DateOnly.fromDateTimeString(value);
-    } on FormatException {
-      return null;
-    }
+    return DateOnly.tryParse(value);
   }
 
   static DateTime? _parseDateTimeValue(String value) {
@@ -102,8 +95,12 @@ class FormParseNode implements ParseNode {
     if (value.isEmpty) {
       return null;
     }
-    // ignore: experimental_member_use
-    return UuidValue.withValidation(value);
+    try {
+      // ignore: experimental_member_use
+      return UuidValue.withValidation(value);
+    } on FormatException {
+      return null;
+    }
   }
 
   static int? _parseIntValue(String value) {
@@ -118,14 +115,7 @@ class FormParseNode implements ParseNode {
   }
 
   static TimeOnly? _parseTimeOnlyValue(String value) {
-    if (value.trim().isEmpty) {
-      return null;
-    }
-    try {
-      return TimeOnly.fromDateTimeString(value);
-    } on FormatException {
-      return null;
-    }
+    return TimeOnly.tryParse(value);
   }
 
   static T? _parseEnumValue<T extends Enum>(

@@ -40,6 +40,53 @@ abstract class TimeOnly implements Comparable<TimeOnly> {
     );
   }
 
+  static final RegExp _timeRegex = RegExp(
+    r'^(\d{2}):(\d{2}):(\d{2})(?:\.(\d+))?$',
+  );
+
+  /// Creates an object implementing [TimeOnly] from the provided string.
+  ///
+  /// Returns `null` if [timeString] is null, empty, or cannot be parsed as a
+  /// valid RFC 3339 `partial-time` (`HH:mm:ss[.fraction]`).
+  static TimeOnly? tryParse(String? timeString) {
+    if (timeString == null) {
+      return null;
+    }
+    final trimmed = timeString.trim();
+    if (trimmed.isEmpty) {
+      return null;
+    }
+
+    final match = _timeRegex.firstMatch(trimmed);
+    if (match == null) {
+      return null;
+    }
+
+    final hours = int.tryParse(match.group(1)!);
+    if (hours == null || hours < 0 || hours > 23) {
+      return null;
+    }
+
+    final minutes = int.tryParse(match.group(2)!);
+    if (minutes == null || minutes < 0 || minutes > 59) {
+      return null;
+    }
+
+    final seconds = int.tryParse(match.group(3)!);
+    if (seconds == null || seconds < 0 || seconds > 59) {
+      return null;
+    }
+
+    final fractionGroup = match.group(4);
+    var milliseconds = 0;
+    if (fractionGroup != null && fractionGroup.isNotEmpty) {
+      final padded = fractionGroup.padRight(3, '0');
+      milliseconds = int.tryParse(padded.substring(0, 3)) ?? 0;
+    }
+
+    return TimeOnly.fromComponents(hours, minutes, seconds, milliseconds);
+  }
+
   /// Gets the hours of the time.
   int get hours;
 

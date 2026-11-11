@@ -112,5 +112,14 @@ void main() {
 
       expect(actual, equals(expected));
     });
+
+    test('tryParse returns null on null, empty, or invalid input', () {
+      expect(DurationExtensions.tryParse(null), isNull);
+      expect(DurationExtensions.tryParse(''), isNull);
+      expect(DurationExtensions.tryParse('   '), isNull);
+      expect(DurationExtensions.tryParse('not-a-duration'), isNull);
+      expect(DurationExtensions.tryParse('P'), isNull);
+      expect(DurationExtensions.tryParse('12345'), isNull);
+    });
   });
 }
