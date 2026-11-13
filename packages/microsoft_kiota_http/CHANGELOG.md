@@ -1,5 +1,18 @@
 # Unreleased
 
+## [0.1.0](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_http-v0.0.8...microsoft_kiota_http-v0.1.0) (2026-11-13)
+
+
+### Features
+
+* **http:** add option to retry only unprocessed mutations ([54d1f7b](https://github.com/microsoft/kiota-dart/commit/54d1f7b2e0bfa1c059ed0281811d9e0a29e8fedd))
+* **http:** add option to retry only unprocessed mutations ([7e9987e](https://github.com/microsoft/kiota-dart/commit/7e9987ef96c4cd393c3906d14f1901c078374f9c))
+
+
+### Bug Fixes
+
+* **http:** don't resend a POST that a redirect turned into a GET ([d7979fa](https://github.com/microsoft/kiota-dart/commit/d7979fa41697b727856fed43d11b6af5ac84f31d))
+
 ## [0.0.8](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_http-v0.0.7...microsoft_kiota_http-v0.0.8) (2026-11-09)
 
 
