@@ -1,5 +1,16 @@
 # Unreleased
 
+## [0.0.8](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_serialization_form-v0.0.7...microsoft_kiota_serialization_form-v0.0.8) (2026-11-13)
+
+
+### Bug Fixes
+
+* **abstractions,text,form:** support tryParse on date/time primitives and safely handle malformed values ([6d319f2](https://github.com/microsoft/kiota-dart/commit/6d319f22ae715587b7e56c72ef4c73dd580f8209))
+* **abstractions:** safely catch out-of-range year ArgumentError in DateOnly.tryParse ([943d2e5](https://github.com/microsoft/kiota-dart/commit/943d2e50f97c25179a5abb7a2e95b0da51ecd201))
+* **serialization:** emit normalized ISO 8601 durations ([5573555](https://github.com/microsoft/kiota-dart/commit/5573555332ed0ac394d137d0440a7182b46a6f81))
+* **serialization:** emit normalized ISO 8601 durations ([90904ae](https://github.com/microsoft/kiota-dart/commit/90904ae618840cbfe46fde1d9e9ff949d8c014a7))
+* **serialization:** require updated abstractions version ([aaa0c3d](https://github.com/microsoft/kiota-dart/commit/aaa0c3dae3086a07b10a5e020321593eb44fb1c2))
+
 ## [0.0.7](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_serialization_form-v0.0.6...microsoft_kiota_serialization_form-v0.0.7) (2026-11-09)
 
 

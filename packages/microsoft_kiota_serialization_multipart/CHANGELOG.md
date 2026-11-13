@@ -1,5 +1,13 @@
 # Unreleased
 
+## [0.0.6](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_serialization_multipart-v0.0.5...microsoft_kiota_serialization_multipart-v0.0.6) (2026-11-13)
+
+
+### Bug Fixes
+
+* **serialization:** emit normalized ISO 8601 durations ([5573555](https://github.com/microsoft/kiota-dart/commit/5573555332ed0ac394d137d0440a7182b46a6f81))
+* **serialization:** emit normalized ISO 8601 durations ([90904ae](https://github.com/microsoft/kiota-dart/commit/90904ae618840cbfe46fde1d9e9ff949d8c014a7))
+
 ## [0.0.5](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_serialization_multipart-v0.0.4...microsoft_kiota_serialization_multipart-v0.0.5) (2026-11-09)
 
 
