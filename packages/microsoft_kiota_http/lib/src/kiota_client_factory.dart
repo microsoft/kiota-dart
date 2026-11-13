@@ -39,6 +39,12 @@ class KiotaClientFactory {
   /// returns 429 or 503 after acting on a request can still see it repeated.
   /// PUT and DELETE also change state, but they're idempotent, so they aren't
   /// affected, and neither are other methods.
+  ///
+  /// A POST or PATCH that the client redirected isn't retried, because the
+  /// redirect shows the server accepted it. The redirect is detected by
+  /// comparing the response's final URL with the request's, so a redirect
+  /// chain that ends back at the original URL isn't detected, and a 429 or
+  /// 503 at the end of it still allows a retry.
   static http.Client createClient({
     bool retryUnprocessedMutationsOnly = false,
   }) {
