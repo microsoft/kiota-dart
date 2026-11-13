@@ -51,16 +51,19 @@ class _TestServer {
 Future<(int, List<String>)> _send(
   String method,
   List<int> statusCodes, {
-  bool retryUnprocessedMutationsOnly = false,
+  bool? retryUnprocessedMutationsOnly,
   int? redirectStatus,
 }) async {
   final server = await _TestServer.start(
     statusCodes,
     redirectStatus: redirectStatus,
   );
-  final client = KiotaClientFactory.createClient(
-    retryUnprocessedMutationsOnly: retryUnprocessedMutationsOnly,
-  );
+  // Leave the argument out unless a test sets it, so the default is what's tested.
+  final client = retryUnprocessedMutationsOnly == null
+      ? KiotaClientFactory.createClient()
+      : KiotaClientFactory.createClient(
+          retryUnprocessedMutationsOnly: retryUnprocessedMutationsOnly,
+        );
   try {
     final request = http.Request(method, server.sendUri);
     if (method.toUpperCase() != 'GET' && method.toUpperCase() != 'DELETE') {
@@ -157,6 +160,20 @@ void main() {
         redirectStatus: 303,
       );
       expect(status, equals(504));
+      expect(requests, equals(['POST /send', 'GET /redirected']));
+    });
+
+    test('does not resend the original POST when the redirected GET gets a '
+        '503', () async {
+      // The 303 shows the server accepted the POST; the 503 only describes
+      // the redirected GET.
+      final (status, requests) = await _send(
+        'POST',
+        [503],
+        retryUnprocessedMutationsOnly: true,
+        redirectStatus: 303,
+      );
+      expect(status, equals(503));
       expect(requests, equals(['POST /send', 'GET /redirected']));
     });
   });

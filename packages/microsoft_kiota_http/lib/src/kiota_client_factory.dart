@@ -67,9 +67,18 @@ class KiotaClientFactory {
     // A retry resends the original request, even when the client followed a
     // redirect that changed the method, so the original method is the one to
     // check. When the request isn't known, it's treated as a mutation.
-    final method = response.request?.method.toUpperCase();
+    final request = response.request;
+    final method = request?.method.toUpperCase();
     if (method != null && method != 'POST' && method != 'PATCH') {
       return true;
+    }
+    // A followed redirect means the server already accepted the original
+    // request, and the status describes the redirected request, not the one a
+    // retry would resend.
+    if (request != null &&
+        response is http.BaseResponseWithUrl &&
+        response.url != request.url) {
+      return false;
     }
     return _unprocessedCodes.contains(response.statusCode);
   }
