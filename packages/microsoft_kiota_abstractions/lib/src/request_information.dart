@@ -104,6 +104,10 @@ class RequestInformation {
       return value.toIso8601String();
     }
 
+    if (value is Duration) {
+      return value.toIso8601String();
+    }
+
     // ignore: experimental_member_use
     if (value is UuidValue) {
       return value.toFormattedString();
