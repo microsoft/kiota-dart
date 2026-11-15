@@ -272,6 +272,39 @@ void main() {
       },
     );
 
+    test(
+      'Sets exploded and non-exploded query parameters with Duration Set',
+      () {
+        final explodedInfo = RequestInformation(
+          httpMethod: HttpMethod.get,
+          urlTemplate: 'http://localhost/events{?durations*}',
+        );
+        explodedInfo.queryParameters['durations'] = <Duration>{
+          const Duration(minutes: 10),
+          const Duration(minutes: 20),
+        };
+
+        expect(
+          explodedInfo.uri.toString(),
+          'http://localhost/events?durations=PT10M&durations=PT20M',
+        );
+
+        final nonExplodedInfo = RequestInformation(
+          httpMethod: HttpMethod.get,
+          urlTemplate: 'http://localhost/events{?durations}',
+        );
+        nonExplodedInfo.queryParameters['durations'] = <Duration>{
+          const Duration(minutes: 10),
+          const Duration(minutes: 20),
+        };
+
+        expect(
+          nonExplodedInfo.uri.toString(),
+          'http://localhost/events?durations=PT10M,PT20M',
+        );
+      },
+    );
+
     test('Builds URL on provided base URL', () {
       // Arrange as the request builders would
       final requestInfo = RequestInformation(
