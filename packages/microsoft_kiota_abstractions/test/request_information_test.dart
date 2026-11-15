@@ -240,6 +240,38 @@ void main() {
       },
     );
 
+    test(
+      'Sets path and query parameters with zero, negative, and fractional Duration',
+      () {
+        final requestInfo = RequestInformation(
+          httpMethod: HttpMethod.get,
+          urlTemplate:
+              'http://localhost/jobs/{zero}{?negative,fractional,days}',
+        );
+
+        requestInfo.pathParameters['zero'] = Duration.zero;
+        requestInfo.queryParameters['negative'] = -const Duration(
+          hours: 1,
+          minutes: 30,
+        );
+        requestInfo.queryParameters['fractional'] = const Duration(
+          seconds: 1,
+          milliseconds: 500,
+        );
+        requestInfo.queryParameters['days'] = const Duration(
+          days: 2,
+          hours: 3,
+          minutes: 4,
+          seconds: 5,
+        );
+
+        expect(
+          requestInfo.uri.toString(),
+          'http://localhost/jobs/PT0S?negative=-PT1H30M&fractional=PT1.5S&days=P2DT3H4M5S',
+        );
+      },
+    );
+
     test('Builds URL on provided base URL', () {
       // Arrange as the request builders would
       final requestInfo = RequestInformation(
