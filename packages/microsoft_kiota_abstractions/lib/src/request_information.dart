@@ -95,6 +95,12 @@ class RequestInformation {
     _rawUri = value;
   }
 
+  /// Sanitizes primitive and collection [value]s for URI template substitutions.
+  ///
+  /// Converts [DateTime], [Duration] (to ISO 8601), [DateOnly], [TimeOnly] (to RFC 3339),
+  /// [UuidValue], [Enum], and [bool] instances into string representations supported
+  /// by [StdUriTemplate], and recursively sanitizes [Iterable] (e.g. [List], [Set])
+  /// and [Map] collections.
   static dynamic _getSanitizedValue(dynamic value) {
     if (value is bool) {
       return value.toString().toLowerCase();
