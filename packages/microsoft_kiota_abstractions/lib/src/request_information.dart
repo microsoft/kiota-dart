@@ -125,7 +125,7 @@ class RequestInformation {
       return value.name;
     }
 
-    if (value is List) {
+    if (value is Iterable) {
       return value.map(_getSanitizedValue).toList(growable: false);
     }
 
