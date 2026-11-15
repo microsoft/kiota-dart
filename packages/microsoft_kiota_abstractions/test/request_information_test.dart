@@ -176,6 +176,24 @@ void main() {
       expect(requestInfo.uri.toString(), contains('%24count=true'));
     });
 
+    test('Sets path and query parameters of Duration type', () {
+      final requestInfo = RequestInformation(
+        httpMethod: HttpMethod.get,
+        urlTemplate: 'http://localhost/{duration}{?timeout}',
+      );
+
+      const pathDuration = Duration(hours: 1, minutes: 30);
+      const queryDuration = Duration(seconds: 45);
+
+      requestInfo.pathParameters['duration'] = pathDuration;
+      requestInfo.queryParameters['timeout'] = queryDuration;
+
+      expect(
+        requestInfo.uri.toString(),
+        'http://localhost/PT1H30M?timeout=PT45S',
+      );
+    });
+
     test('Builds URL on provided base URL', () {
       // Arrange as the request builders would
       final requestInfo = RequestInformation(
