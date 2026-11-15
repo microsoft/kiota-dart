@@ -218,6 +218,28 @@ void main() {
       );
     });
 
+    test(
+      'Sets query parameters with nested Map containing Duration and DateOnly',
+      () {
+        final requestInfo = RequestInformation(
+          httpMethod: HttpMethod.get,
+          urlTemplate: 'http://localhost/search{?filter*}',
+        );
+
+        final map = <String, dynamic>{
+          'delay': const Duration(seconds: 15),
+          'date': DateOnly.fromComponents(2024, 1, 1),
+        };
+
+        requestInfo.queryParameters['filter'] = map;
+
+        expect(
+          requestInfo.uri.toString(),
+          'http://localhost/search?delay=PT15S&date=2024-01-01',
+        );
+      },
+    );
+
     test('Builds URL on provided base URL', () {
       // Arrange as the request builders would
       final requestInfo = RequestInformation(
