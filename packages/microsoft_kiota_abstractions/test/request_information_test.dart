@@ -194,6 +194,30 @@ void main() {
       );
     });
 
+    test('Sets query parameters of non-List Iterable type such as Set', () {
+      final requestInfo = RequestInformation(
+        httpMethod: HttpMethod.get,
+        urlTemplate: 'http://localhost/events{?dates,durations}',
+      );
+
+      final dateSet = <DateTime>{
+        DateTime.utc(2024, 1, 1),
+        DateTime.utc(2024, 1, 2),
+      };
+      final durationSet = <Duration>{
+        const Duration(minutes: 15),
+        const Duration(minutes: 30),
+      };
+
+      requestInfo.queryParameters['dates'] = dateSet;
+      requestInfo.queryParameters['durations'] = durationSet;
+
+      expect(
+        requestInfo.uri.toString(),
+        'http://localhost/events?dates=2024-01-01T00%3A00%3A00.000Z,2024-01-02T00%3A00%3A00.000Z&durations=PT15M,PT30M',
+      );
+    });
+
     test('Builds URL on provided base URL', () {
       // Arrange as the request builders would
       final requestInfo = RequestInformation(
