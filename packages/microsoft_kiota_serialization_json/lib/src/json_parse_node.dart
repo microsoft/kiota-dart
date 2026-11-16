@@ -21,7 +21,20 @@ class JsonParseNode implements ParseNode {
 
   @override
   Uint8List? getByteArrayValue() {
-    return _node == null ? null : base64Decode(_node.toString());
+    if (_node == null) {
+      return null;
+    }
+
+    final value = _node.toString();
+    if (value.isEmpty) {
+      return null;
+    }
+
+    try {
+      return base64Decode(value);
+    } on FormatException {
+      return null;
+    }
   }
 
   @override
@@ -90,7 +103,15 @@ class JsonParseNode implements ParseNode {
       } else if (_isA<T, int>()) {
         return _castPrimitive<T>(items, 'int');
       } else if (_isA<T, double>()) {
-        return _castPrimitive<T>(items, 'double');
+        if (!items.every((i) => i is num)) {
+          throw JsonParseException(
+            message:
+                'Not every element in the collection of primitives is a double',
+            node: this,
+          );
+        }
+
+        return items.map((i) => (i as num).toDouble()).cast<T>().toList();
       } else if (_isA<T, String>()) {
         return _castPrimitive<T>(items, 'String');
       } else if (_isA<T, DateTime>()) {
@@ -100,17 +121,29 @@ class JsonParseNode implements ParseNode {
           'DateTime',
         );
       } else if (_isSubtype<T, DateOnly?>()) {
-        return _convertPrimitive(
-          items,
-          (i) => _parseDateOnlyValue(i) as T,
-          'DateOnly',
-        );
+        return _convertPrimitive(items, (i) {
+          final date = _parseDateOnlyValue(i);
+          if (date == null) {
+            throw JsonParseException(
+              message: 'Failed to parse DateOnly: $i',
+              node: this,
+            );
+          }
+
+          return date as T;
+        }, 'DateOnly');
       } else if (_isSubtype<T, TimeOnly?>()) {
-        return _convertPrimitive(
-          items,
-          (i) => _parseTimeOnlyValue(i) as T,
-          'TimeOnly',
-        );
+        return _convertPrimitive(items, (i) {
+          final time = _parseTimeOnlyValue(i);
+          if (time == null) {
+            throw JsonParseException(
+              message: 'Failed to parse TimeOnly: $i',
+              node: this,
+            );
+          }
+
+          return time as T;
+        }, 'TimeOnly');
       } else if (_isA<T, Duration>()) {
         return _convertPrimitive(items, (i) {
           final dur = _parseDurationValue(i);
@@ -125,12 +158,17 @@ class JsonParseNode implements ParseNode {
         }, 'Duration');
         // ignore: experimental_member_use
       } else if (_isA<T, UuidValue>()) {
-        return _convertPrimitive(
-          items,
-          // ignore: experimental_member_use
-          (i) => _parseGuidValue(i) as T,
-          'UuidValue',
-        );
+        return _convertPrimitive(items, (i) {
+          final guid = _parseGuidValue(i);
+          if (guid == null) {
+            throw JsonParseException(
+              message: 'Failed to parse UuidValue: $i',
+              node: this,
+            );
+          }
+
+          return guid as T;
+        }, 'UuidValue');
       } else {
         throw JsonParseException(
           message: 'The type $T is not supported for primitive deserialization',
@@ -171,7 +209,7 @@ class JsonParseNode implements ParseNode {
   }
 
   static DateOnly? _parseDateOnlyValue(String value) =>
-      DateOnly.fromDateTimeString(value);
+      DateOnly.tryParse(value);
 
   static DateTime? _parseDateTimeValue(String value) =>
       DateTime.tryParse(value);
@@ -180,13 +218,21 @@ class JsonParseNode implements ParseNode {
       DurationExtensions.tryParse(value);
 
   // ignore: experimental_member_use
-  static UuidValue _parseGuidValue(String value) {
-    // ignore: experimental_member_use
-    return UuidValue.withValidation(value);
+  static UuidValue? _parseGuidValue(String value) {
+    if (value.isEmpty) {
+      return null;
+    }
+
+    try {
+      // ignore: experimental_member_use
+      return UuidValue.withValidation(value);
+    } on FormatException {
+      return null;
+    }
   }
 
   static TimeOnly? _parseTimeOnlyValue(String value) =>
-      TimeOnly.fromDateTimeString(value);
+      TimeOnly.tryParse(value);
 
   static T? _parseEnumValue<T extends Enum>(
     String value,
