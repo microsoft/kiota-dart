@@ -730,14 +730,34 @@ void main() {
     );
 
     test(
-      'Get collection of num values accepts mixed numeric types and preserves nulls for nullable num',
+      'Get collection of primitive values rejects num as code generation only passes int or double',
       () {
         final jsonParseNode = JsonParseNode(jsonDecode('[1, null, 2.5]'));
-        final nums = jsonParseNode
-            .getCollectionOfPrimitiveValues<num?>()
-            .toList();
 
-        expect(nums, equals([1, null, 2.5]));
+        expect(
+          () => jsonParseNode.getCollectionOfPrimitiveValues<num>(),
+          throwsA(
+            isA<JsonParseException>().having(
+              (e) => e.message,
+              'message',
+              equals(
+                'The type num is not supported for primitive deserialization',
+              ),
+            ),
+          ),
+        );
+        expect(
+          () => jsonParseNode.getCollectionOfPrimitiveValues<num?>(),
+          throwsA(
+            isA<JsonParseException>().having(
+              (e) => e.message,
+              'message',
+              equals(
+                'The type num? is not supported for primitive deserialization',
+              ),
+            ),
+          ),
+        );
       },
     );
 

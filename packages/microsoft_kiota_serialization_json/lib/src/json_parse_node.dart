@@ -93,8 +93,6 @@ class JsonParseNode implements ParseNode {
         return _castPrimitive<T>(items, 'int');
       } else if (_isA<T, double>()) {
         return _castPrimitive<T>(items, 'double');
-      } else if (_isSubtype<T, num?>()) {
-        return _castPrimitive<T>(items, 'num');
       } else if (_isA<T, String>()) {
         return _castPrimitive<T>(items, 'String');
       } else if (_isA<T, DateTime>()) {
