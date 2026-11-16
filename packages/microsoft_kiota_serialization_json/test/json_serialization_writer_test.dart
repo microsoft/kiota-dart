@@ -143,6 +143,45 @@ void main() {
       );
     });
 
+    test('writeCollectionOfPrimitiveValues with DateOnly', () {
+      final writer = JsonSerializationWriter()
+        ..writeCollectionOfPrimitiveValues('dates', [
+          DateOnly.fromComponents(2024, 6, 15),
+          DateOnly.fromComponents(2024, 12, 31),
+        ]);
+
+      expect(
+        utf8.decode(writer.getSerializedContent()),
+        equals('{"dates":["2024-06-15","2024-12-31"]}'),
+      );
+    });
+
+    test('writeCollectionOfPrimitiveValues with TimeOnly', () {
+      final writer = JsonSerializationWriter()
+        ..writeCollectionOfPrimitiveValues('times', [
+          TimeOnly.fromComponents(9, 30),
+          TimeOnly.fromComponents(18, 0, 45),
+        ]);
+
+      expect(
+        utf8.decode(writer.getSerializedContent()),
+        equals('{"times":["09:30:00","18:00:45"]}'),
+      );
+    });
+
+    test('writeCollectionOfPrimitiveValues with Duration', () {
+      final writer = JsonSerializationWriter()
+        ..writeCollectionOfPrimitiveValues('durations', [
+          const Duration(hours: 1, minutes: 30),
+          const Duration(seconds: 45),
+        ]);
+
+      expect(
+        utf8.decode(writer.getSerializedContent()),
+        equals('{"durations":["PT1H30M","PT45S"]}'),
+      );
+    });
+
     test('writeObject', () {
       const untypedNodesList = [UntypedString('abc'), UntypedDouble(8.8)];
       final simpleUser = MicrosoftGraphUser()
