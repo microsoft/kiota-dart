@@ -102,7 +102,7 @@ class FormParseNode implements ParseNode {
 
   // ignore: experimental_member_use
   static UuidValue? _parseGuidValue(String value) {
-    if (value.isEmpty) {
+    if (value.isEmpty || value == 'null') {
       return null;
     }
     try {
@@ -132,7 +132,7 @@ class FormParseNode implements ParseNode {
     String value,
     EnumFactory<T> parser,
   ) {
-    if (value.isEmpty) {
+    if (value.isEmpty || value == 'null') {
       return null;
     }
     return parser(value);
@@ -300,10 +300,6 @@ class FormParseNode implements ParseNode {
       final value = field.value;
 
       if (deserializers.containsKey(key)) {
-        if (value == 'null') {
-          continue;
-        }
-
         final deserializer = deserializers[key]!;
 
         final node = FormParseNode(value, isDecoded: true)

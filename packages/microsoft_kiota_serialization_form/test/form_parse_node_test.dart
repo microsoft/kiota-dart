@@ -386,6 +386,78 @@ void main() {
       expect(value, isNotNull);
     });
 
+    test(
+      'getObjectValue preserves null-valued singleton collections and scalar nulls',
+      () {
+        final node = FormParseNode(
+          'files=null&numbers=null&title=null&count=null&active=null&method=null',
+        );
+
+        final parsable = MockParsable();
+        List<Uint8List>? parsedFiles;
+        List<Uint8List?>? parsedNullableFiles;
+        List<int?>? parsedNumbers;
+        List<int>? parsedNonNullableNumbers;
+        String? parsedTitle = 'initial';
+        int? parsedCount = 42;
+        bool? parsedActive = true;
+        HttpMethod? parsedMethod = HttpMethod.post;
+
+        when(parsable.getFieldDeserializers()).thenReturn({
+          'files': (node) {
+            parsedFiles = node
+                .getCollectionOfPrimitiveValues<Uint8List>()
+                .toList();
+            parsedNullableFiles = node
+                .getCollectionOfPrimitiveValues<Uint8List?>()
+                .toList();
+          },
+          'numbers': (node) {
+            parsedNumbers = node
+                .getCollectionOfPrimitiveValues<int?>()
+                .toList();
+            parsedNonNullableNumbers = node
+                .getCollectionOfPrimitiveValues<int>()
+                .toList();
+          },
+          'title': (node) {
+            parsedTitle = node.getStringValue();
+          },
+          'count': (node) {
+            parsedCount = node.getIntValue();
+          },
+          'active': (node) {
+            parsedActive = node.getBoolValue();
+          },
+          'method': (node) {
+            parsedMethod = node.getEnumValue(_httpMethodEnumFactory);
+          },
+        });
+
+        final value = node.getObjectValue<MockParsable>((_) => parsable);
+
+        expect(value, isNotNull);
+        expect(
+          parsedFiles,
+          equals([
+            Uint8List.fromList([158, 233, 101]),
+          ]),
+        );
+        expect(
+          parsedNullableFiles,
+          equals([
+            Uint8List.fromList([158, 233, 101]),
+          ]),
+        );
+        expect(parsedNumbers, equals([null]));
+        expect(parsedNonNullableNumbers, equals(<int>[]));
+        expect(parsedTitle, isNull);
+        expect(parsedCount, isNull);
+        expect(parsedActive, isNull);
+        expect(parsedMethod, isNull);
+      },
+    );
+
     test('FormParseNode parses fields', () {
       final node = FormParseNode(
         'filename=file.txt&size=123&type=null&temp=true',
