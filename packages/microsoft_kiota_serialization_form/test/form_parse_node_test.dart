@@ -225,6 +225,99 @@ void main() {
       );
     });
 
+    test('getCollectionOfPrimitiveValues<Uint8List>', () {
+      final node = FormParseNode('dGVzdA==,');
+
+      expect(
+        node.getCollectionOfPrimitiveValues<Uint8List>(),
+        equals([
+          Uint8List.fromList([116, 101, 115, 116]),
+          Uint8List(0),
+        ]),
+      );
+    });
+
+    test('getCollectionOfPrimitiveValues with nullable primitive types', () {
+      final intNode = FormParseNode('1,null,2');
+      expect(
+        intNode.getCollectionOfPrimitiveValues<int?>(),
+        equals([1, null, 2]),
+      );
+
+      final doubleNode = FormParseNode('1.5,null,2.5');
+      expect(
+        doubleNode.getCollectionOfPrimitiveValues<double?>(),
+        equals([1.5, null, 2.5]),
+      );
+
+      final stringNode = FormParseNode('foo,null,bar');
+      expect(
+        stringNode.getCollectionOfPrimitiveValues<String?>(),
+        equals(['foo', null, 'bar']),
+      );
+
+      final boolNode = FormParseNode('true,null,false');
+      expect(
+        boolNode.getCollectionOfPrimitiveValues<bool?>(),
+        equals([true, null, false]),
+      );
+
+      final dateNode = FormParseNode('2021-01-01,null,2022-02-02');
+      expect(
+        dateNode.getCollectionOfPrimitiveValues<DateOnly?>(),
+        equals([
+          DateOnly.fromComponents(2021),
+          null,
+          DateOnly.fromComponents(2022, 2, 2),
+        ]),
+      );
+
+      final timeNode = FormParseNode('12:00:00,null,13:30:00');
+      expect(
+        timeNode.getCollectionOfPrimitiveValues<TimeOnly?>(),
+        equals([
+          TimeOnly.fromComponents(12, 0),
+          null,
+          TimeOnly.fromComponents(13, 30),
+        ]),
+      );
+
+      final durationNode = FormParseNode('PT1H,null,PT2H');
+      expect(
+        durationNode.getCollectionOfPrimitiveValues<Duration?>(),
+        equals([
+          const Duration(hours: 1),
+          null,
+          const Duration(hours: 2),
+        ]),
+      );
+
+      final uuidNode = FormParseNode(
+        '1f8a1626-369d-41df-bcc4-af5c5adbbd0a,null',
+      );
+      expect(
+        // ignore: experimental_member_use
+        uuidNode.getCollectionOfPrimitiveValues<UuidValue?>(),
+        equals([
+          // ignore: experimental_member_use
+          UuidValue.fromString('1f8a1626-369d-41df-bcc4-af5c5adbbd0a'),
+          null,
+        ]),
+      );
+
+      final dateTimeNode = FormParseNode(
+        '2021-01-01T00:00:00Z,null,2022-02-02T00:00:00Z',
+      );
+      expect(
+        dateTimeNode.getCollectionOfPrimitiveValues<DateTime?>(),
+        equals([
+          DateTime.utc(2021),
+          null,
+          DateTime.utc(2022, 2, 2),
+        ]),
+      );
+    });
+
     test('getCollectionOfEnumValues', () {
       final node = FormParseNode('get,post');
 
@@ -342,6 +435,10 @@ void main() {
     test('getByteArrayValue safely returns null on invalid base64', () {
       final invalidNode = FormParseNode('invalid-base64!');
       expect(invalidNode.getByteArrayValue(), isNull);
+    });
+
+    test('getByteArrayValue decodes empty string to empty byte array', () {
+      expect(FormParseNode('').getByteArrayValue(), equals(Uint8List(0)));
     });
 
     test('getGuidValue safely returns null on empty or invalid guid', () {
