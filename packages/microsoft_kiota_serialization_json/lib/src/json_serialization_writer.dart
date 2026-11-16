@@ -109,6 +109,16 @@ class JsonSerializationWriter implements SerializationWriter {
     if (value is Duration) {
       return value.toIso8601String();
     }
+    if (value is DateTime) {
+      return value.toIso8601String();
+    }
+    // ignore: experimental_member_use
+    if (value is UuidValue) {
+      return value.uuid;
+    }
+    if (value is Uint8List) {
+      return base64Encode(value);
+    }
     return value;
   }
 
