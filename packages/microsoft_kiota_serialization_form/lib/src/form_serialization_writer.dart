@@ -27,6 +27,7 @@ class FormSerializationWriter implements SerializationWriter {
     }
   }
 
+  /// Serializes a primitive [value] of unknown runtime type to form URL encoded format.
   void _writeAnyValue(String? key, Object? value) {
     switch (value) {
       case null:
@@ -50,6 +51,8 @@ class FormSerializationWriter implements SerializationWriter {
       // ignore: experimental_member_use
       case final UuidValue u:
         writeUuidValue(key, u);
+      case final Uint8List u:
+        writeByteArrayValue(key, u);
       default:
         writeStringValue(key, value.toString());
     }

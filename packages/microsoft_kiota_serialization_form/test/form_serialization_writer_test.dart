@@ -95,5 +95,115 @@ void main() {
       expect(result, contains('key='));
       expect(result, contains('count=0'));
     });
+
+    test('writes additional data with byte array and empty byte array', () {
+      final writer = FormSerializationWriter()
+        ..writeAdditionalData({
+          'avatar': Uint8List.fromList([116, 101, 115, 116]),
+          'empty': Uint8List(0),
+        });
+
+      final result = utf8.decode(writer.getSerializedContent());
+      expect(result, equals('avatar=dGVzdA%3D%3D&empty='));
+    });
+
+    test('writes collection of byte array primitive values', () {
+      final writer = FormSerializationWriter()
+        ..writeCollectionOfPrimitiveValues('files', [
+          Uint8List.fromList([116, 101, 115, 116]),
+          Uint8List(0),
+        ]);
+
+      final result = utf8.decode(writer.getSerializedContent());
+      expect(result, equals('files=dGVzdA%3D%3D&files='));
+    });
+
+    group('round-trips with FormParseNode', () {
+      test('round-trips byte array and empty byte array', () {
+        final bytes = Uint8List.fromList([1, 2, 3, 4, 5]);
+        final emptyBytes = Uint8List(0);
+        final writer = FormSerializationWriter()
+          ..writeByteArrayValue('data', bytes)
+          ..writeByteArrayValue('empty', emptyBytes);
+
+        final serialized = utf8.decode(writer.getSerializedContent());
+        final root = FormParseNode(serialized);
+
+        expect(root.getChildNode('data')?.getByteArrayValue(), equals(bytes));
+        expect(
+          root.getChildNode('empty')?.getByteArrayValue(),
+          equals(emptyBytes),
+        );
+      });
+
+      test('round-trips additional data containing byte arrays', () {
+        final avatar = Uint8List.fromList([116, 101, 115, 116]);
+        final empty = Uint8List(0);
+        final writer = FormSerializationWriter()
+          ..writeAdditionalData({'avatar': avatar, 'empty': empty});
+
+        final serialized = utf8.decode(writer.getSerializedContent());
+        final root = FormParseNode(serialized);
+
+        expect(
+          root.getChildNode('avatar')?.getByteArrayValue(),
+          equals(avatar),
+        );
+        expect(root.getChildNode('empty')?.getByteArrayValue(), equals(empty));
+      });
+
+      test(
+        'round-trips collection of byte arrays including plus and null payloads',
+        () {
+          final b1 = Uint8List.fromList([116, 101, 115, 116]);
+          final b2 = Uint8List(0);
+          final bPlus = Uint8List.fromList([251]); // Base64 '+w=='
+          final bNull = Uint8List.fromList([158, 233, 101]); // Base64 'null'
+          final writer = FormSerializationWriter()
+            ..writeCollectionOfPrimitiveValues('files', [b1, b2, bPlus, bNull]);
+
+          final serialized = utf8.decode(writer.getSerializedContent());
+          final root = FormParseNode(serialized);
+
+          expect(
+            root
+                .getChildNode('files')
+                ?.getCollectionOfPrimitiveValues<Uint8List>(),
+            equals([b1, b2, bPlus, bNull]),
+          );
+          expect(
+            root
+                .getChildNode('files')
+                ?.getCollectionOfPrimitiveValues<Uint8List?>(),
+            equals([b1, b2, bPlus, bNull]),
+          );
+        },
+      );
+
+      test('round-trips primitive collections of different types', () {
+        final writer = FormSerializationWriter()
+          ..writeCollectionOfPrimitiveValues('numbers', [1, 2, 3])
+          ..writeCollectionOfPrimitiveValues('flags', [true, false])
+          ..writeCollectionOfPrimitiveValues('strings', ['hello', 'world']);
+
+        final serialized = utf8.decode(writer.getSerializedContent());
+        final root = FormParseNode(serialized);
+
+        expect(
+          root.getChildNode('numbers')?.getCollectionOfPrimitiveValues<int>(),
+          equals([1, 2, 3]),
+        );
+        expect(
+          root.getChildNode('flags')?.getCollectionOfPrimitiveValues<bool>(),
+          equals([true, false]),
+        );
+        expect(
+          root
+              .getChildNode('strings')
+              ?.getCollectionOfPrimitiveValues<String>(),
+          equals(['hello', 'world']),
+        );
+      });
+    });
   });
 }

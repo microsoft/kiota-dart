@@ -1,10 +1,19 @@
 part of '../microsoft_kiota_serialization_form.dart';
 
+/// A helper to get a [Type] from a nullable generic parameter.
+typedef _TypeOf<T> = T;
+
 /// Represents a [ParseNode] that can be used to parse a form url encoded string.
 class FormParseNode implements ParseNode {
   FormParseNode(String value)
     : _rawValue = value,
+      _isDecoded = false,
       _fields = _parseFields(value);
+
+  FormParseNode._fromDecodedValue(String value)
+    : _rawValue = value,
+      _isDecoded = true,
+      _fields = const {};
 
   static Map<String, String> _parseFields(String value) {
     final fields = value.split('&');
@@ -46,9 +55,11 @@ class FormParseNode implements ParseNode {
   }
 
   final String _rawValue;
+  final bool _isDecoded;
   final Map<String, String> _fields;
 
-  String get _decodedValue => Uri.decodeQueryComponent(_rawValue);
+  String get _decodedValue =>
+      _isDecoded ? _rawValue : Uri.decodeQueryComponent(_rawValue);
 
   @override
   ParsableHook? onAfterAssignFieldValues;
@@ -63,9 +74,13 @@ class FormParseNode implements ParseNode {
     return bool.tryParse(value);
   }
 
+  /// Parses a Base64-encoded [Uint8List] value.
+  ///
+  /// Returns an empty [Uint8List] when the string value is empty,
+  /// or `null` if the string cannot be decoded.
   static Uint8List? _parseByteArrayValue(String value) {
     if (value.isEmpty) {
-      return null;
+      return Uint8List(0);
     }
     try {
       return base64Decode(value);
@@ -92,7 +107,7 @@ class FormParseNode implements ParseNode {
 
   // ignore: experimental_member_use
   static UuidValue? _parseGuidValue(String value) {
-    if (value.isEmpty) {
+    if (value.isEmpty || value == 'null') {
       return null;
     }
     try {
@@ -122,7 +137,7 @@ class FormParseNode implements ParseNode {
     String value,
     EnumFactory<T> parser,
   ) {
-    if (value.isEmpty) {
+    if (value.isEmpty || value == 'null') {
       return null;
     }
     return parser(value);
@@ -142,7 +157,7 @@ class FormParseNode implements ParseNode {
       return null;
     }
 
-    return FormParseNode(_fields[sanitizedIdentifier]!)
+    return FormParseNode._fromDecodedValue(_fields[sanitizedIdentifier]!)
       ..onAfterAssignFieldValues = onAfterAssignFieldValues
       ..onBeforeAssignFieldValues = onBeforeAssignFieldValues;
   }
@@ -172,41 +187,68 @@ class FormParseNode implements ParseNode {
     );
   }
 
+  /// Checks if [T] is exactly [U] or [U?].
+  @pragma('vm:prefer-inline')
+  static bool _isA<T, U>() => T == U || T == _TypeOf<U?>;
+
+  /// Checks if [T] is a subtype of [U].
+  @pragma('vm:prefer-inline')
+  static bool _isSubtype<T, U>() => <T>[] is List<U>;
+
+  /// Returns an [Iterable] of primitive values of type [T].
+  ///
+  /// Supports both non-nullable and nullable primitive types, as well as
+  /// Base64-encoded [Uint8List] values.
   @override
   Iterable<T> getCollectionOfPrimitiveValues<T>() sync* {
-    final collection = _decodedValue
-        .split(',')
-        .where((entry) => entry.isNotEmpty);
+    final isByteArray = _isA<T, Uint8List>() || _isSubtype<T, Uint8List?>();
+    final entries = _decodedValue.split(',');
+    final collection = isByteArray
+        ? entries
+        : entries.where((entry) => entry.isNotEmpty);
 
+    final allowsNull = null is T;
     final T? Function(String entry) converter;
-    switch (T) {
-      case const (bool):
-        converter = (v) => _parseBoolValue(v) as T?;
-      case const (int):
-        converter = (v) => _parseIntValue(v) as T?;
-      case const (double):
-        converter = (v) => _parseDoubleValue(v) as T?;
-      case const (String):
-        converter = (v) => _parseStringValue(v) as T?;
-      case const (DateTime):
-        converter = (v) => _parseDateTimeValue(v) as T?;
-      case const (DateOnly):
-        converter = (v) => _parseDateOnlyValue(v) as T?;
-      case const (TimeOnly):
-        converter = (v) => _parseTimeOnlyValue(v) as T?;
-      case const (Duration):
-        converter = (v) => _parseDurationValue(v) as T?;
+
+    if (_isA<T, bool>()) {
+      converter = (v) => _parseBoolValue(v) as T?;
+    } else if (_isA<T, int>()) {
+      converter = (v) => _parseIntValue(v) as T?;
+    } else if (_isA<T, double>()) {
+      converter = (v) => _parseDoubleValue(v) as T?;
+    } else if (_isA<T, String>()) {
+      converter = (v) => _parseStringValue(v) as T?;
+    } else if (_isA<T, DateTime>()) {
+      converter = (v) => _parseDateTimeValue(v) as T?;
+    } else if (_isA<T, DateOnly>()) {
+      converter = (v) => _parseDateOnlyValue(v) as T?;
+    } else if (_isA<T, TimeOnly>()) {
+      converter = (v) => _parseTimeOnlyValue(v) as T?;
+    } else if (_isA<T, Duration>()) {
+      converter = (v) => _parseDurationValue(v) as T?;
       // ignore: experimental_member_use
-      case const (UuidValue):
-        converter = (v) => _parseGuidValue(v) as T?;
-      default:
-        throw UnsupportedError('Unsupported primitive type $T');
+    } else if (_isA<T, UuidValue>()) {
+      // ignore: experimental_member_use
+      converter = (v) => _parseGuidValue(v) as T?;
+    } else if (isByteArray) {
+      converter = (v) => _parseByteArrayValue(v) as T?;
+    } else {
+      throw UnsupportedError('Unsupported primitive type $T');
     }
 
     for (final entry in collection) {
+      if (!isByteArray && entry == 'null') {
+        if (allowsNull) {
+          yield null as T;
+        }
+        continue;
+      }
+
       final value = converter(entry);
       if (value != null) {
         yield value;
+      } else if (allowsNull) {
+        yield null as T;
       }
     }
   }
@@ -263,13 +305,9 @@ class FormParseNode implements ParseNode {
       final value = field.value;
 
       if (deserializers.containsKey(key)) {
-        if (value == 'null') {
-          continue;
-        }
-
         final deserializer = deserializers[key]!;
 
-        final node = FormParseNode(value)
+        final node = FormParseNode._fromDecodedValue(value)
           ..onBeforeAssignFieldValues = onBeforeAssignFieldValues
           ..onAfterAssignFieldValues = onAfterAssignFieldValues;
 
