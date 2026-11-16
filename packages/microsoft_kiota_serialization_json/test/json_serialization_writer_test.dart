@@ -182,6 +182,52 @@ void main() {
       );
     });
 
+    test('writeCollectionOfPrimitiveValues with UuidValue', () {
+      // ignore: experimental_member_use
+      final uuid1 = UuidValue.fromString(
+        '019329eb-0ac5-7cc0-9dea-6440b3648264',
+      );
+      // ignore: experimental_member_use
+      final uuid2 = UuidValue.fromString(
+        'a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d',
+      );
+      final writer = JsonSerializationWriter()
+        ..writeCollectionOfPrimitiveValues('uuids', [uuid1, uuid2]);
+
+      expect(
+        utf8.decode(writer.getSerializedContent()),
+        equals(
+          '{"uuids":["019329eb-0ac5-7cc0-9dea-6440b3648264","a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d"]}',
+        ),
+      );
+    });
+
+    test('writeCollectionOfPrimitiveValues with Uint8List', () {
+      final bytes1 = Uint8List.fromList([1, 2, 3]);
+      final bytes2 = Uint8List.fromList([72, 101, 108, 108, 111]);
+      final writer = JsonSerializationWriter()
+        ..writeCollectionOfPrimitiveValues('bytes', [bytes1, bytes2]);
+
+      expect(
+        utf8.decode(writer.getSerializedContent()),
+        equals('{"bytes":["AQID","SGVsbG8="]}'),
+      );
+    });
+
+    test('writeCollectionOfPrimitiveValues with DateTime', () {
+      final dt1 = DateTime.utc(2024, 1, 15, 8, 30);
+      final dt2 = DateTime.utc(2024, 12, 31, 23, 59, 59);
+      final writer = JsonSerializationWriter()
+        ..writeCollectionOfPrimitiveValues('dates', [dt1, dt2]);
+
+      expect(
+        utf8.decode(writer.getSerializedContent()),
+        equals(
+          '{"dates":["2024-01-15T08:30:00.000Z","2024-12-31T23:59:59.000Z"]}',
+        ),
+      );
+    });
+
     test('writeObject', () {
       const untypedNodesList = [UntypedString('abc'), UntypedDouble(8.8)];
       final simpleUser = MicrosoftGraphUser()
