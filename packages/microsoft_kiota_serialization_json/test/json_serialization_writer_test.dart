@@ -306,6 +306,8 @@ void main() {
           'time': TimeOnly.fromComponents(12, 00),
           'date': DateOnly.fromComponents(2000),
           'datetime': DateTime(2024, 12, 31, 23, 59),
+          'duration': const Duration(hours: 3, minutes: 15),
+          'bytes': Uint8List.fromList([10, 20, 30]),
           // ignore: experimental_member_use
           'uuid': UuidValue.fromString('019329eb-0ac5-7cc0-9dea-6440b3648264'),
           'user': user2,
@@ -316,7 +318,7 @@ void main() {
       expect(
         utf8.decode(writer.getSerializedContent()),
         equals(
-          '{"workDuration":"PT2H","a":"#1 coworker","string":"a string","double":0.0,"bool":false,"time":"12:00:00","date":"2000-01-01","datetime":"2024-12-31T23:59:00.000","uuid":"019329eb-0ac5-7cc0-9dea-6440b3648264","user":{"workDuration":"PT12H","active":true}}',
+          '{"workDuration":"PT2H","a":"#1 coworker","string":"a string","double":0.0,"bool":false,"time":"12:00:00","date":"2000-01-01","datetime":"2024-12-31T23:59:00.000","duration":"PT3H15M","bytes":"ChQe","uuid":"019329eb-0ac5-7cc0-9dea-6440b3648264","user":{"workDuration":"PT12H","active":true}}',
         ),
       );
     });
