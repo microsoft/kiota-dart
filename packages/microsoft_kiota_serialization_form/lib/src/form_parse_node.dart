@@ -1,5 +1,8 @@
 part of '../microsoft_kiota_serialization_form.dart';
 
+/// A helper to get a [Type] from a nullable generic parameter.
+typedef _TypeOf<T> = T;
+
 /// Represents a [ParseNode] that can be used to parse a form url encoded string.
 class FormParseNode implements ParseNode {
   FormParseNode(String value)
@@ -172,38 +175,58 @@ class FormParseNode implements ParseNode {
     );
   }
 
+  /// Checks if [T] is exactly [U] or [U?].
+  @pragma('vm:prefer-inline')
+  static bool _isA<T, U>() => T == U || T == _TypeOf<U?>;
+
+  /// Checks if [T] is a subtype of [U].
+  @pragma('vm:prefer-inline')
+  static bool _isSubtype<T, U>() => <T>[] is List<U>;
+
   @override
   Iterable<T> getCollectionOfPrimitiveValues<T>() sync* {
-    final collection = _decodedValue
-        .split(',')
-        .where((entry) => entry.isNotEmpty);
+    final entries = _decodedValue.split(',');
+    final collection = _isA<T, Uint8List>()
+        ? entries
+        : entries.where((entry) => entry.isNotEmpty);
 
+    final allowsNull = null is T;
     final T? Function(String entry) converter;
-    switch (T) {
-      case const (bool):
-        converter = (v) => _parseBoolValue(v) as T?;
-      case const (int):
-        converter = (v) => _parseIntValue(v) as T?;
-      case const (double):
-        converter = (v) => _parseDoubleValue(v) as T?;
-      case const (String):
-        converter = (v) => _parseStringValue(v) as T?;
-      case const (DateTime):
-        converter = (v) => _parseDateTimeValue(v) as T?;
-      case const (DateOnly):
-        converter = (v) => _parseDateOnlyValue(v) as T?;
-      case const (TimeOnly):
-        converter = (v) => _parseTimeOnlyValue(v) as T?;
-      case const (Duration):
-        converter = (v) => _parseDurationValue(v) as T?;
+
+    if (_isA<T, bool>()) {
+      converter = (v) => _parseBoolValue(v) as T?;
+    } else if (_isA<T, int>()) {
+      converter = (v) => _parseIntValue(v) as T?;
+    } else if (_isA<T, double>()) {
+      converter = (v) => _parseDoubleValue(v) as T?;
+    } else if (_isA<T, String>()) {
+      converter = (v) => _parseStringValue(v) as T?;
+    } else if (_isA<T, DateTime>()) {
+      converter = (v) => _parseDateTimeValue(v) as T?;
+    } else if (_isA<T, DateOnly>()) {
+      converter = (v) => _parseDateOnlyValue(v) as T?;
+    } else if (_isA<T, TimeOnly>()) {
+      converter = (v) => _parseTimeOnlyValue(v) as T?;
+    } else if (_isA<T, Duration>()) {
+      converter = (v) => _parseDurationValue(v) as T?;
       // ignore: experimental_member_use
-      case const (UuidValue):
-        converter = (v) => _parseGuidValue(v) as T?;
-      default:
-        throw UnsupportedError('Unsupported primitive type $T');
+    } else if (_isA<T, UuidValue>()) {
+      // ignore: experimental_member_use
+      converter = (v) => _parseGuidValue(v) as T?;
+    } else if (_isA<T, Uint8List>() || _isSubtype<T, Uint8List?>()) {
+      converter = (v) => _parseByteArrayValue(v) as T?;
+    } else {
+      throw UnsupportedError('Unsupported primitive type $T');
     }
 
     for (final entry in collection) {
+      if (entry == 'null') {
+        if (allowsNull) {
+          yield null as T;
+        }
+        continue;
+      }
+
       final value = converter(entry);
       if (value != null) {
         yield value;

@@ -285,11 +285,7 @@ void main() {
       final durationNode = FormParseNode('PT1H,null,PT2H');
       expect(
         durationNode.getCollectionOfPrimitiveValues<Duration?>(),
-        equals([
-          const Duration(hours: 1),
-          null,
-          const Duration(hours: 2),
-        ]),
+        equals([const Duration(hours: 1), null, const Duration(hours: 2)]),
       );
 
       final uuidNode = FormParseNode(
@@ -310,11 +306,7 @@ void main() {
       );
       expect(
         dateTimeNode.getCollectionOfPrimitiveValues<DateTime?>(),
-        equals([
-          DateTime.utc(2021),
-          null,
-          DateTime.utc(2022, 2, 2),
-        ]),
+        equals([DateTime.utc(2021), null, DateTime.utc(2022, 2, 2)]),
       );
     });
 
