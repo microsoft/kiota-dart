@@ -645,28 +645,29 @@ void main() {
       },
     );
 
+    test('primitive getters return null for null input', () {
+      final nullNode = JsonParseNode(null);
+      expect(nullNode.getDateOnlyValue(), isNull);
+      expect(nullNode.getTimeOnlyValue(), isNull);
+      expect(nullNode.getGuidValue(), isNull);
+      expect(nullNode.getByteArrayValue(), isNull);
+      expect(nullNode.getDurationValue(), isNull);
+    });
+
     test(
-      'primitive getters return null for null, empty, and malformed inputs',
+      'getByteArrayValue decodes empty Base64 string to empty byte array',
       () {
-        final nullNode = JsonParseNode(null);
-        expect(nullNode.getDateOnlyValue(), isNull);
-        expect(nullNode.getTimeOnlyValue(), isNull);
-        expect(nullNode.getGuidValue(), isNull);
-        expect(nullNode.getByteArrayValue(), isNull);
-        expect(nullNode.getDurationValue(), isNull);
-
         final emptyNode = JsonParseNode('');
-        expect(emptyNode.getDateOnlyValue(), isNull);
-        expect(emptyNode.getTimeOnlyValue(), isNull);
-        expect(emptyNode.getGuidValue(), isNull);
         expect(emptyNode.getByteArrayValue(), equals(Uint8List(0)));
-
-        final malformedNode = JsonParseNode('invalid-value');
-        expect(malformedNode.getDateOnlyValue(), isNull);
-        expect(malformedNode.getTimeOnlyValue(), isNull);
-        expect(malformedNode.getGuidValue(), isNull);
-        expect(malformedNode.getByteArrayValue(), isNull);
       },
     );
+
+    test('primitive getters throw FormatException for malformed payloads', () {
+      final malformedNode = JsonParseNode('invalid-value');
+      expect(malformedNode.getDateOnlyValue, throwsFormatException);
+      expect(malformedNode.getTimeOnlyValue, throwsFormatException);
+      expect(malformedNode.getGuidValue, throwsFormatException);
+      expect(malformedNode.getByteArrayValue, throwsFormatException);
+    });
   });
 }
