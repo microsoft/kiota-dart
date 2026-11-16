@@ -176,6 +176,135 @@ void main() {
       expect(requestInfo.uri.toString(), contains('%24count=true'));
     });
 
+    test('Sets path and query parameters of Duration type', () {
+      final requestInfo = RequestInformation(
+        httpMethod: HttpMethod.get,
+        urlTemplate: 'http://localhost/{duration}{?timeout}',
+      );
+
+      const pathDuration = Duration(hours: 1, minutes: 30);
+      const queryDuration = Duration(seconds: 45);
+
+      requestInfo.pathParameters['duration'] = pathDuration;
+      requestInfo.queryParameters['timeout'] = queryDuration;
+
+      expect(
+        requestInfo.uri.toString(),
+        'http://localhost/PT1H30M?timeout=PT45S',
+      );
+    });
+
+    test('Sets query parameters of non-List Iterable type such as Set', () {
+      final requestInfo = RequestInformation(
+        httpMethod: HttpMethod.get,
+        urlTemplate: 'http://localhost/events{?dates,durations}',
+      );
+
+      final dateSet = <DateTime>{
+        DateTime.utc(2024, 1, 1),
+        DateTime.utc(2024, 1, 2),
+      };
+      final durationSet = <Duration>{
+        const Duration(minutes: 15),
+        const Duration(minutes: 30),
+      };
+
+      requestInfo.queryParameters['dates'] = dateSet;
+      requestInfo.queryParameters['durations'] = durationSet;
+
+      expect(
+        requestInfo.uri.toString(),
+        'http://localhost/events?dates=2024-01-01T00%3A00%3A00.000Z,2024-01-02T00%3A00%3A00.000Z&durations=PT15M,PT30M',
+      );
+    });
+
+    test(
+      'Sets query parameters with nested Map containing Duration and DateOnly',
+      () {
+        final requestInfo = RequestInformation(
+          httpMethod: HttpMethod.get,
+          urlTemplate: 'http://localhost/search{?filter*}',
+        );
+
+        final map = <String, dynamic>{
+          'delay': const Duration(seconds: 15),
+          'date': DateOnly.fromComponents(2024, 1, 1),
+        };
+
+        requestInfo.queryParameters['filter'] = map;
+
+        expect(
+          requestInfo.uri.toString(),
+          'http://localhost/search?delay=PT15S&date=2024-01-01',
+        );
+      },
+    );
+
+    test(
+      'Sets path and query parameters with zero, negative, and fractional Duration',
+      () {
+        final requestInfo = RequestInformation(
+          httpMethod: HttpMethod.get,
+          urlTemplate:
+              'http://localhost/jobs/{zero}{?negative,fractional,days}',
+        );
+
+        requestInfo.pathParameters['zero'] = Duration.zero;
+        requestInfo.queryParameters['negative'] = -const Duration(
+          hours: 1,
+          minutes: 30,
+        );
+        requestInfo.queryParameters['fractional'] = const Duration(
+          seconds: 1,
+          milliseconds: 500,
+        );
+        requestInfo.queryParameters['days'] = const Duration(
+          days: 2,
+          hours: 3,
+          minutes: 4,
+          seconds: 5,
+        );
+
+        expect(
+          requestInfo.uri.toString(),
+          'http://localhost/jobs/PT0S?negative=-PT1H30M&fractional=PT1.5S&days=P2DT3H4M5S',
+        );
+      },
+    );
+
+    test(
+      'Sets exploded and non-exploded query parameters with Duration Set',
+      () {
+        final explodedInfo = RequestInformation(
+          httpMethod: HttpMethod.get,
+          urlTemplate: 'http://localhost/events{?durations*}',
+        );
+        explodedInfo.queryParameters['durations'] = <Duration>{
+          const Duration(minutes: 10),
+          const Duration(minutes: 20),
+        };
+
+        expect(
+          explodedInfo.uri.toString(),
+          'http://localhost/events?durations=PT10M&durations=PT20M',
+        );
+
+        final nonExplodedInfo = RequestInformation(
+          httpMethod: HttpMethod.get,
+          urlTemplate: 'http://localhost/events{?durations}',
+        );
+        nonExplodedInfo.queryParameters['durations'] = <Duration>{
+          const Duration(minutes: 10),
+          const Duration(minutes: 20),
+        };
+
+        expect(
+          nonExplodedInfo.uri.toString(),
+          'http://localhost/events?durations=PT10M,PT20M',
+        );
+      },
+    );
+
     test('Builds URL on provided base URL', () {
       // Arrange as the request builders would
       final requestInfo = RequestInformation(
