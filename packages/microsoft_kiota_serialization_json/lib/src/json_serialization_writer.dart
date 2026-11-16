@@ -40,7 +40,7 @@ class JsonSerializationWriter implements SerializationWriter {
       } else if (entry.value is Duration) {
         writeDurationValue(entry.key, entry.value as Duration);
       } else if (entry.value is Uint8List) {
-        writeByteArrayValue(entry.key, entry.value as Uint8List);
+        _contents[entry.key] = base64Encode(entry.value as Uint8List);
       } else if (entry.value is Parsable) {
         writeObjectValue(entry.key, entry.value as Parsable);
         // ignore: experimental_member_use
