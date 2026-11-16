@@ -95,5 +95,27 @@ void main() {
       expect(result, contains('key='));
       expect(result, contains('count=0'));
     });
+
+    test('writes additional data with byte array and empty byte array', () {
+      final writer = FormSerializationWriter()
+        ..writeAdditionalData({
+          'avatar': Uint8List.fromList([116, 101, 115, 116]),
+          'empty': Uint8List(0),
+        });
+
+      final result = utf8.decode(writer.getSerializedContent());
+      expect(result, equals('avatar=dGVzdA%3D%3D&empty='));
+    });
+
+    test('writes collection of byte array primitive values', () {
+      final writer = FormSerializationWriter()
+        ..writeCollectionOfPrimitiveValues('files', [
+          Uint8List.fromList([116, 101, 115, 116]),
+          Uint8List(0),
+        ]);
+
+      final result = utf8.decode(writer.getSerializedContent());
+      expect(result, equals('files=dGVzdA%3D%3D&files='));
+    });
   });
 }
