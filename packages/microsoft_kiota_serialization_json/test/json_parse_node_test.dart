@@ -554,5 +554,95 @@ void main() {
       expect(users[0].id, equals('u1'));
       expect(users[1].id, equals('u2'));
     });
+
+    test('round-trip primitive collections through writer and parse node', () {
+      final dates = [
+        DateOnly.fromComponents(2024, 6, 15),
+        DateOnly.fromComponents(2024, 12, 31),
+      ];
+      final times = [
+        TimeOnly.fromComponents(8, 30),
+        TimeOnly.fromComponents(17, 45, 15),
+      ];
+      final durations = [
+        const Duration(hours: 2, minutes: 15),
+        const Duration(seconds: 30),
+      ];
+      // ignore: experimental_member_use
+      final uuids = [
+        // ignore: experimental_member_use
+        UuidValue.fromString('019329eb-0ac5-7cc0-9dea-6440b3648264'),
+        // ignore: experimental_member_use
+        UuidValue.fromString('a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d'),
+      ];
+
+      final writer = JsonSerializationWriter()
+        ..writeCollectionOfPrimitiveValues('dates', dates)
+        ..writeCollectionOfPrimitiveValues('times', times)
+        ..writeCollectionOfPrimitiveValues('durations', durations)
+        ..writeCollectionOfPrimitiveValues('uuids', uuids);
+
+      final jsonMap =
+          jsonDecode(utf8.decode(writer.getSerializedContent()))
+              as Map<String, dynamic>;
+
+      final datesNode = JsonParseNode(jsonMap['dates']);
+      final parsedDates = datesNode
+          .getCollectionOfPrimitiveValues<DateOnly>()
+          .toList();
+      expect(parsedDates, equals(dates));
+
+      final timesNode = JsonParseNode(jsonMap['times']);
+      final parsedTimes = timesNode
+          .getCollectionOfPrimitiveValues<TimeOnly>()
+          .toList();
+      expect(parsedTimes, equals(times));
+
+      final durationsNode = JsonParseNode(jsonMap['durations']);
+      final parsedDurations = durationsNode
+          .getCollectionOfPrimitiveValues<Duration>()
+          .toList();
+      expect(parsedDurations, equals(durations));
+
+      final uuidsNode = JsonParseNode(jsonMap['uuids']);
+      final parsedUuids = uuidsNode
+          // ignore: experimental_member_use
+          .getCollectionOfPrimitiveValues<UuidValue>()
+          .toList();
+      expect(parsedUuids, equals(uuids));
+    });
+
+    test('Get collection of double values converts integer elements', () {
+      final jsonParseNode = JsonParseNode(jsonDecode('[1, 2.5, 3]'));
+      final doubles = jsonParseNode
+          .getCollectionOfPrimitiveValues<double>()
+          .toList();
+
+      expect(doubles, equals([1.0, 2.5, 3.0]));
+    });
+
+    test(
+      'primitive getters return null for null, empty, and malformed inputs',
+      () {
+        final nullNode = JsonParseNode(null);
+        expect(nullNode.getDateOnlyValue(), isNull);
+        expect(nullNode.getTimeOnlyValue(), isNull);
+        expect(nullNode.getGuidValue(), isNull);
+        expect(nullNode.getByteArrayValue(), isNull);
+        expect(nullNode.getDurationValue(), isNull);
+
+        final emptyNode = JsonParseNode('');
+        expect(emptyNode.getDateOnlyValue(), isNull);
+        expect(emptyNode.getTimeOnlyValue(), isNull);
+        expect(emptyNode.getGuidValue(), isNull);
+        expect(emptyNode.getByteArrayValue(), isNull);
+
+        final malformedNode = JsonParseNode('invalid-value');
+        expect(malformedNode.getDateOnlyValue(), isNull);
+        expect(malformedNode.getTimeOnlyValue(), isNull);
+        expect(malformedNode.getGuidValue(), isNull);
+        expect(malformedNode.getByteArrayValue(), isNull);
+      },
+    );
   });
 }
