@@ -27,13 +27,8 @@ class JsonParseNode implements ParseNode {
       return null;
     }
 
-    final value = _node.toString();
-    if (value.isEmpty) {
-      return null;
-    }
-
     try {
-      return base64Decode(value);
+      return base64Decode(_node.toString());
     } on FormatException {
       return null;
     }

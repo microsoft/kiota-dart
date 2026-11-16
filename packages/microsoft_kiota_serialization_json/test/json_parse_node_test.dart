@@ -635,7 +635,7 @@ void main() {
         expect(emptyNode.getDateOnlyValue(), isNull);
         expect(emptyNode.getTimeOnlyValue(), isNull);
         expect(emptyNode.getGuidValue(), isNull);
-        expect(emptyNode.getByteArrayValue(), isNull);
+        expect(emptyNode.getByteArrayValue(), equals(Uint8List(0)));
 
         final malformedNode = JsonParseNode('invalid-value');
         expect(malformedNode.getDateOnlyValue(), isNull);
