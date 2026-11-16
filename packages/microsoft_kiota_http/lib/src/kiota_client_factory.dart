@@ -4,7 +4,7 @@ class KiotaClientFactory {
   KiotaClientFactory._();
 
   static const String _productName = 'kiota-dart';
-  static const String _productVersion = '0.0.8'; // x-release-please-version
+  static const String _productVersion = '0.1.0'; // x-release-please-version
 
   static const _retryCodes = {
     408, // Request Timeout
