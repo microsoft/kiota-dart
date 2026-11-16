@@ -335,5 +335,20 @@ void main() {
       final writer = JsonSerializationWriter()..writeObjectValue(null, untyped);
       expect(utf8.decode(writer.getSerializedContent()), equals(inputJson));
     });
+
+    test(
+      'writeAdditionalData retains empty byte array as empty base64 string',
+      () {
+        final user = MicrosoftGraphUser()
+          ..additionalData = {'emptyBytes': Uint8List(0)};
+
+        final writer = JsonSerializationWriter()..writeObjectValue(null, user);
+
+        expect(
+          utf8.decode(writer.getSerializedContent()),
+          equals('{"emptyBytes":""}'),
+        );
+      },
+    );
   });
 }

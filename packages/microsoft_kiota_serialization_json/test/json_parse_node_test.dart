@@ -622,6 +622,30 @@ void main() {
     });
 
     test(
+      'Get collection of double values preserves nulls for nullable double',
+      () {
+        final jsonParseNode = JsonParseNode(jsonDecode('[1, null, 2.5]'));
+        final doubles = jsonParseNode
+            .getCollectionOfPrimitiveValues<double?>()
+            .toList();
+
+        expect(doubles, equals([1.0, null, 2.5]));
+      },
+    );
+
+    test(
+      'Get collection of double values rejects nulls for non-nullable double',
+      () {
+        final jsonParseNode = JsonParseNode(jsonDecode('[1, null, 2.5]'));
+
+        expect(
+          () => jsonParseNode.getCollectionOfPrimitiveValues<double>(),
+          throwsA(isA<JsonParseException>()),
+        );
+      },
+    );
+
+    test(
       'primitive getters return null for null, empty, and malformed inputs',
       () {
         final nullNode = JsonParseNode(null);
