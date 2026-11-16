@@ -237,6 +237,44 @@ void main() {
       );
     });
 
+    test(
+      'getCollectionOfPrimitiveValues<Uint8List> parses plus and null base64 payloads without double decoding or dropping',
+      () {
+        final node = FormParseNode('%2Bw%3D%3D,null');
+
+        expect(
+          node.getCollectionOfPrimitiveValues<Uint8List>(),
+          equals([
+            Uint8List.fromList([251]),
+            Uint8List.fromList([158, 233, 101]),
+          ]),
+        );
+        expect(
+          node.getCollectionOfPrimitiveValues<Uint8List?>(),
+          equals([
+            Uint8List.fromList([251]),
+            Uint8List.fromList([158, 233, 101]),
+          ]),
+        );
+      },
+    );
+
+    test(
+      'getCollectionOfPrimitiveValues<Uint8List?> preserves null for invalid base64 entries',
+      () {
+        final node = FormParseNode('dGVzdA==,invalid!!!,');
+
+        expect(
+          node.getCollectionOfPrimitiveValues<Uint8List?>(),
+          equals([
+            Uint8List.fromList([116, 101, 115, 116]),
+            null,
+            Uint8List(0),
+          ]),
+        );
+      },
+    );
+
     test('getCollectionOfPrimitiveValues with nullable primitive types', () {
       final intNode = FormParseNode('1,null,2');
       expect(

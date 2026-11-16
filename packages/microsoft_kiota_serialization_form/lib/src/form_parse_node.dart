@@ -5,9 +5,10 @@ typedef _TypeOf<T> = T;
 
 /// Represents a [ParseNode] that can be used to parse a form url encoded string.
 class FormParseNode implements ParseNode {
-  FormParseNode(String value)
+  FormParseNode(String value, {bool isDecoded = false})
     : _rawValue = value,
-      _fields = _parseFields(value);
+      _isDecoded = isDecoded,
+      _fields = isDecoded ? const {} : _parseFields(value);
 
   static Map<String, String> _parseFields(String value) {
     final fields = value.split('&');
@@ -49,9 +50,11 @@ class FormParseNode implements ParseNode {
   }
 
   final String _rawValue;
+  final bool _isDecoded;
   final Map<String, String> _fields;
 
-  String get _decodedValue => Uri.decodeQueryComponent(_rawValue);
+  String get _decodedValue =>
+      _isDecoded ? _rawValue : Uri.decodeQueryComponent(_rawValue);
 
   @override
   ParsableHook? onAfterAssignFieldValues;
@@ -149,7 +152,7 @@ class FormParseNode implements ParseNode {
       return null;
     }
 
-    return FormParseNode(_fields[sanitizedIdentifier]!)
+    return FormParseNode(_fields[sanitizedIdentifier]!, isDecoded: true)
       ..onAfterAssignFieldValues = onAfterAssignFieldValues
       ..onBeforeAssignFieldValues = onBeforeAssignFieldValues;
   }
@@ -193,8 +196,9 @@ class FormParseNode implements ParseNode {
   /// Base64-encoded [Uint8List] values.
   @override
   Iterable<T> getCollectionOfPrimitiveValues<T>() sync* {
+    final isByteArray = _isA<T, Uint8List>() || _isSubtype<T, Uint8List?>();
     final entries = _decodedValue.split(',');
-    final collection = _isA<T, Uint8List>()
+    final collection = isByteArray
         ? entries
         : entries.where((entry) => entry.isNotEmpty);
 
@@ -221,14 +225,14 @@ class FormParseNode implements ParseNode {
     } else if (_isA<T, UuidValue>()) {
       // ignore: experimental_member_use
       converter = (v) => _parseGuidValue(v) as T?;
-    } else if (_isA<T, Uint8List>() || _isSubtype<T, Uint8List?>()) {
+    } else if (isByteArray) {
       converter = (v) => _parseByteArrayValue(v) as T?;
     } else {
       throw UnsupportedError('Unsupported primitive type $T');
     }
 
     for (final entry in collection) {
-      if (entry == 'null') {
+      if (!isByteArray && entry == 'null') {
         if (allowsNull) {
           yield null as T;
         }
@@ -238,6 +242,8 @@ class FormParseNode implements ParseNode {
       final value = converter(entry);
       if (value != null) {
         yield value;
+      } else if (allowsNull) {
+        yield null as T;
       }
     }
   }
@@ -300,7 +306,7 @@ class FormParseNode implements ParseNode {
 
         final deserializer = deserializers[key]!;
 
-        final node = FormParseNode(value)
+        final node = FormParseNode(value, isDecoded: true)
           ..onBeforeAssignFieldValues = onBeforeAssignFieldValues
           ..onAfterAssignFieldValues = onAfterAssignFieldValues;
 

@@ -152,22 +152,33 @@ void main() {
         expect(root.getChildNode('empty')?.getByteArrayValue(), equals(empty));
       });
 
-      test('round-trips collection of byte arrays', () {
-        final b1 = Uint8List.fromList([116, 101, 115, 116]);
-        final b2 = Uint8List(0);
-        final writer = FormSerializationWriter()
-          ..writeCollectionOfPrimitiveValues('files', [b1, b2]);
+      test(
+        'round-trips collection of byte arrays including plus and null payloads',
+        () {
+          final b1 = Uint8List.fromList([116, 101, 115, 116]);
+          final b2 = Uint8List(0);
+          final bPlus = Uint8List.fromList([251]); // Base64 '+w=='
+          final bNull = Uint8List.fromList([158, 233, 101]); // Base64 'null'
+          final writer = FormSerializationWriter()
+            ..writeCollectionOfPrimitiveValues('files', [b1, b2, bPlus, bNull]);
 
-        final serialized = utf8.decode(writer.getSerializedContent());
-        final root = FormParseNode(serialized);
+          final serialized = utf8.decode(writer.getSerializedContent());
+          final root = FormParseNode(serialized);
 
-        expect(
-          root
-              .getChildNode('files')
-              ?.getCollectionOfPrimitiveValues<Uint8List>(),
-          equals([b1, b2]),
-        );
-      });
+          expect(
+            root
+                .getChildNode('files')
+                ?.getCollectionOfPrimitiveValues<Uint8List>(),
+            equals([b1, b2, bPlus, bNull]),
+          );
+          expect(
+            root
+                .getChildNode('files')
+                ?.getCollectionOfPrimitiveValues<Uint8List?>(),
+            equals([b1, b2, bPlus, bNull]),
+          );
+        },
+      );
 
       test('round-trips primitive collections of different types', () {
         final writer = FormSerializationWriter()
