@@ -50,6 +50,8 @@ class FormSerializationWriter implements SerializationWriter {
       // ignore: experimental_member_use
       case final UuidValue u:
         writeUuidValue(key, u);
+      case final Uint8List u:
+        writeByteArrayValue(key, u);
       default:
         writeStringValue(key, value.toString());
     }
