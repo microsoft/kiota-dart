@@ -27,6 +27,7 @@ class FormSerializationWriter implements SerializationWriter {
     }
   }
 
+  /// Serializes a primitive [value] of unknown runtime type to form URL encoded format.
   void _writeAnyValue(String? key, Object? value) {
     switch (value) {
       case null:

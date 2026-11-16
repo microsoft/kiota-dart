@@ -66,6 +66,10 @@ class FormParseNode implements ParseNode {
     return bool.tryParse(value);
   }
 
+  /// Parses a Base64-encoded [Uint8List] value.
+  ///
+  /// Returns an empty [Uint8List] when the string value is empty,
+  /// or `null` if the string cannot be decoded.
   static Uint8List? _parseByteArrayValue(String value) {
     if (value.isEmpty) {
       return Uint8List(0);
@@ -183,6 +187,10 @@ class FormParseNode implements ParseNode {
   @pragma('vm:prefer-inline')
   static bool _isSubtype<T, U>() => <T>[] is List<U>;
 
+  /// Returns an [Iterable] of primitive values of type [T].
+  ///
+  /// Supports both non-nullable and nullable primitive types, as well as
+  /// Base64-encoded [Uint8List] values.
   @override
   Iterable<T> getCollectionOfPrimitiveValues<T>() sync* {
     final entries = _decodedValue.split(',');
