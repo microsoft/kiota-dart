@@ -5,10 +5,15 @@ typedef _TypeOf<T> = T;
 
 /// Represents a [ParseNode] that can be used to parse a form url encoded string.
 class FormParseNode implements ParseNode {
-  FormParseNode(String value, {bool isDecoded = false})
+  FormParseNode(String value)
     : _rawValue = value,
-      _isDecoded = isDecoded,
-      _fields = isDecoded ? const {} : _parseFields(value);
+      _isDecoded = false,
+      _fields = _parseFields(value);
+
+  FormParseNode._fromDecodedValue(String value)
+    : _rawValue = value,
+      _isDecoded = true,
+      _fields = const {};
 
   static Map<String, String> _parseFields(String value) {
     final fields = value.split('&');
@@ -152,7 +157,7 @@ class FormParseNode implements ParseNode {
       return null;
     }
 
-    return FormParseNode(_fields[sanitizedIdentifier]!, isDecoded: true)
+    return FormParseNode._fromDecodedValue(_fields[sanitizedIdentifier]!)
       ..onAfterAssignFieldValues = onAfterAssignFieldValues
       ..onBeforeAssignFieldValues = onBeforeAssignFieldValues;
   }
@@ -302,7 +307,7 @@ class FormParseNode implements ParseNode {
       if (deserializers.containsKey(key)) {
         final deserializer = deserializers[key]!;
 
-        final node = FormParseNode(value, isDecoded: true)
+        final node = FormParseNode._fromDecodedValue(value)
           ..onBeforeAssignFieldValues = onBeforeAssignFieldValues
           ..onAfterAssignFieldValues = onAfterAssignFieldValues;
 
