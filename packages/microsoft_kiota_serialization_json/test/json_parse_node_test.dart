@@ -645,6 +645,102 @@ void main() {
       },
     );
 
+    test(
+      'Get collection of int values converts whole-number double elements',
+      () {
+        final jsonParseNode = JsonParseNode(jsonDecode('[1, 2.0, 3]'));
+        final ints = jsonParseNode
+            .getCollectionOfPrimitiveValues<int>()
+            .toList();
+
+        expect(ints, equals([1, 2, 3]));
+      },
+    );
+
+    test('Get collection of int values rejects fractional double elements', () {
+      final jsonParseNode = JsonParseNode(jsonDecode('[1, 2.5, 3]'));
+
+      expect(
+        () => jsonParseNode.getCollectionOfPrimitiveValues<int>(),
+        throwsA(isA<JsonParseException>()),
+      );
+    });
+
+    test('Get collection of int values preserves nulls for nullable int', () {
+      final jsonParseNode = JsonParseNode(jsonDecode('[1, null, 2]'));
+      final ints = jsonParseNode
+          .getCollectionOfPrimitiveValues<int?>()
+          .toList();
+
+      expect(ints, equals([1, null, 2]));
+    });
+
+    test('Get collection of int values rejects nulls for non-nullable int', () {
+      final jsonParseNode = JsonParseNode(jsonDecode('[1, null, 2]'));
+
+      expect(
+        () => jsonParseNode.getCollectionOfPrimitiveValues<int>(),
+        throwsA(isA<JsonParseException>()),
+      );
+    });
+
+    test('Get collection of bool values preserves nulls for nullable bool', () {
+      final jsonParseNode = JsonParseNode(jsonDecode('[true, null, false]'));
+      final bools = jsonParseNode
+          .getCollectionOfPrimitiveValues<bool?>()
+          .toList();
+
+      expect(bools, equals([true, null, false]));
+    });
+
+    test(
+      'Get collection of bool values rejects nulls for non-nullable bool',
+      () {
+        final jsonParseNode = JsonParseNode(jsonDecode('[true, null, false]'));
+
+        expect(
+          () => jsonParseNode.getCollectionOfPrimitiveValues<bool>(),
+          throwsA(isA<JsonParseException>()),
+        );
+      },
+    );
+
+    test(
+      'Get collection of String values preserves nulls for nullable String',
+      () {
+        final jsonParseNode = JsonParseNode(jsonDecode('["a", null, "b"]'));
+        final strings = jsonParseNode
+            .getCollectionOfPrimitiveValues<String?>()
+            .toList();
+
+        expect(strings, equals(['a', null, 'b']));
+      },
+    );
+
+    test(
+      'Get collection of String values rejects nulls for non-nullable String',
+      () {
+        final jsonParseNode = JsonParseNode(jsonDecode('["a", null, "b"]'));
+
+        expect(
+          () => jsonParseNode.getCollectionOfPrimitiveValues<String>(),
+          throwsA(isA<JsonParseException>()),
+        );
+      },
+    );
+
+    test(
+      'Get collection of num values accepts mixed numeric types and preserves nulls for nullable num',
+      () {
+        final jsonParseNode = JsonParseNode(jsonDecode('[1, null, 2.5]'));
+        final nums = jsonParseNode
+            .getCollectionOfPrimitiveValues<num?>()
+            .toList();
+
+        expect(nums, equals([1, null, 2.5]));
+      },
+    );
+
     test('primitive getters return null for null input', () {
       final nullNode = JsonParseNode(null);
       expect(nullNode.getDateOnlyValue(), isNull);

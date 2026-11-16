@@ -93,6 +93,8 @@ class JsonParseNode implements ParseNode {
         return _castPrimitive<T>(items, 'int');
       } else if (_isA<T, double>()) {
         return _castPrimitive<T>(items, 'double');
+      } else if (_isSubtype<T, num?>()) {
+        return _castPrimitive<T>(items, 'num');
       } else if (_isA<T, String>()) {
         return _castPrimitive<T>(items, 'String');
       } else if (_isA<T, DateTime>()) {
@@ -144,32 +146,29 @@ class JsonParseNode implements ParseNode {
     return result;
   }
 
-  List<T> _castPrimitive<T>(List<dynamic> items, String primitiveName) {
-    if (_isA<T, double>()) {
-      final allowsNull = null is T;
-      if (!items.every((i) => i is num || (allowsNull && i == null))) {
-        throw JsonParseException(
-          message:
-              'Not every element in the collection of primitives is a $primitiveName',
-          node: this,
-        );
+  T _castElement<T>(dynamic item, String primitiveName) {
+    if (item is T) {
+      return item;
+    }
+
+    if (item is num) {
+      if (_isSubtype<T, double?>()) {
+        return item.toDouble() as T;
       }
-
-      return items
-          .map((i) => i == null ? null : (i as num).toDouble())
-          .cast<T>()
-          .toList();
+      if (_isSubtype<T, int?>() && item.toInt() == item) {
+        return item.toInt() as T;
+      }
     }
 
-    if (!items.every((i) => i is T)) {
-      throw JsonParseException(
-        message:
-            'Not every element in the collection of primitives is a $primitiveName',
-        node: this,
-      );
-    }
+    throw JsonParseException(
+      message:
+          'Not every element in the collection of primitives is a $primitiveName',
+      node: this,
+    );
+  }
 
-    return items.cast<T>();
+  List<T> _castPrimitive<T>(List<dynamic> items, String primitiveName) {
+    return items.map((item) => _castElement<T>(item, primitiveName)).toList();
   }
 
   List<T> _convertPrimitive<T>(
