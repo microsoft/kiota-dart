@@ -100,7 +100,8 @@ class JsonParseNode implements ParseNode {
       } else if (_isA<T, int>()) {
         return _castPrimitive<T>(items, 'int');
       } else if (_isA<T, double>()) {
-        if (!items.every((i) => i is num)) {
+        final allowsNull = null is T;
+        if (!items.every((i) => i is num || (allowsNull && i == null))) {
           throw JsonParseException(
             message:
                 'Not every element in the collection of primitives is a double',
@@ -108,7 +109,10 @@ class JsonParseNode implements ParseNode {
           );
         }
 
-        return items.map((i) => (i as num).toDouble()).cast<T>().toList();
+        return items
+            .map((i) => i == null ? null : (i as num).toDouble())
+            .cast<T>()
+            .toList();
       } else if (_isA<T, String>()) {
         return _castPrimitive<T>(items, 'String');
       } else if (_isA<T, DateTime>()) {
