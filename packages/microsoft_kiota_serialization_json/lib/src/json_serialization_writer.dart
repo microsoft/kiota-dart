@@ -99,14 +99,27 @@ class JsonSerializationWriter implements SerializationWriter {
     }
   }
 
+  dynamic _sanitizePrimitiveValue(dynamic value) {
+    if (value is DateOnly) {
+      return value.toRfc3339String();
+    }
+    if (value is TimeOnly) {
+      return value.toRfc3339String();
+    }
+    if (value is Duration) {
+      return value.toIso8601String();
+    }
+    return value;
+  }
+
   @override
   void writeCollectionOfPrimitiveValues<T>(String? key, Iterable<T>? values) {
     if (values == null) {
       return;
     } else {
-      _contents[key ?? ''] = values is List<T>
-          ? values
-          : values.toList(growable: false);
+      _contents[key ?? ''] = values
+          .map(_sanitizePrimitiveValue)
+          .toList(growable: false);
     }
   }
 
