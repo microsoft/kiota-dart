@@ -65,7 +65,7 @@ class FormParseNode implements ParseNode {
 
   static Uint8List? _parseByteArrayValue(String value) {
     if (value.isEmpty) {
-      return null;
+      return Uint8List(0);
     }
     try {
       return base64Decode(value);
