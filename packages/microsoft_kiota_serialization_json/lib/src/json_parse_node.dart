@@ -3,8 +3,6 @@ part of '../microsoft_kiota_serialization_json.dart';
 /// A helper to get a [Type] from a nullable generic parameter.
 typedef _TypeOf<T> = T;
 
-/// Represents a [ParseNode] for deserializing JSON data trees into models
-/// and primitives.
 class JsonParseNode implements ParseNode {
   JsonParseNode(this._node);
 
@@ -145,22 +143,6 @@ class JsonParseNode implements ParseNode {
   }
 
   List<T> _castPrimitive<T>(List<dynamic> items, String primitiveName) {
-    if (_isA<T, double>()) {
-      final allowsNull = null is T;
-      if (!items.every((i) => i is num || (allowsNull && i == null))) {
-        throw JsonParseException(
-          message:
-              'Not every element in the collection of primitives is a $primitiveName',
-          node: this,
-        );
-      }
-
-      return items
-          .map((i) => i == null ? null : (i as num).toDouble())
-          .cast<T>()
-          .toList();
-    }
-
     if (!items.every((i) => i is T)) {
       throw JsonParseException(
         message:
@@ -169,7 +151,7 @@ class JsonParseNode implements ParseNode {
       );
     }
 
-    return items.cast<T>().toList();
+    return items.cast<T>();
   }
 
   List<T> _convertPrimitive<T>(
