@@ -645,17 +645,14 @@ void main() {
       },
     );
 
-    test(
-      'Get collection of int values converts whole-number double elements',
-      () {
-        final jsonParseNode = JsonParseNode(jsonDecode('[1, 2.0, 3]'));
-        final ints = jsonParseNode
-            .getCollectionOfPrimitiveValues<int>()
-            .toList();
+    test('Get collection of int values rejects double elements', () {
+      final jsonParseNode = JsonParseNode(jsonDecode('[1, 2.0, 3]'));
 
-        expect(ints, equals([1, 2, 3]));
-      },
-    );
+      expect(
+        () => jsonParseNode.getCollectionOfPrimitiveValues<int>(),
+        throwsA(isA<JsonParseException>()),
+      );
+    });
 
     test('Get collection of int values rejects fractional double elements', () {
       final jsonParseNode = JsonParseNode(jsonDecode('[1, 2.5, 3]'));

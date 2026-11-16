@@ -144,29 +144,32 @@ class JsonParseNode implements ParseNode {
     return result;
   }
 
-  T _castElement<T>(dynamic item, String primitiveName) {
-    if (item is T) {
-      return item;
-    }
-
-    if (item is num) {
-      if (_isSubtype<T, double?>()) {
-        return item.toDouble() as T;
-      }
-      if (_isSubtype<T, int?>() && item.toInt() == item) {
-        return item.toInt() as T;
-      }
-    }
-
-    throw JsonParseException(
-      message:
-          'Not every element in the collection of primitives is a $primitiveName',
-      node: this,
-    );
-  }
-
   List<T> _castPrimitive<T>(List<dynamic> items, String primitiveName) {
-    return items.map((item) => _castElement<T>(item, primitiveName)).toList();
+    if (_isA<T, double>()) {
+      final allowsNull = null is T;
+      if (!items.every((i) => i is num || (allowsNull && i == null))) {
+        throw JsonParseException(
+          message:
+              'Not every element in the collection of primitives is a $primitiveName',
+          node: this,
+        );
+      }
+
+      return items
+          .map((i) => i == null ? null : (i as num).toDouble())
+          .cast<T>()
+          .toList();
+    }
+
+    if (!items.every((i) => i is T)) {
+      throw JsonParseException(
+        message:
+            'Not every element in the collection of primitives is a $primitiveName',
+        node: this,
+      );
+    }
+
+    return items.cast<T>().toList();
   }
 
   List<T> _convertPrimitive<T>(
