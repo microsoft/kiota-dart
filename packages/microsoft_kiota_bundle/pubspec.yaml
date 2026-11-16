@@ -11,7 +11,7 @@ resolution: workspace
 
 dependencies:
   microsoft_kiota_abstractions: ">=0.0.1 <0.9.0"
-  microsoft_kiota_http: ^0.0.1
+  microsoft_kiota_http: ">=0.0.3 <0.2.0"
   microsoft_kiota_serialization_text: ^0.0.1
   microsoft_kiota_serialization_form: ^0.0.1
   microsoft_kiota_serialization_json: ^0.0.1
