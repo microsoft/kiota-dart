@@ -103,6 +103,10 @@ class JsonSerializationWriter implements SerializationWriter {
     }
   }
 
+  /// Converts a primitive or temporal [value] into a JSON-encodable wire format.
+  ///
+  /// Supported types include [DateOnly], [TimeOnly], [Duration], [DateTime],
+  /// [UuidValue], and [Uint8List]. Other scalar values are returned as-is.
   dynamic _sanitizePrimitiveValue(dynamic value) {
     if (value is DateOnly) {
       return value.toRfc3339String();

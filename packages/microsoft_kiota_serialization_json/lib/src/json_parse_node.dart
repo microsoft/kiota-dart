@@ -3,6 +3,8 @@ part of '../microsoft_kiota_serialization_json.dart';
 /// A helper to get a [Type] from a nullable generic parameter.
 typedef _TypeOf<T> = T;
 
+/// Represents a [ParseNode] for deserializing JSON data trees into models
+/// and primitives with defensive parsing for malformed values.
 class JsonParseNode implements ParseNode {
   JsonParseNode(this._node);
 
