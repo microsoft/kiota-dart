@@ -1,5 +1,13 @@
 ## Unreleased
 
+## [0.1.2](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_bundle-v0.1.1...microsoft_kiota_bundle-v0.1.2) (2026-11-16)
+
+
+### Bug Fixes
+
+* **bundle:** allow HTTP 0.1 releases ([3faef85](https://github.com/microsoft/kiota-dart/commit/3faef8520e07d22b3027f64ab65ab592424cf867))
+* raise internal dependency minimums and allow HTTP 0.1 releases ([535b5cd](https://github.com/microsoft/kiota-dart/commit/535b5cd5b10e661b9e0f2a5871c4bcfdd4aeed28))
+
 ## [0.1.1](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_bundle-v0.1.0...microsoft_kiota_bundle-v0.1.1) (2025-10-02)
 
 

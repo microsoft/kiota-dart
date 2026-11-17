@@ -1,5 +1,22 @@
 # Unreleased
 
+## [0.0.8](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_serialization_form-v0.0.7...microsoft_kiota_serialization_form-v0.0.8) (2026-11-16)
+
+
+### Bug Fixes
+
+* **abstractions,text,form:** support tryParse on date/time primitives and safely handle malformed values ([6d319f2](https://github.com/microsoft/kiota-dart/commit/6d319f22ae715587b7e56c72ef4c73dd580f8209))
+* **abstractions:** safely catch out-of-range year ArgumentError in DateOnly.tryParse ([943d2e5](https://github.com/microsoft/kiota-dart/commit/943d2e50f97c25179a5abb7a2e95b0da51ecd201))
+* **serialization-form:** allow typed deserialization of null-valued singleton collections ([34c10b8](https://github.com/microsoft/kiota-dart/commit/34c10b8a910904ba68ad3f31e07d4f9e8c7ff9d0))
+* **serialization-form:** decode empty Base64 string to empty byte array in FormParseNode ([57a6b76](https://github.com/microsoft/kiota-dart/commit/57a6b76a1958250f3c31042ba146c489b464ec9f))
+* **serialization-form:** prevent double decoding and handle base64 null payloads in byte array collections ([9d2bb42](https://github.com/microsoft/kiota-dart/commit/9d2bb42e798479003a27548f75349e69606d33a2))
+* **serialization-form:** support nullable types and Uint8List in FormParseNode.getCollectionOfPrimitiveValues ([7341766](https://github.com/microsoft/kiota-dart/commit/7341766248058473106d5f66a5911be1f4cb604f))
+* **serialization-form:** support Uint8List serialization in FormSerializationWriter._writeAnyValue ([eaa38d1](https://github.com/microsoft/kiota-dart/commit/eaa38d1115e54fd3ec5828281b317fd70c910a16))
+* **serialization-form:** support Uint8List serialization, empty byte arrays, and nullable primitive collections ([7270a2f](https://github.com/microsoft/kiota-dart/commit/7270a2fee1a6418491a3c4b03f5b4238ae1a015e))
+* **serialization:** emit normalized ISO 8601 durations ([5573555](https://github.com/microsoft/kiota-dart/commit/5573555332ed0ac394d137d0440a7182b46a6f81))
+* **serialization:** emit normalized ISO 8601 durations ([90904ae](https://github.com/microsoft/kiota-dart/commit/90904ae618840cbfe46fde1d9e9ff949d8c014a7))
+* **serialization:** require updated abstractions version ([aaa0c3d](https://github.com/microsoft/kiota-dart/commit/aaa0c3dae3086a07b10a5e020321593eb44fb1c2))
+
 ## [0.0.7](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_serialization_form-v0.0.6...microsoft_kiota_serialization_form-v0.0.7) (2026-11-09)
 
 
