@@ -64,8 +64,39 @@ class InMemoryBackingStore implements BackingStore {
     }
   }
 
+  bool _returnOnlyChangedValues = false;
+
   @override
-  bool returnOnlyChangedValues = false;
+  bool get returnOnlyChangedValues => _returnOnlyChangedValues;
+
+  @override
+  set returnOnlyChangedValues(bool value) {
+    _returnOnlyChangedValues = value;
+
+    for (final key in List<String>.of(_store.keys)) {
+      final tuple = _store[key];
+      if (tuple == null) {
+        continue;
+      }
+
+      final obj = tuple.$2;
+      if (obj is BackedModel) {
+        final nestedStore = obj.backingStore;
+        if (nestedStore != null &&
+            nestedStore.returnOnlyChangedValues != value) {
+          nestedStore.returnOnlyChangedValues = value;
+        }
+      } else if (obj is (Iterable<Object?>, int)) {
+        for (final model in obj.$1.whereType<BackedModel>()) {
+          final nestedStore = model.backingStore;
+          if (nestedStore != null &&
+              nestedStore.returnOnlyChangedValues != value) {
+            nestedStore.returnOnlyChangedValues = value;
+          }
+        }
+      }
+    }
+  }
 
   @override
   void clear() => _store.clear();
