@@ -195,5 +195,94 @@ void main() {
         );
       },
     );
+
+    test(
+      'propagates initializationCompleted and returnOnlyChangedValues to nested models and collections',
+      () {
+        final directChild = MockBackedModel();
+        final directChildStore = InMemoryBackingStore();
+        when(directChild.backingStore).thenReturn(directChildStore);
+
+        final listChild = MockBackedModel();
+        final listChildStore = InMemoryBackingStore();
+        when(listChild.backingStore).thenReturn(listChildStore);
+
+        final parent = InMemoryBackingStore()
+          ..set('child', directChild)
+          ..set('children', [listChild])
+          ..initializationCompleted = false;
+
+        expect(directChildStore.initializationCompleted, isFalse);
+        expect(listChildStore.initializationCompleted, isFalse);
+
+        parent
+          ..initializationCompleted = true
+          ..returnOnlyChangedValues = true;
+
+        expect(directChildStore.initializationCompleted, isTrue);
+        expect(listChildStore.initializationCompleted, isTrue);
+        expect(directChildStore.returnOnlyChangedValues, isTrue);
+        expect(listChildStore.returnOnlyChangedValues, isTrue);
+
+        parent.returnOnlyChangedValues = false;
+        expect(directChildStore.returnOnlyChangedValues, isFalse);
+        expect(listChildStore.returnOnlyChangedValues, isFalse);
+      },
+    );
+
+    test(
+      'subscribes replaced BackedModel values and unsubscribes detached models',
+      () {
+        final firstChild = MockBackedModel();
+        final firstStore = InMemoryBackingStore();
+        when(firstChild.backingStore).thenReturn(firstStore);
+
+        final secondChild = MockBackedModel();
+        final secondStore = InMemoryBackingStore();
+        when(secondChild.backingStore).thenReturn(secondStore);
+
+        final parent = InMemoryBackingStore()
+          ..initializationCompleted = false
+          ..set('child', null)
+          ..set('child', firstChild)
+          ..set('child', secondChild)
+          ..initializationCompleted = true
+          ..returnOnlyChangedValues = true;
+
+        // Mutating detached firstChild must not overwrite or dirty parent
+        firstStore.set('title', 'stale');
+        expect(parent.get<BackedModel>('child'), isNull);
+
+        // Mutating active secondChild must mark parent dirty
+        secondStore.set('title', 'active');
+        expect(parent.get<BackedModel>('child'), same(secondChild));
+
+        // Clearing parent must unsubscribe secondChild
+        parent
+          ..clear()
+          ..returnOnlyChangedValues = false;
+        secondStore.set('title', 'after-clear');
+        expect(parent.get<BackedModel>('child'), isNull);
+      },
+    );
+
+    test(
+      'allows unsubscribing inside a subscription callback without ConcurrentModificationError',
+      () {
+        final store = InMemoryBackingStore();
+        var secondCalled = false;
+        late String firstId;
+        firstId = store.subscribe((k, prev, next) {
+          store.unsubscribe(firstId);
+        });
+        store
+          ..subscribe((k, prev, next) {
+            secondCalled = true;
+          })
+          ..set('name', 'value');
+
+        expect(secondCalled, isTrue);
+      },
+    );
   });
 }
