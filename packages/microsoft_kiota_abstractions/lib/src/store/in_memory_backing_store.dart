@@ -13,17 +13,29 @@ class InMemoryBackingStore implements BackingStore {
   set initializationCompleted(bool value) {
     _initializationCompleted = value;
 
-    for (final key in _store.keys) {
-      final tuple = _store[key]!;
-      final obj = tuple.$2;
-
-      if (obj is BackedModel) {
-        obj.backingStore?.initializationCompleted = value;
+    for (final key in List<String>.of(_store.keys)) {
+      final tuple = _store[key];
+      if (tuple == null) {
+        continue;
       }
 
-      _ensureCollectionPropertyIsConsistent(key, obj);
+      _ensureCollectionPropertyIsConsistent(key, tuple.$2);
 
-      _store[key] = (!value, obj);
+      final updatedTuple = _store[key];
+      if (updatedTuple == null) {
+        continue;
+      }
+
+      final refreshedObj = updatedTuple.$2;
+      if (refreshedObj is BackedModel) {
+        refreshedObj.backingStore?.initializationCompleted = value;
+      } else if (refreshedObj is (Iterable<Object?>, int)) {
+        for (final model in refreshedObj.$1.whereType<BackedModel>()) {
+          model.backingStore?.initializationCompleted = value;
+        }
+      }
+
+      _store[key] = (!value, refreshedObj);
     }
   }
 
