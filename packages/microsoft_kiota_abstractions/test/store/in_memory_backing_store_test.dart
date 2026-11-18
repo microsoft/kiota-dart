@@ -117,5 +117,83 @@ void main() {
       expect(newValue, 'Peter');
       expect(subscriptionId, isNotNull);
     });
+
+    test('unwraps stored collections in iterate and subscriber callbacks', () {
+      final initialTags = ['a', 'b'];
+      final updatedTags = ['a', 'b', 'c'];
+      final store = InMemoryBackingStore()..set('tags', initialTags);
+
+      final iterated = store.iterate().toList();
+      expect(iterated, hasLength(1));
+      expect(iterated.first.key, 'tags');
+      expect(iterated.first.value, same(initialTags));
+
+      Object? receivedPrevious;
+      Object? receivedNew;
+      store
+        ..subscribe((k, previous, next) {
+          receivedPrevious = previous;
+          receivedNew = next;
+        })
+        ..set('tags', updatedTags);
+
+      expect(receivedPrevious, same(initialTags));
+      expect(receivedNew, same(updatedTags));
+    });
+
+    test(
+      'detects in-place collection mutations immediately in get and iterate',
+      () {
+        final tagsForGet = ['one'];
+        final storeForGet = InMemoryBackingStore()
+          ..set('tags', tagsForGet)
+          ..initializationCompleted = true
+          ..returnOnlyChangedValues = true;
+
+        expect(storeForGet.get<List<String>>('tags'), isNull);
+        tagsForGet.add('two');
+        expect(storeForGet.get<List<String>>('tags'), equals(['one', 'two']));
+
+        final tagsForIterate = ['alpha'];
+        final storeForIterate = InMemoryBackingStore()
+          ..set('tags', tagsForIterate)
+          ..initializationCompleted = true
+          ..returnOnlyChangedValues = true;
+
+        expect(storeForIterate.iterate().toList(), isEmpty);
+        tagsForIterate.add('beta');
+
+        final changedEntries = storeForIterate.iterate().toList();
+        expect(changedEntries, hasLength(1));
+        expect(changedEntries.first.key, 'tags');
+        expect(changedEntries.first.value, equals(['alpha', 'beta']));
+      },
+    );
+
+    test(
+      'preserves refreshed collection size snapshot when initializationCompleted is set',
+      () {
+        final items = ['initial'];
+        final store = InMemoryBackingStore()
+          ..initializationCompleted = false
+          ..set('items', items);
+
+        items.add('added-during-init');
+
+        store
+          ..initializationCompleted = true
+          ..returnOnlyChangedValues = true;
+
+        expect(store.iterate().toList(), isEmpty);
+        expect(store.iterate().toList(), isEmpty);
+        expect(store.get<List<String>>('items'), isNull);
+
+        items.add('mutated-after-init');
+        expect(
+          store.get<List<String>>('items'),
+          equals(['initial', 'added-during-init', 'mutated-after-init']),
+        );
+      },
+    );
   });
 }
