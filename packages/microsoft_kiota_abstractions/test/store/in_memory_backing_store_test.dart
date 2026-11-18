@@ -284,5 +284,76 @@ void main() {
         expect(secondCalled, isTrue);
       },
     );
+
+    test(
+      'tracks Map mutations and unwraps Map values in iterate and subscriptions',
+      () {
+        final additionalData = <String, Object?>{'first': 1};
+        final store = InMemoryBackingStore()
+          ..set('additionalData', additionalData);
+
+        final initialEntries = store.iterate().toList();
+        expect(initialEntries, hasLength(1));
+        expect(initialEntries.first.value, same(additionalData));
+
+        store
+          ..initializationCompleted = true
+          ..returnOnlyChangedValues = true;
+
+        expect(store.get<Map<String, Object?>>('additionalData'), isNull);
+        expect(store.iterate().toList(), isEmpty);
+
+        additionalData['second'] = 2;
+
+        final mutated = store.get<Map<String, Object?>>('additionalData');
+        expect(mutated, same(additionalData));
+        expect(mutated, equals({'first': 1, 'second': 2}));
+
+        final changedEntries = store.iterate().toList();
+        expect(changedEntries, hasLength(1));
+        expect(changedEntries.first.value, same(additionalData));
+
+        Object? receivedPrevious;
+        store
+          ..subscribe((k, prev, next) => receivedPrevious = prev)
+          ..set('additionalData', <String, Object?>{'replaced': true});
+        expect(receivedPrevious, same(additionalData));
+      },
+    );
+
+    test(
+      'propagates flags and manages subscriptions for BackedModel values inside Maps',
+      () {
+        final mapChild = MockBackedModel();
+        final mapChildStore = InMemoryBackingStore();
+        when(mapChild.backingStore).thenReturn(mapChildStore);
+
+        final parent = InMemoryBackingStore()
+          ..set('items', <String, Object?>{'a': mapChild})
+          ..initializationCompleted = false;
+
+        expect(mapChildStore.initializationCompleted, isFalse);
+
+        parent
+          ..initializationCompleted = true
+          ..returnOnlyChangedValues = true;
+
+        expect(mapChildStore.initializationCompleted, isTrue);
+        expect(mapChildStore.returnOnlyChangedValues, isTrue);
+        expect(parent.get<Map<String, Object?>>('items'), isNull);
+
+        mapChildStore.set('status', 'updated');
+        expect(parent.get<Map<String, Object?>>('items'), isNotNull);
+
+        parent
+          ..set('items', <String, Object?>{})
+          ..initializationCompleted = true
+          ..returnOnlyChangedValues = true;
+
+        // Detached mapChild should no longer dirty parent
+        mapChildStore.set('status', 'detached');
+        expect(parent.get<Map<String, Object?>>('items'), isNull);
+      },
+    );
   });
 }
