@@ -72,46 +72,56 @@ class InMemoryBackingStore implements BackingStore {
       throw ArgumentError('The key cannot be empty.');
     }
 
-    if (!_store.containsKey(key)) {
+    final tuple = _store[key];
+    if (tuple == null) {
       return null;
     }
 
-    final tuple = _store[key]!;
-    final changed = tuple.$1;
-    final obj = tuple.$2;
+    _ensureCollectionPropertyIsConsistent(key, tuple.$2);
 
-    _ensureCollectionPropertyIsConsistent(key, obj);
+    final updatedTuple = _store[key];
+    if (updatedTuple == null) {
+      return null;
+    }
 
-    final unwrapped = _unwrapValue(obj);
+    final changed = updatedTuple.$1;
+    final unwrapped = _unwrapValue(updatedTuple.$2);
 
     return changed || !returnOnlyChangedValues ? unwrapped as T? : null;
   }
 
   @override
   Iterable<MapEntry<String, Object?>> iterate() sync* {
-    for (final key in _store.keys) {
-      final tuple = _store[key]!;
-      final changed = tuple.$1;
-      final obj = tuple.$2;
-
-      if (returnOnlyChangedValues) {
-        _ensureCollectionPropertyIsConsistent(key, obj);
+    for (final key in List<String>.of(_store.keys)) {
+      final tuple = _store[key];
+      if (tuple == null) {
+        continue;
       }
 
-      if (changed || !returnOnlyChangedValues) {
-        yield MapEntry(key, _unwrapValue(obj));
+      if (returnOnlyChangedValues) {
+        _ensureCollectionPropertyIsConsistent(key, tuple.$2);
+      }
+
+      final updatedTuple = _store[key];
+      if (updatedTuple == null) {
+        continue;
+      }
+
+      if (updatedTuple.$1 || !returnOnlyChangedValues) {
+        yield MapEntry(key, _unwrapValue(updatedTuple.$2));
       }
     }
   }
 
   @override
   Iterable<String> iterateKeysForValuesChangedToNull() sync* {
-    for (final key in _store.keys) {
-      final tuple = _store[key]!;
-      final changed = tuple.$1;
-      final obj = tuple.$2;
+    for (final key in List<String>.of(_store.keys)) {
+      final tuple = _store[key];
+      if (tuple == null) {
+        continue;
+      }
 
-      if (changed && obj == null) {
+      if (tuple.$1 && tuple.$2 == null) {
         yield key;
       }
     }
