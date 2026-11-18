@@ -99,7 +99,26 @@ class InMemoryBackingStore implements BackingStore {
   }
 
   @override
-  void clear() => _store.clear();
+  void clear() {
+    for (final entry in List<MapEntry<String, (bool, Object?)>>.of(
+      _store.entries,
+    )) {
+      _unsubscribeNestedModels(entry.key, entry.value.$2);
+    }
+
+    _store.clear();
+  }
+
+  void _unsubscribeNestedModels(String key, Object? value) {
+    final unwrapped = _unwrapValue(value);
+    if (unwrapped is BackedModel) {
+      unwrapped.backingStore?.unsubscribe(key);
+    } else if (unwrapped is Iterable<Object?>) {
+      for (final model in unwrapped.whereType<BackedModel>()) {
+        model.backingStore?.unsubscribe(key);
+      }
+    }
+  }
 
   Object? _unwrapValue(Object? value) {
     if (value is (Iterable<Object?>, int)) {
@@ -181,31 +200,35 @@ class InMemoryBackingStore implements BackingStore {
       valueToAdd = (initializationCompleted, (value, value.length));
     }
 
-    (bool, Object?)? oldValue;
-    if (_store.containsKey(key)) {
-      oldValue = _store[key];
-    } else if (value is BackedModel) {
-      value.backingStore?.subscribe((dataKey, previousValue, newValue) {
-        // all its properties are dirty as the model has been touched
-        value.backingStore!.initializationCompleted = false;
+    final oldValue = _store[key];
+    final previousValue = _unwrapValue(oldValue?.$2);
 
-        set(key, value);
-      }, key);
+    if (oldValue != null && !identical(previousValue, value)) {
+      _unsubscribeNestedModels(key, oldValue.$2);
     }
 
     _store[key] = valueToAdd;
 
-    if (value is Iterable<Object?>) {
-      value.whereType<BackedModel>().forEach((model) {
+    if (value is BackedModel && !identical(previousValue, value)) {
+      value.backingStore?.subscribe((dataKey, prev, next) {
+        // all its properties are dirty as the model has been touched
+        value.backingStore?.initializationCompleted = false;
+
+        set(key, value);
+      }, key);
+    } else if (value is Iterable<Object?>) {
+      for (final model in value.whereType<BackedModel>()) {
         model.backingStore?.initializationCompleted = false;
-        model.backingStore?.subscribe((dataKey, previousValue, newValue) {
+        model.backingStore?.subscribe((dataKey, prev, next) {
+          model.backingStore?.initializationCompleted = false;
           set(key, value);
         }, key);
-      });
+      }
     }
 
-    final previousValue = _unwrapValue(oldValue?.$2);
-    for (final subscription in _subscriptions.values) {
+    for (final subscription in List<BackingStoreSubscriptionCallback>.of(
+      _subscriptions.values,
+    )) {
       subscription(key, previousValue, value);
     }
   }
