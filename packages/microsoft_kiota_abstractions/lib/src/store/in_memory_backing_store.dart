@@ -33,6 +33,10 @@ class InMemoryBackingStore implements BackingStore {
         for (final model in refreshedObj.$1.whereType<BackedModel>()) {
           model.backingStore?.initializationCompleted = value;
         }
+      } else if (refreshedObj is (Map<Object?, Object?>, int)) {
+        for (final model in refreshedObj.$1.values.whereType<BackedModel>()) {
+          model.backingStore?.initializationCompleted = value;
+        }
       }
 
       _store[key] = (!value, refreshedObj);
@@ -42,17 +46,27 @@ class InMemoryBackingStore implements BackingStore {
   void _ensureCollectionPropertyIsConsistent(String key, Object? value) {
     // check if we put in a collection annotated with the size
     if (value is (Iterable<Object?>, int)) {
-      value.$1.whereType<BackedModel>().forEach((model) {
+      for (final model in value.$1.whereType<BackedModel>()) {
         model.backingStore?.iterate().forEach((item) {
           // Call get() on nested properties so that this method may be called
           // recursively to ensure collections are consistent
           model.backingStore?.get<Object?>(item.key);
         });
-      });
+      }
 
       // (and the size has changed since we last updated)
       if (value.$1.length != value.$2) {
         // ensure the store is notified the collection property has changed
+        set(key, value.$1);
+      }
+    } else if (value is (Map<Object?, Object?>, int)) {
+      for (final model in value.$1.values.whereType<BackedModel>()) {
+        model.backingStore?.iterate().forEach((item) {
+          model.backingStore?.get<Object?>(item.key);
+        });
+      }
+
+      if (value.$1.length != value.$2) {
         set(key, value.$1);
       }
     } else if (value is BackedModel) {
@@ -94,6 +108,14 @@ class InMemoryBackingStore implements BackingStore {
             nestedStore.returnOnlyChangedValues = value;
           }
         }
+      } else if (obj is (Map<Object?, Object?>, int)) {
+        for (final model in obj.$1.values.whereType<BackedModel>()) {
+          final nestedStore = model.backingStore;
+          if (nestedStore != null &&
+              nestedStore.returnOnlyChangedValues != value) {
+            nestedStore.returnOnlyChangedValues = value;
+          }
+        }
       }
     }
   }
@@ -117,11 +139,18 @@ class InMemoryBackingStore implements BackingStore {
       for (final model in unwrapped.whereType<BackedModel>()) {
         model.backingStore?.unsubscribe(key);
       }
+    } else if (unwrapped is Map<Object?, Object?>) {
+      for (final model in unwrapped.values.whereType<BackedModel>()) {
+        model.backingStore?.unsubscribe(key);
+      }
     }
   }
 
   Object? _unwrapValue(Object? value) {
     if (value is (Iterable<Object?>, int)) {
+      return value.$1;
+    }
+    if (value is (Map<Object?, Object?>, int)) {
       return value.$1;
     }
 
@@ -198,6 +227,8 @@ class InMemoryBackingStore implements BackingStore {
     (bool, Object?) valueToAdd = (initializationCompleted, value);
     if (value is Iterable<Object?>) {
       valueToAdd = (initializationCompleted, (value, value.length));
+    } else if (value is Map<Object?, Object?>) {
+      valueToAdd = (initializationCompleted, (value, value.length));
     }
 
     final oldValue = _store[key];
@@ -218,6 +249,14 @@ class InMemoryBackingStore implements BackingStore {
       }, key);
     } else if (value is Iterable<Object?>) {
       for (final model in value.whereType<BackedModel>()) {
+        model.backingStore?.initializationCompleted = false;
+        model.backingStore?.subscribe((dataKey, prev, next) {
+          model.backingStore?.initializationCompleted = false;
+          set(key, value);
+        }, key);
+      }
+    } else if (value is Map<Object?, Object?>) {
+      for (final model in value.values.whereType<BackedModel>()) {
         model.backingStore?.initializationCompleted = false;
         model.backingStore?.subscribe((dataKey, prev, next) {
           model.backingStore?.initializationCompleted = false;
