@@ -58,6 +58,14 @@ class InMemoryBackingStore implements BackingStore {
   @override
   void clear() => _store.clear();
 
+  Object? _unwrapValue(Object? value) {
+    if (value is (Iterable<Object?>, int)) {
+      return value.$1;
+    }
+
+    return value;
+  }
+
   @override
   T? get<T>(String key) {
     if (key.isEmpty) {
@@ -70,15 +78,13 @@ class InMemoryBackingStore implements BackingStore {
 
     final tuple = _store[key]!;
     final changed = tuple.$1;
-    var obj = tuple.$2;
+    final obj = tuple.$2;
 
     _ensureCollectionPropertyIsConsistent(key, obj);
 
-    if (obj is (Iterable<Object?>, int)) {
-      obj = obj.$1;
-    }
+    final unwrapped = _unwrapValue(obj);
 
-    return changed || !returnOnlyChangedValues ? obj as T? : null;
+    return changed || !returnOnlyChangedValues ? unwrapped as T? : null;
   }
 
   @override
@@ -93,7 +99,7 @@ class InMemoryBackingStore implements BackingStore {
       }
 
       if (changed || !returnOnlyChangedValues) {
-        yield MapEntry(key, obj);
+        yield MapEntry(key, _unwrapValue(obj));
       }
     }
   }
@@ -145,8 +151,9 @@ class InMemoryBackingStore implements BackingStore {
       });
     }
 
+    final previousValue = _unwrapValue(oldValue?.$2);
     for (final subscription in _subscriptions.values) {
-      subscription(key, oldValue?.$2, value);
+      subscription(key, previousValue, value);
     }
   }
 
