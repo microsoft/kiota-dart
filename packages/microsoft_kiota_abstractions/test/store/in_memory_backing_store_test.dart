@@ -355,5 +355,160 @@ void main() {
         expect(parent.get<Map<String, Object?>>('items'), isNull);
       },
     );
+
+    test(
+      'allocates independent subscription IDs for shared child models across parents',
+      () {
+        final sharedChild = MockBackedModel();
+        final childStore = InMemoryBackingStore();
+        when(sharedChild.backingStore).thenReturn(childStore);
+
+        final parentA = InMemoryBackingStore()
+          ..set('child', sharedChild)
+          ..initializationCompleted = true
+          ..returnOnlyChangedValues = true;
+
+        final parentB = InMemoryBackingStore()
+          ..set('child', sharedChild)
+          ..initializationCompleted = true
+          ..returnOnlyChangedValues = true;
+
+        // Clear parentA; parentA must unsubscribe only its own subscription handle
+        parentA.clear();
+
+        // Mutating child must still dirty parentB and not repopulate parentA
+        childStore.set('name', 'updated');
+        expect(parentB.get<BackedModel>('child'), same(sharedChild));
+        expect(parentA.get<BackedModel>('child'), isNull);
+        expect(parentA.iterate(), isEmpty);
+
+        // Replacing parentB's property must also cleanly unsubscribe without throwing
+        parentB.set('child', null);
+        childStore.set('name', 'after-null');
+        expect(parentB.get<BackedModel>('child'), isNull);
+      },
+    );
+
+    test(
+      'reconciles in-place collection removal and prevents detached child from dirtying parent',
+      () {
+        final childA = MockBackedModel();
+        final storeA = InMemoryBackingStore();
+        when(childA.backingStore).thenReturn(storeA);
+
+        final childB = MockBackedModel();
+        final storeB = InMemoryBackingStore();
+        when(childB.backingStore).thenReturn(storeB);
+
+        final items = <BackedModel>[childA, childB];
+        final parent = InMemoryBackingStore()
+          ..set('items', items)
+          ..initializationCompleted = true
+          ..returnOnlyChangedValues = true;
+
+        expect(parent.get<List<BackedModel>>('items'), isNull);
+
+        // Remove childA in place from the list
+        items.remove(childA);
+
+        // Access triggers collection consistency and reconciles subscriptions
+        expect(parent.get<List<BackedModel>>('items'), equals([childB]));
+
+        parent
+          ..initializationCompleted = true
+          ..returnOnlyChangedValues = true;
+
+        expect(parent.get<List<BackedModel>>('items'), isNull);
+
+        // Mutating detached childA must not dirty parent
+        storeA.set('title', 'detached-change');
+        expect(parent.get<List<BackedModel>>('items'), isNull);
+
+        // Mutating retained childB must dirty parent
+        storeB.set('title', 'retained-change');
+        expect(parent.get<List<BackedModel>>('items'), equals([childB]));
+      },
+    );
+
+    test(
+      'reconciles in-place collection removal followed by clear without repopulating parent',
+      () {
+        final child = MockBackedModel();
+        final childStore = InMemoryBackingStore();
+        when(child.backingStore).thenReturn(childStore);
+
+        final list = <BackedModel>[child];
+        final parent = InMemoryBackingStore()..set('items', list);
+
+        // Remove in place before clear() is invoked
+        list.remove(child);
+        parent.clear();
+
+        // Mutating detached child must not repopulate cleared parent
+        childStore.set('title', 'after-clear');
+        expect(parent.get<List<BackedModel>>('items'), isNull);
+        expect(parent.iterate(), isEmpty);
+      },
+    );
+
+    test(
+      'reconciles in-place Map removal followed by clear without repopulating parent',
+      () {
+        final mapChild = MockBackedModel();
+        final mapChildStore = InMemoryBackingStore();
+        when(mapChild.backingStore).thenReturn(mapChildStore);
+
+        final map = <String, Object?>{'key': mapChild};
+        final parent = InMemoryBackingStore()..set('map', map);
+
+        map.remove('key');
+        parent.clear();
+
+        mapChildStore.set('title', 'after-clear');
+        expect(parent.get<Map<String, Object?>>('map'), isNull);
+        expect(parent.iterate(), isEmpty);
+      },
+    );
+
+    test(
+      'skips callbacks for subscriptions removed during notification and prevents resurrecting cleared parent',
+      () {
+        final child = MockBackedModel();
+        final childStore = InMemoryBackingStore();
+        when(child.backingStore).thenReturn(childStore);
+
+        final parent = InMemoryBackingStore()..set('child', child);
+
+        // A child-store subscriber clears parent during child change notification
+        childStore
+          ..subscribe((k, prev, next) {
+            parent.clear();
+          })
+          ..set('name', 'trigger');
+
+        expect(parent.get<BackedModel>('child'), isNull);
+        expect(parent.iterate(), isEmpty);
+      },
+    );
+
+    test(
+      'skips subsequent subscriber if an earlier callback unsubscribes it',
+      () {
+        final store = InMemoryBackingStore();
+        var secondCalled = false;
+        const secondId = 'second-sub';
+
+        store
+          ..subscribe((k, prev, next) {
+            store.unsubscribe(secondId);
+          })
+          ..subscribe((k, prev, next) {
+            secondCalled = true;
+          }, secondId)
+          ..set('key', 'val');
+
+        expect(secondCalled, isFalse);
+      },
+    );
   });
 }
