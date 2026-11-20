@@ -37,6 +37,10 @@ class JsonSerializationWriter implements SerializationWriter {
         writeDateOnlyValue(entry.key, entry.value as DateOnly);
       } else if (entry.value is TimeOnly) {
         writeTimeOnlyValue(entry.key, entry.value as TimeOnly);
+      } else if (entry.value is Duration) {
+        writeDurationValue(entry.key, entry.value as Duration);
+      } else if (entry.value is Uint8List) {
+        _contents[entry.key] = base64Encode(entry.value as Uint8List);
       } else if (entry.value is Parsable) {
         writeObjectValue(entry.key, entry.value as Parsable);
         // ignore: experimental_member_use
@@ -99,14 +103,41 @@ class JsonSerializationWriter implements SerializationWriter {
     }
   }
 
+  /// Converts a primitive or temporal [value] into a JSON-encodable wire format.
+  ///
+  /// Supported types include [DateOnly], [TimeOnly], [Duration], [DateTime],
+  /// [UuidValue], and [Uint8List]. Other scalar values are returned as-is.
+  dynamic _sanitizePrimitiveValue(dynamic value) {
+    if (value is DateOnly) {
+      return value.toRfc3339String();
+    }
+    if (value is TimeOnly) {
+      return value.toRfc3339String();
+    }
+    if (value is Duration) {
+      return value.toIso8601String();
+    }
+    if (value is DateTime) {
+      return value.toIso8601String();
+    }
+    // ignore: experimental_member_use
+    if (value is UuidValue) {
+      return value.uuid;
+    }
+    if (value is Uint8List) {
+      return base64Encode(value);
+    }
+    return value;
+  }
+
   @override
   void writeCollectionOfPrimitiveValues<T>(String? key, Iterable<T>? values) {
     if (values == null) {
       return;
     } else {
-      _contents[key ?? ''] = values is List<T>
-          ? values
-          : values.toList(growable: false);
+      _contents[key ?? ''] = values
+          .map(_sanitizePrimitiveValue)
+          .toList(growable: false);
     }
   }
 

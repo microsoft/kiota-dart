@@ -143,6 +143,91 @@ void main() {
       );
     });
 
+    test('writeCollectionOfPrimitiveValues with DateOnly', () {
+      final writer = JsonSerializationWriter()
+        ..writeCollectionOfPrimitiveValues('dates', [
+          DateOnly.fromComponents(2024, 6, 15),
+          DateOnly.fromComponents(2024, 12, 31),
+        ]);
+
+      expect(
+        utf8.decode(writer.getSerializedContent()),
+        equals('{"dates":["2024-06-15","2024-12-31"]}'),
+      );
+    });
+
+    test('writeCollectionOfPrimitiveValues with TimeOnly', () {
+      final writer = JsonSerializationWriter()
+        ..writeCollectionOfPrimitiveValues('times', [
+          TimeOnly.fromComponents(9, 30),
+          TimeOnly.fromComponents(18, 0, 45),
+        ]);
+
+      expect(
+        utf8.decode(writer.getSerializedContent()),
+        equals('{"times":["09:30:00","18:00:45"]}'),
+      );
+    });
+
+    test('writeCollectionOfPrimitiveValues with Duration', () {
+      final writer = JsonSerializationWriter()
+        ..writeCollectionOfPrimitiveValues('durations', [
+          const Duration(hours: 1, minutes: 30),
+          const Duration(seconds: 45),
+        ]);
+
+      expect(
+        utf8.decode(writer.getSerializedContent()),
+        equals('{"durations":["PT1H30M","PT45S"]}'),
+      );
+    });
+
+    test('writeCollectionOfPrimitiveValues with UuidValue', () {
+      // ignore: experimental_member_use
+      final uuid1 = UuidValue.fromString(
+        '019329eb-0ac5-7cc0-9dea-6440b3648264',
+      );
+      // ignore: experimental_member_use
+      final uuid2 = UuidValue.fromString(
+        'a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d',
+      );
+      final writer = JsonSerializationWriter()
+        ..writeCollectionOfPrimitiveValues('uuids', [uuid1, uuid2]);
+
+      expect(
+        utf8.decode(writer.getSerializedContent()),
+        equals(
+          '{"uuids":["019329eb-0ac5-7cc0-9dea-6440b3648264","a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d"]}',
+        ),
+      );
+    });
+
+    test('writeCollectionOfPrimitiveValues with Uint8List', () {
+      final bytes1 = Uint8List.fromList([1, 2, 3]);
+      final bytes2 = Uint8List.fromList([72, 101, 108, 108, 111]);
+      final writer = JsonSerializationWriter()
+        ..writeCollectionOfPrimitiveValues('bytes', [bytes1, bytes2]);
+
+      expect(
+        utf8.decode(writer.getSerializedContent()),
+        equals('{"bytes":["AQID","SGVsbG8="]}'),
+      );
+    });
+
+    test('writeCollectionOfPrimitiveValues with DateTime', () {
+      final dt1 = DateTime.utc(2024, 1, 15, 8, 30);
+      final dt2 = DateTime.utc(2024, 12, 31, 23, 59, 59);
+      final writer = JsonSerializationWriter()
+        ..writeCollectionOfPrimitiveValues('dates', [dt1, dt2]);
+
+      expect(
+        utf8.decode(writer.getSerializedContent()),
+        equals(
+          '{"dates":["2024-01-15T08:30:00.000Z","2024-12-31T23:59:59.000Z"]}',
+        ),
+      );
+    });
+
     test('writeObject', () {
       const untypedNodesList = [UntypedString('abc'), UntypedDouble(8.8)];
       final simpleUser = MicrosoftGraphUser()
@@ -221,6 +306,9 @@ void main() {
           'time': TimeOnly.fromComponents(12, 00),
           'date': DateOnly.fromComponents(2000),
           'datetime': DateTime(2024, 12, 31, 23, 59),
+          'duration': const Duration(hours: 3, minutes: 15),
+          'bytes': Uint8List.fromList([10, 20, 30]),
+          'emptyBytes': Uint8List(0),
           // ignore: experimental_member_use
           'uuid': UuidValue.fromString('019329eb-0ac5-7cc0-9dea-6440b3648264'),
           'user': user2,
@@ -231,7 +319,7 @@ void main() {
       expect(
         utf8.decode(writer.getSerializedContent()),
         equals(
-          '{"workDuration":"PT2H","a":"#1 coworker","string":"a string","double":0.0,"bool":false,"time":"12:00:00","date":"2000-01-01","datetime":"2024-12-31T23:59:00.000","uuid":"019329eb-0ac5-7cc0-9dea-6440b3648264","user":{"workDuration":"PT12H","active":true}}',
+          '{"workDuration":"PT2H","a":"#1 coworker","string":"a string","double":0.0,"bool":false,"time":"12:00:00","date":"2000-01-01","datetime":"2024-12-31T23:59:00.000","duration":"PT3H15M","bytes":"ChQe","emptyBytes":"","uuid":"019329eb-0ac5-7cc0-9dea-6440b3648264","user":{"workDuration":"PT12H","active":true}}',
         ),
       );
     });
@@ -247,5 +335,20 @@ void main() {
       final writer = JsonSerializationWriter()..writeObjectValue(null, untyped);
       expect(utf8.decode(writer.getSerializedContent()), equals(inputJson));
     });
+
+    test(
+      'writeAdditionalData retains empty byte array as empty base64 string',
+      () {
+        final user = MicrosoftGraphUser()
+          ..additionalData = {'emptyBytes': Uint8List(0)};
+
+        final writer = JsonSerializationWriter()..writeObjectValue(null, user);
+
+        expect(
+          utf8.decode(writer.getSerializedContent()),
+          equals('{"emptyBytes":""}'),
+        );
+      },
+    );
   });
 }
