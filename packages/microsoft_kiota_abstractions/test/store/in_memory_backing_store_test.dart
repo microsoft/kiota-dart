@@ -222,7 +222,7 @@ void main() {
         expect(directChildStore.initializationCompleted, isTrue);
         expect(listChildStore.initializationCompleted, isTrue);
         expect(directChildStore.returnOnlyChangedValues, isTrue);
-        expect(listChildStore.returnOnlyChangedValues, isTrue);
+        expect(listChildStore.returnOnlyChangedValues, isFalse);
 
         parent.returnOnlyChangedValues = false;
         expect(directChildStore.returnOnlyChangedValues, isFalse);
@@ -339,7 +339,7 @@ void main() {
           ..returnOnlyChangedValues = true;
 
         expect(mapChildStore.initializationCompleted, isTrue);
-        expect(mapChildStore.returnOnlyChangedValues, isTrue);
+        expect(mapChildStore.returnOnlyChangedValues, isFalse);
         expect(parent.get<Map<String, Object?>>('items'), isNull);
 
         mapChildStore.set('status', 'updated');
@@ -508,6 +508,119 @@ void main() {
           ..set('key', 'val');
 
         expect(secondCalled, isFalse);
+      },
+    );
+
+    test(
+      'tracks same-size in-place Map entry mutations when returnOnlyChangedValues is true',
+      () {
+        final additionalData = <String, Object?>{'first': 1};
+        final store = InMemoryBackingStore()
+          ..set('additionalData', additionalData)
+          ..initializationCompleted = true
+          ..returnOnlyChangedValues = true;
+
+        expect(store.get<Map<String, Object?>>('additionalData'), isNull);
+        expect(store.iterate().toList(), isEmpty);
+
+        // Mutate existing key in place without changing map length
+        additionalData['first'] = 2;
+
+        final mutated = store.get<Map<String, Object?>>('additionalData');
+        expect(mutated, isNotNull);
+        expect(mutated, equals({'first': 2}));
+        expect(store.iterate().toList(), hasLength(1));
+      },
+    );
+
+    test(
+      'tracks same-size in-place Iterable element mutations when returnOnlyChangedValues is true',
+      () {
+        final list = <Object?>['initial', 'second'];
+        final store = InMemoryBackingStore()
+          ..set('items', list)
+          ..initializationCompleted = true
+          ..returnOnlyChangedValues = true;
+
+        expect(store.get<List<Object?>>('items'), isNull);
+        expect(store.iterate().toList(), isEmpty);
+
+        // Mutate existing index in place without changing list length
+        list[0] = 'updated';
+
+        final mutated = store.get<List<Object?>>('items');
+        expect(mutated, isNotNull);
+        expect(mutated, equals(['updated', 'second']));
+        expect(store.iterate().toList(), hasLength(1));
+      },
+    );
+
+    test(
+      'dirty collection preserves full serialization for unchanged members while direct nested properties remain changed-only',
+      () {
+        final memberA = MockBackedModel();
+        final memberAStore = InMemoryBackingStore();
+        when(memberA.backingStore).thenReturn(memberAStore);
+
+        final memberB = MockBackedModel();
+        final memberBStore = InMemoryBackingStore();
+        when(memberB.backingStore).thenReturn(memberBStore);
+
+        final directChild = MockBackedModel();
+        final directChildStore = InMemoryBackingStore();
+        when(directChild.backingStore).thenReturn(directChildStore);
+
+        final parent = InMemoryBackingStore()
+          ..set('directChild', directChild)
+          ..set('members', [memberA, memberB])
+          ..initializationCompleted = true
+          ..returnOnlyChangedValues = true;
+
+        // Direct nested child has returnOnlyChangedValues set to true
+        expect(directChildStore.returnOnlyChangedValues, isTrue);
+
+        // Members of collection preserve full serialization (returnOnlyChangedValues = false)
+        expect(memberAStore.returnOnlyChangedValues, isFalse);
+        expect(memberBStore.returnOnlyChangedValues, isFalse);
+
+        // Setting a property on memberA dirties memberA and triggers parent collection dirtying
+        memberAStore.set('name', 'Alice Updated');
+
+        // Parent collection getter returns the collection with both members
+        final members = parent.get<List<Object?>>('members');
+        expect(members, isNotNull);
+        expect(members, hasLength(2));
+
+        // Unchanged memberB still returns its properties because returnOnlyChangedValues is false
+        memberBStore.set('name', 'Bob');
+        expect(memberBStore.get<String>('name'), 'Bob');
+      },
+    );
+
+    test(
+      'consistency check on deep chain of BackedModels checks each property once without exponential traversal',
+      () {
+        final root = InMemoryBackingStore();
+        var current = root;
+        for (var i = 0; i < 6; i++) {
+          final nextModel = MockBackedModel();
+          final nextStore = InMemoryBackingStore();
+          when(nextModel.backingStore).thenReturn(nextStore);
+          current.set('child', nextModel);
+          current = nextStore;
+        }
+
+        root
+          ..initializationCompleted = true
+          ..returnOnlyChangedValues = true;
+
+        // Calling get on root must complete quickly and not exponentially explode
+        final stopwatch = Stopwatch()..start();
+        for (var i = 0; i < 50; i++) {
+          root.get<BackedModel>('child');
+        }
+        stopwatch.stop();
+        expect(stopwatch.elapsedMilliseconds, lessThan(1000));
       },
     );
   });

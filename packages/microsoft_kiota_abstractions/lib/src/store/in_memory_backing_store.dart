@@ -27,53 +27,117 @@ class InMemoryBackingStore implements BackingStore {
         continue;
       }
 
-      final models = _nestedSubscriptions[key];
-      if (models != null) {
-        for (final model in models.keys) {
+      final unwrapped = _unwrapValue(updatedTuple.$2);
+      if (unwrapped is BackedModel) {
+        unwrapped.backingStore?.initializationCompleted = value;
+      } else if (unwrapped is Iterable<Object?>) {
+        for (final model in unwrapped.whereType<BackedModel>()) {
+          model.backingStore?.initializationCompleted = value;
+        }
+      } else if (unwrapped is Map<Object?, Object?>) {
+        for (final model in unwrapped.values.whereType<BackedModel>()) {
           model.backingStore?.initializationCompleted = value;
         }
       }
 
-      _store[key] = (!value, updatedTuple.$2);
+      var freshValue = updatedTuple.$2;
+      if (unwrapped is Iterable<Object?>) {
+        freshValue = (unwrapped, List<Object?>.of(unwrapped));
+      } else if (unwrapped is Map<Object?, Object?>) {
+        freshValue = (unwrapped, Map<Object?, Object?>.of(unwrapped));
+      }
+
+      _store[key] = (!value, freshValue);
     }
   }
 
-  void _ensureCollectionPropertyIsConsistent(String key, Object? value) {
-    // check if we put in a collection annotated with the size
-    if (value is (Iterable<Object?>, int)) {
+  bool _hasMapChanged(
+    Map<Object?, Object?> current,
+    Map<Object?, Object?> snapshot,
+  ) {
+    if (current.length != snapshot.length) {
+      return true;
+    }
+    for (final entry in current.entries) {
+      if (!snapshot.containsKey(entry.key)) {
+        return true;
+      }
+      final snapVal = snapshot[entry.key];
+      if (!identical(entry.value, snapVal) && entry.value != snapVal) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  bool _hasIterableChanged(Iterable<Object?> current, List<Object?> snapshot) {
+    if (current.length != snapshot.length) {
+      return true;
+    }
+    var i = 0;
+    for (final item in current) {
+      final snapVal = snapshot[i++];
+      if (!identical(item, snapVal) && item != snapVal) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  void _checkNestedModelConsistency(
+    BackedModel model, [
+    Set<BackingStore>? visited,
+  ]) {
+    final store = model.backingStore;
+    if (store == null) {
+      return;
+    }
+    visited ??= Set<BackingStore>.identity();
+    if (!visited.add(store)) {
+      return;
+    }
+
+    if (store is InMemoryBackingStore) {
+      for (final key in List<String>.of(store._store.keys)) {
+        final tuple = store._store[key];
+        if (tuple != null) {
+          store._ensureCollectionPropertyIsConsistent(key, tuple.$2, visited);
+        }
+      }
+    } else {
+      for (final entry in store.iterate()) {
+        store.get<Object?>(entry.key);
+      }
+    }
+  }
+
+  void _ensureCollectionPropertyIsConsistent(
+    String key,
+    Object? value, [
+    Set<BackingStore>? visited,
+  ]) {
+    if (value is (Iterable<Object?>, List<Object?>)) {
       for (final model in value.$1.whereType<BackedModel>()) {
-        model.backingStore?.iterate().forEach((item) {
-          // Call get() on nested properties so that this method may be called
-          // recursively to ensure collections are consistent
-          model.backingStore?.get<Object?>(item.key);
-        });
+        _checkNestedModelConsistency(model, visited);
       }
 
       _reconcileNestedSubscriptions(key, value.$1);
 
-      // (and the size has changed since we last updated)
-      if (value.$1.length != value.$2) {
-        // ensure the store is notified the collection property has changed
+      if (_hasIterableChanged(value.$1, value.$2)) {
         set(key, value.$1);
       }
-    } else if (value is (Map<Object?, Object?>, int)) {
+    } else if (value is (Map<Object?, Object?>, Map<Object?, Object?>)) {
       for (final model in value.$1.values.whereType<BackedModel>()) {
-        model.backingStore?.iterate().forEach((item) {
-          model.backingStore?.get<Object?>(item.key);
-        });
+        _checkNestedModelConsistency(model, visited);
       }
 
       _reconcileNestedSubscriptions(key, value.$1);
 
-      if (value.$1.length != value.$2) {
+      if (_hasMapChanged(value.$1, value.$2)) {
         set(key, value.$1);
       }
     } else if (value is BackedModel) {
-      value.backingStore?.iterate().forEach((item) {
-        // Call get() on nested properties so that this method may be called
-        // recursively to ensure collections are consistent
-        value.backingStore?.get<Object?>(item.key);
-      });
+      _checkNestedModelConsistency(value, visited);
     }
   }
 
@@ -94,14 +158,12 @@ class InMemoryBackingStore implements BackingStore {
 
       _ensureCollectionPropertyIsConsistent(key, tuple.$2);
 
-      final models = _nestedSubscriptions[key];
-      if (models != null) {
-        for (final model in models.keys) {
-          final nestedStore = model.backingStore;
-          if (nestedStore != null &&
-              nestedStore.returnOnlyChangedValues != value) {
-            nestedStore.returnOnlyChangedValues = value;
-          }
+      final unwrapped = _unwrapValue(tuple.$2);
+      if (unwrapped is BackedModel) {
+        final nestedStore = unwrapped.backingStore;
+        if (nestedStore != null &&
+            nestedStore.returnOnlyChangedValues != value) {
+          nestedStore.returnOnlyChangedValues = value;
         }
       }
     }
@@ -140,7 +202,8 @@ class InMemoryBackingStore implements BackingStore {
   }
 
   void _reconcileNestedSubscriptions(String key, Object? value) {
-    final currentModels = _extractBackedModels(value);
+    final unwrappedValue = _unwrapValue(value);
+    final currentModels = _extractBackedModels(unwrappedValue);
     final registered = _nestedSubscriptions[key];
 
     if (registered != null) {
@@ -169,6 +232,8 @@ class InMemoryBackingStore implements BackingStore {
         Map<BackedModel, String>.identity,
       );
 
+      final isDirectModel = unwrappedValue is BackedModel;
+
       for (final model in currentModels) {
         if (!map.containsKey(model)) {
           final targetStore = model.backingStore;
@@ -176,7 +241,8 @@ class InMemoryBackingStore implements BackingStore {
             if (!initializationCompleted) {
               targetStore.initializationCompleted = false;
             }
-            if (returnOnlyChangedValues &&
+            if (isDirectModel &&
+                returnOnlyChangedValues &&
                 !targetStore.returnOnlyChangedValues) {
               targetStore.returnOnlyChangedValues = true;
             }
@@ -212,10 +278,10 @@ class InMemoryBackingStore implements BackingStore {
   }
 
   Object? _unwrapValue(Object? value) {
-    if (value is (Iterable<Object?>, int)) {
+    if (value is (Iterable<Object?>, Object?)) {
       return value.$1;
     }
-    if (value is (Map<Object?, Object?>, int)) {
+    if (value is (Map<Object?, Object?>, Object?)) {
       return value.$1;
     }
 
@@ -291,9 +357,12 @@ class InMemoryBackingStore implements BackingStore {
 
     (bool, Object?) valueToAdd = (initializationCompleted, value);
     if (value is Iterable<Object?>) {
-      valueToAdd = (initializationCompleted, (value, value.length));
+      valueToAdd = (initializationCompleted, (value, List<Object?>.of(value)));
     } else if (value is Map<Object?, Object?>) {
-      valueToAdd = (initializationCompleted, (value, value.length));
+      valueToAdd = (
+        initializationCompleted,
+        (value, Map<Object?, Object?>.of(value)),
+      );
     }
 
     final oldValue = _store[key];

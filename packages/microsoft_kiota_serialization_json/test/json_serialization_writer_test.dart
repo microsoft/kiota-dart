@@ -247,5 +247,101 @@ void main() {
       final writer = JsonSerializationWriter()..writeObjectValue(null, untyped);
       expect(utf8.decode(writer.getSerializedContent()), equals(inputJson));
     });
+
+    test(
+      'dirty collection preserves full serialization for unchanged members while direct nested properties remain changed-only',
+      () {
+        final group = _TestBackedGroup();
+        final leader = _TestBackedUser()
+          ..id = 'leader-1'
+          ..name = 'Leader';
+        final userA = _TestBackedUser()
+          ..id = 'user-a'
+          ..name = 'Alice';
+        final userB = _TestBackedUser()
+          ..id = 'user-b'
+          ..name = 'Bob';
+
+        group
+          ..id = 'group-1'
+          ..leader = leader
+          ..members = [userA, userB];
+
+        group.backingStore!.initializationCompleted = true;
+        group.backingStore!.returnOnlyChangedValues = true;
+
+        // Mutate only userA in the collection
+        userA.name = 'Alice Updated';
+
+        final writer = JsonSerializationWriter()..writeObjectValue(null, group);
+        final json = jsonDecode(utf8.decode(writer.getSerializedContent()));
+
+        // Group's id and leader were unchanged -> omitted
+        // Members collection was dirtied -> serialized
+        // User A was changed -> serialized with updated name
+        // User B was unchanged in the dirty collection -> FULLY serialized (not empty {})
+        expect(json, {
+          'members': [
+            {'id': 'user-a', 'name': 'Alice Updated'},
+            {'id': 'user-b', 'name': 'Bob'},
+          ],
+        });
+      },
+    );
   });
+}
+
+class _TestBackedUser extends Parsable implements BackedModel {
+  _TestBackedUser([BackingStore? store])
+    : backingStore = store ?? InMemoryBackingStore();
+
+  @override
+  BackingStore? backingStore;
+
+  String? get id => backingStore?.get<String>('id');
+  set id(String? value) => backingStore?.set<String?>('id', value);
+
+  String? get name => backingStore?.get<String>('name');
+  set name(String? value) => backingStore?.set<String?>('name', value);
+
+  @override
+  void serialize(SerializationWriter writer) {
+    writer
+      ..writeStringValue('id', id)
+      ..writeStringValue('name', name);
+  }
+
+  @override
+  Map<String, void Function(ParseNode)> getFieldDeserializers() => {};
+}
+
+class _TestBackedGroup extends Parsable implements BackedModel {
+  _TestBackedGroup([BackingStore? store])
+    : backingStore = store ?? InMemoryBackingStore();
+
+  @override
+  BackingStore? backingStore;
+
+  String? get id => backingStore?.get<String>('id');
+  set id(String? value) => backingStore?.set<String?>('id', value);
+
+  _TestBackedUser? get leader => backingStore?.get<_TestBackedUser>('leader');
+  set leader(_TestBackedUser? value) =>
+      backingStore?.set<_TestBackedUser?>('leader', value);
+
+  Iterable<_TestBackedUser>? get members =>
+      backingStore?.get<Iterable<_TestBackedUser>>('members');
+  set members(Iterable<_TestBackedUser>? value) =>
+      backingStore?.set<Iterable<_TestBackedUser>?>('members', value);
+
+  @override
+  void serialize(SerializationWriter writer) {
+    writer
+      ..writeStringValue('id', id)
+      ..writeObjectValue('leader', leader)
+      ..writeCollectionOfObjectValues('members', members);
+  }
+
+  @override
+  Map<String, void Function(ParseNode)> getFieldDeserializers() => {};
 }
