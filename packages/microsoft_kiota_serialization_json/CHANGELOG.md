@@ -1,5 +1,12 @@
 # Unreleased
 
+## [0.0.13](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_serialization_json-v0.0.12...microsoft_kiota_serialization_json-v0.0.13) (2026-11-20)
+
+
+### Bug Fixes
+
+* **serialization-json:** support primitive collections serialization, duration additional data, and numeric double collections ([86a8195](https://github.com/microsoft/kiota-dart/commit/86a819592c796aaf7fbc985f525e0a3a7c9fbc94))
+
 ## [0.0.12](https://github.com/microsoft/kiota-dart/compare/microsoft_kiota_serialization_json-v0.0.11...microsoft_kiota_serialization_json-v0.0.12) (2026-11-16)
 
 
